@@ -1,0 +1,22 @@
+name: Protocol proposal
+description: Propose a concrete interoperability change to PACT
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Interoperability problem
+      description: Include a concrete interaction and the current limitation.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Proposed behavior and compatibility
+      description: Explain schema, lifecycle, A2A compatibility, and security effects.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Examples and conformance cases
+      description: Describe positive and negative fixtures and alternatives considered.

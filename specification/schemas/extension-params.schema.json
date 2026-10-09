@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/pact/v1/schemas/extension-params.schema.json",
+  "title": "PACT extension-params v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "versions",
+    "contracts"
+  ],
+  "properties": {
+    "versions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "const": "0.1.0"
+      }
+    },
+    "contracts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://example.org/pact/v1/schemas/contract.schema.json"
+      }
+    }
+  }
+}

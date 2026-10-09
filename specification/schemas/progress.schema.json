@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/pact/v1/schemas/progress.schema.json",
+  "title": "PACT Progress v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sequence", "stage", "completed_units", "total_units", "percentage", "updated_at"],
+  "properties": {
+    "sequence": {"type": "integer", "minimum": 0},
+    "stage": {"type": "string", "minLength": 1, "maxLength": 100},
+    "completed_units": {"type": "integer", "minimum": 0},
+    "total_units": {"type": ["integer", "null"], "minimum": 1},
+    "percentage": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+    "updated_at": {"type": "string", "format": "date-time"}
+  },
+  "allOf": [
+    {"if": {"properties": {"total_units": {"type": "null"}}, "required": ["total_units"]}, "then": {"properties": {"percentage": {"type": "null"}}}},
+    {"if": {"properties": {"total_units": {"type": "integer"}}, "required": ["total_units"]}, "then": {"properties": {"percentage": {"type": "number"}}}}
+  ],
+  "$comment": "Cross-field arithmetic consistency and monotonic sequence require runtime semantic validation."
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/pact/v1/schemas/contract.schema.json",
+  "title": "PACT contract v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "version",
+    "input",
+    "output"
+  ],
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "input": {
+      "$ref": "https://example.org/pact/v1/schemas/schema-reference.schema.json"
+    },
+    "output": {
+      "$ref": "https://example.org/pact/v1/schemas/schema-reference.schema.json"
+    },
+    "question_answer": {
+      "$ref": "https://example.org/pact/v1/schemas/schema-reference.schema.json"
+    }
+  }
+}

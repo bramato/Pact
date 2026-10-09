@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/pact/v1/schemas/schema-reference.schema.json",
+  "title": "PACT schema-reference v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_uri",
+    "sha256"
+  ],
+  "properties": {
+    "schema_uri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

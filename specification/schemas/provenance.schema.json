@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/pact/v1/schemas/provenance.schema.json",
+  "title": "PACT provenance v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "coordinator_id",
+    "contributors"
+  ],
+  "properties": {
+    "coordinator_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contributors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "child_id",
+          "artifact_ids",
+          "validation_verdict",
+          "attempts"
+        ],
+        "properties": {
+          "child_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "artifact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "validation_verdict": {
+            "enum": [
+              "pending",
+              "valid",
+              "invalid"
+            ]
+          },
+          "attempts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "state",
+                "occurred_at"
+              ],
+              "properties": {
+                "state": {
+                  "enum": [
+                    "TASK_STATE_UNSPECIFIED",
+                    "TASK_STATE_SUBMITTED",
+                    "TASK_STATE_WORKING",
+                    "TASK_STATE_INPUT_REQUIRED",
+                    "TASK_STATE_AUTH_REQUIRED",
+                    "TASK_STATE_COMPLETED",
+                    "TASK_STATE_FAILED",
+                    "TASK_STATE_CANCELED",
+                    "TASK_STATE_REJECTED"
+                  ]
+                },
+                "occurred_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "error_code": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

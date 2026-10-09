@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/pact/v1/schemas/metadata.schema.json",
+  "title": "PACT metadata v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version"
+  ],
+  "properties": {
+    "version": {
+      "const": "0.1.0"
+    },
+    "contract": {
+      "$ref": "https://example.org/pact/v1/schemas/contract.schema.json"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "coordinator_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "progress": {
+      "$ref": "https://example.org/pact/v1/schemas/progress.schema.json"
+    },
+    "question": {
+      "$ref": "https://example.org/pact/v1/schemas/question.schema.json"
+    },
+    "answer": {
+      "$ref": "https://example.org/pact/v1/schemas/answer.schema.json"
+    },
+    "event": {
+      "$ref": "https://example.org/pact/v1/schemas/event.schema.json"
+    },
+    "swarm": {
+      "$ref": "https://example.org/pact/v1/schemas/swarm.schema.json"
+    },
+    "provenance": {
+      "$ref": "https://example.org/pact/v1/schemas/provenance.schema.json"
+    },
+    "error": {
+      "$ref": "https://example.org/pact/v1/schemas/error.schema.json"
+    }
+  }
+}

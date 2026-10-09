@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/pact/v1/schemas/child.schema.json",
+  "title": "PACT child v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "child_id",
+    "parent_task_id",
+    "assignee_id",
+    "depends_on",
+    "required",
+    "weight",
+    "contract_id",
+    "state",
+    "result_artifact_ids"
+  ],
+  "properties": {
+    "child_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assignee_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "weight": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "contract_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "enum": [
+        "TASK_STATE_UNSPECIFIED",
+        "TASK_STATE_SUBMITTED",
+        "TASK_STATE_WORKING",
+        "TASK_STATE_INPUT_REQUIRED",
+        "TASK_STATE_AUTH_REQUIRED",
+        "TASK_STATE_COMPLETED",
+        "TASK_STATE_FAILED",
+        "TASK_STATE_CANCELED",
+        "TASK_STATE_REJECTED"
+      ]
+    },
+    "result_artifact_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  }
+}

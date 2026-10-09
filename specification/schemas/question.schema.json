@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/pact/v1/schemas/question.schema.json",
+  "title": "PACT question v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "question_id",
+    "task_id",
+    "prompt",
+    "answer_schema",
+    "required",
+    "expires_at",
+    "status"
+  ],
+  "properties": {
+    "question_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prompt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "answer_schema": {
+      "$ref": "https://example.org/pact/v1/schemas/schema-reference.schema.json"
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "open",
+        "answered",
+        "expired",
+        "withdrawn"
+      ]
+    }
+  }
+}
