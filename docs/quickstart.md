@@ -16,7 +16,7 @@ npm run check
 npm run docs:build
 ```
 
-Marco's Herd site is **http://pact.test**. Herd serves `public/`; storage and vendor directories are outside the document root. Keep the existing HTTP scheme for this local demo. A deployed authenticated peer needs HTTPS and an application-owned authentication adapter.
+The local Herd demo runs at **http://pact.test** over HTTP. Herd serves `public/`; storage and dependencies remain outside the document root. A deployed authenticated peer uses HTTPS and an authentication adapter supplied by its application.
 
 Setup creates private random tokens and a SQLite database under ignored `storage/`. It preserves existing configuration. Tokens do not appear in Agent Cards, transcripts, fixtures or CLI output. `PACT_CONFIG` can select a separate local configuration file. Never commit that file.
 
