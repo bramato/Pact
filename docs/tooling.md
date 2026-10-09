@@ -1,11 +1,22 @@
-# Local tooling
+# Tooling
 
-Install the pinned dependencies with `npm ci --ignore-scripts` using Node.js 22 or newer. Validation is offline after installation. No environment variables, application server, model credentials, or A2A SDK are required.
+Current v0.2 commands:
+
+```sh
+npm run check:all       # Unit/shared vectors, legacy corpus, repository/docs, HTTP faults
+npm run package:smoke   # Build/install three standalone SDK archives in temporary projects
+npm run demo:verify     # Verify Core and Swarm exchanges on the configured Herd site
+node tools/pact.mjs test http://pact.test/a2a --config storage/demo-config.json --reference-suite
+```
+
+[Quickstart](quickstart.md) installs PHP dependencies and explains private configuration. [Independent cases](../conformance/v0.2/README.md) define stable error expectations. `PACT_PHP` and `PACT_COMPOSER` optionally select executable paths. Test fixtures use disposable HTTP servers; the local application remains Herd's `pact.test`.
+
+## Archived v0.1 validation
+
+The retained JavaScript validators run offline after npm dependency installation and need no PHP runtime, application server or model credentials.
 
 | Command | Result |
 | --- | --- |
-| `npm run check` | Runtime tests, portable corpus, integrity/examples/local-link/asset checks |
-| `npm test` | Native Node.js runtime tests |
 | `npm run conformance` | Portable resources and behavior scenarios |
 | `node tools/conformance.mjs --json` | JSON result with per-case expected/actual values |
 | `npm run validate -- progress examples/progress.json` | One resource's shape and applicable semantics |
@@ -14,7 +25,7 @@ Install the pinned dependencies with `npm ci --ignore-scripts` using Node.js 22 
 
 The validators return exit 0 on success, 1 on rejected input or mismatched corpus expectation, and 2 on invalid command usage. JSON errors include `code`, `message`, and optional schema `details`. Library functions in [validation.mjs](../tools/lib/validation.mjs) and [reliability.mjs](../tools/lib/reliability.mjs) are local conformance models, not a published SDK or transport API.
 
-## Semantic boundaries
+### Semantic boundaries
 
 `validateResource` validates a resource's shape; progress, event, swarm, and nested metadata also receive stateless semantic checks. It cannot establish stateful history, a question's answer, or a contract's data from one resource alone.
 
@@ -26,7 +37,7 @@ The validators return exit 0 on success, 1 on rejected input or mismatched corpu
 
 `evaluateSwarm` evaluates documented DAG and aggregation rules against local validation verdicts. `cancellationTargets` returns outstanding child IDs without changing their states. Adapters must derive verdicts from actual outputs and wait for remote cancellation acknowledgment.
 
-## Error families
+### Error families
 
 | Prefix / code | Meaning |
 | --- | --- |

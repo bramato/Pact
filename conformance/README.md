@@ -1,4 +1,6 @@
-# Conformance corpus
+# Archived v0.1 conformance corpus
+
+Current implementations and live tests use [v0.2 vectors](v0.2/README.md). This page documents the retained source-proposal corpus.
 
 The portable interface consists of JSON files, independent of any A2A SDK:
 

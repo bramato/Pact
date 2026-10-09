@@ -1,18 +1,18 @@
 # Delivery roadmap
 
-Status is based on the files and executable checks in this repository. Draft definitions are reviewable but remain open to revision.
+The six implementation improvements are tracked with direct evidence in [the delivery audit](delivery-plan.md).
 
-| Phase | Delivered here | Remaining |
+| Area | Delivered in draft v0.2 | Next work |
 | --- | --- | --- |
-| 0 — Governance and scope | Contribution, conduct, security, version policy; existing MIT license recorded | Name/domain review, permanent URI, private reporting contacts, license review |
-| 1 — Core specification | Supplied proposal, resource schemas, wire conventions, vocabulary, A2A examples, fixtures | Public review and freezing a normative draft |
-| 2 — Two-agent MVP | Offline input/output/answer validation, lifecycle and idempotency models | Two live authenticated agents, durable acceptance, streaming/polling, transport adapters |
-| 3 — Swarm MVP | DAG rules, aggregation checks, provenance example, failure/cancellation scenarios | Live coordinator, durable child execution, retries, timeouts, remote cancellation acknowledgments |
-| 4 — Interoperability | SDK-independent JSON corpus, local conformance CLI, CI | TypeScript and PHP/Laravel SDKs, cross-language tests, peer interoperability |
-| 5 — Community release | Release checklist | Permanent identifiers, v0.1.0 tag, specification/package publication, live demo, ecosystem feedback |
+| Specification | Core/Swarm split, exact event integrity, typed catalog, concurrent questions, errors/retries/cancellation | Public review and freeze |
+| Interoperability | Independent SDKs, typed answers and validated outputs over HTTP | Independent ecosystem peer implementations |
+| Swarm | Three contributors, actual dependencies, distinct retry tasks, optional failure and provenance | Quorum runtime scheduler, nested plans |
+| Durability | Atomic SQLite acceptance/outbox, leased dispatch, process-kill recovery, response-loss reconciliation | Shared coordination and ownership transfer |
+| Progress | Fixed weights, execution/aggregation/validation, null totals, retry regression, separate high watermark | Production measured-unit adapters |
+| Developer experience | SDK archives, live CLI, copyable examples, navigable local docs, controlled identifiers | Owner-authorized package/specification release |
 
-## Open design work
+## Release gate
 
-Coordinator failover and ownership transfer; contributor artifact trust; publication/signing/discovery of contracts; concurrent question bundling; enforceable resource budgets; nested swarm depth and cancellation guarantees belong to the proposed v0.2 work.
+Review the MIT licensing and package dependency licenses, establish a private reporting channel, freeze schemas and identifier contents, verify fresh installs/archives and independent live peers, then authorize package and specification publication. The owner handles pushes, tags and publication. Draft IDs live under the controlled repository; no domain purchase is needed to test locally.
 
-The release checklist is to resolve permanent identity and reporting channels, review license compatibility, freeze schemas/contracts and byte digests, pass checks and live interoperability tests, document production limits, then authorize publication. A release must not imply official A2A endorsement.
+Production adapters still need application-owned authentication, retention/resource budgets and operational monitoring. A2A streaming, signed contract distribution, trust in contributor content, distributed coordinator failover and enforceable cancellation guarantees remain explicit future work.

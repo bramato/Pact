@@ -1,23 +1,21 @@
 # Compatibility
 
-| Component | Current target | Evidence / limit |
+| Component | Target | Evidence / limit |
 | --- | --- | --- |
-| PACT | 0.1.0 draft | Imported proposal, schemas, local fixtures |
-| A2A binding | 1.0 | Examples checked against upstream release v1.0.1 models; no live peer test |
-| JSON Schema | Draft 2020-12 | Ajv 2020 validator with format checks enabled |
-| Local tooling | Node.js >=22 | Native test runner, no A2A SDK dependency |
-| TypeScript / PHP SDKs | Planned | No packages or transport adapters implemented |
-| Other A2A versions | Unverified | Need separate binding examples and interoperability tests |
+| PACT Core / Swarm | 0.2.0 draft | Normative text, schemas, independent PHP/TypeScript vectors |
+| Archived proposal | 0.1.0 | Original documents preserved byte-for-byte; legacy corpus retained |
+| A2A JSON-RPC | 1.0 | Models reviewed at upstream v1.0.1; authenticated live task/question/artifact exchange |
+| JSON Schema | Draft 2020-12 | Ajv and Opis, formats asserted, pinned local resolver |
+| TypeScript | Node.js 22+ | Typed SDK, HTTP client, compiled standalone archive |
+| PHP | 8.2+ | SDK platform requirement, Composer dependencies; local tests use PHP 8.4 |
+| Laravel | Illuminate 12 | Actual HTTP routes; reference lock resolved against PHP 8.2 |
+| Durability | SQLite, one coordinator | Real SIGKILL/restart, exact-byte reconciliation, unique committed child effects |
+| Streaming / other A2A bindings | Unverified | Polling JSON-RPC reference only |
 
-The wire version is `1.0`; `v1.0.1` identifies the upstream source release used for review. A2A 1.0 uses `SendMessage`, `ROLE_USER` / `ROLE_AGENT`, `TASK_STATE_*`, and structured Parts with a `data` member. Older examples using `message/send`, `kind: "data"`, and lowercase states must not be mixed into this binding.
+The wire header is `A2A-Version: 1.0`; `v1.0.1` identifies the upstream model source. Use `SendMessage`, `ROLE_USER` / `ROLE_AGENT`, `TASK_STATE_*`, structured Part `data`, `GetTask` and `CancelTask`. Do not combine this binding with older `message/send` or `kind` examples.
 
-PACT is a profile over existing A2A objects and extension negotiation. A2A peers without PACT remain valid A2A peers. A PACT caller must explicitly negotiate support and either fail or obtain caller authorization before downgrading. Metadata, progress, or HTTP 200 cannot establish task completion.
+Core is mandatory in the reference card. Swarm is optional and activated separately. Missing required support fails explicitly; any downgrade needs caller authorization. v0.2 identifiers are backed by this owner's repository and await publication when the owner pushes/releases the draft. Archived `example.org` IDs are not deployment identities.
 
-The fixture runner checks PACT resources and documented semantics. The example checker verifies selected fields and nesting against the reviewed A2A models, not the entire upstream protocol. Passing these checks is not certification, full A2A conformance, or evidence of secure production operation.
+Tests cover the declared PACT binding and deterministic peer. They do not certify all A2A features, output truth, distributed leader failover or production deployment policy. See [implementation limits](implementation.md).
 
-Primary sources:
-
-- [A2A v1.0.1 specification](https://github.com/a2aproject/A2A/blob/v1.0.1/docs/specification.md)
-- [A2A v1.0.1 protobuf models](https://github.com/a2aproject/A2A/blob/v1.0.1/specification/a2a.proto)
-- [A2A v1.0.1 extension guidance](https://github.com/a2aproject/A2A/blob/v1.0.1/docs/topics/extensions.md)
-- [JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12)
+Sources: [A2A models](https://github.com/a2aproject/A2A/blob/v1.0.1/specification/a2a.proto), [A2A specification](https://github.com/a2aproject/A2A/blob/v1.0.1/docs/specification.md), [extensions](https://github.com/a2aproject/A2A/blob/v1.0.1/docs/topics/extensions.md), [JSON Schema](https://json-schema.org/draft/2020-12), [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785), [Laravel 12 routing](https://laravel.com/docs/12.x/routing).

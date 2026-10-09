@@ -16,9 +16,10 @@
     "build:sdk": "node tools/build/sdk-resources.mjs && npm run build --workspace @pact-protocol/core",
     "conformance": "node tools/conformance.mjs",
     "validate": "node tools/validate.mjs",
-    "check": "npm test && npm run conformance && node tools/check-repository.mjs",
+    "check": "npm test && npm run conformance && node tools/check-repository.mjs && npm run docs:build",
     "pretest": "npm run build:sdk",
     "test:integration": "node --test --test-reporter=spec tests/integration/*.test.mjs",
+    "docs:build": "node tools/build/docs.mjs",
     "demo": "node examples/v0.2/demo.mjs",
     "demo:swarm": "node examples/v0.2/demo.mjs --swarm",
     "check:all": "npm run check && npm run test:integration",
@@ -27,9 +28,13 @@
   },
   "dependencies": {
     "ajv": "8.20.0",
-    "ajv-formats": "3.0.1"
+    "ajv-formats": "3.0.1",
+    "marked": "18.1.0"
   },
   "bin": {
     "pact": "tools/pact.mjs"
+  },
+  "devDependencies": {
+    "prettier": "3.9.9"
   }
 }
