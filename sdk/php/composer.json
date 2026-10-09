@@ -1,0 +1,30 @@
+{
+  "name": "pact-protocol/core",
+  "description": "Independent PHP implementation of PACT Core and Swarm",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "ext-bcmath": "*",
+    "opis/json-schema": "2.6.0",
+    "ext-curl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Pact\\": "src/"
+    }
+  },
+  "config": {
+    "allow-plugins": false,
+    "sort-packages": true
+  },
+  "archive": {
+    "exclude": [
+      "/tests",
+      "/vendor",
+      "/composer.lock"
+    ]
+  }
+}

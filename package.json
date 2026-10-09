@@ -1,16 +1,23 @@
 {
   "name": "pact-conformance",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Offline conformance harness for the draft PACT A2A profile",
+  "description": "PACT specification, independent SDKs and live A2A conformance",
   "license": "MIT",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "sdk/typescript"
+  ],
   "scripts": {
-    "test": "node --test",
+    "test": "node --test --test-reporter=spec tests/*.test.mjs",
+    "build:sdk": "node tools/build/sdk-resources.mjs && npm run build --workspace @pact-protocol/core",
     "conformance": "node tools/conformance.mjs",
     "validate": "node tools/validate.mjs",
-    "check": "npm test && npm run conformance && node tools/check-repository.mjs"
+    "check": "npm test && npm run conformance && node tools/check-repository.mjs",
+    "pretest": "npm run build:sdk"
   },
   "dependencies": {
     "ajv": "8.20.0",

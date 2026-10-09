@@ -12,12 +12,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [22, 24]
+        include:
+          - node: 22
+            php: '8.2'
+          - node: 24
+            php: '8.4'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, bcmath, curl, pdo_sqlite, sqlite3, posix
+          tools: composer:v2
+          coverage: none
       - run: npm ci --ignore-scripts
+      - run: npm run build:sdk
+      - run: composer install --working-dir=sdk/php --no-interaction --no-progress
       - run: npm run check

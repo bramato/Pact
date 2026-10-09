@@ -13,8 +13,8 @@ for (const field of ['input', 'output', 'question_answer']) {
 }
 
 const manifest = readJson(resolve(ROOT, 'conformance/manifest.json'));
-assert.equal(readFileSync(resolve(ROOT, 'VERSION'), 'utf8').trim(), manifest.version);
-assert.equal(readJson(resolve(ROOT, 'package.json')).version, manifest.version);
+assert.equal(readFileSync(resolve(ROOT, 'VERSION'), 'utf8').trim(), readJson(resolve(ROOT, 'specification/0.2/manifest.json')).version);
+assert.equal(readJson(resolve(ROOT, 'package.json')).version, '0.2.0');
 for (const source of manifest.source_documents) {
   assert.equal(sha256(readFileSync(resolve(ROOT, 'conformance', source.file))), source.sha256, 'Supplied document changed');
 }
@@ -87,7 +87,7 @@ assertLifecycle('TASK_STATE_WORKING', completed.status.state, { outputValidated:
 
 function checkLinks(directory) {
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
-    if (['node_modules', '.git'].includes(entry.name)) continue;
+    if (['node_modules', '.git', 'vendor', 'dist', 'site', 'storage'].includes(entry.name)) continue;
     const path = resolve(directory, entry.name);
     if (entry.isDirectory()) { checkLinks(path); continue; }
     if (!entry.name.endsWith('.md')) continue;

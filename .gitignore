@@ -1,7 +1,15 @@
 node_modules/
 .DS_Store
 coverage/
+vendor/
+sdk/typescript/dist/
+sdk/*/resources/
+storage/
+site/
+*.tgz
 *.log
 .env
 .env.*
 !.env.example
+
+.pint.cache
