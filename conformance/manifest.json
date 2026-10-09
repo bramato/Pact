@@ -1,0 +1,17 @@
+{
+  "version": "0.1.0",
+  "a2a_source_release": "v1.0.1",
+  "extension_uri": "https://example.org/pact/v1",
+  "status": "draft",
+  "schema_dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source_documents": [
+    {
+      "file": "../specification/PACT-SPEC-v0.1.md",
+      "sha256": "82ee9f7c75d6317668d43a894358d4b4decfb24f2a9070d0ed5dd3c9217b4f06"
+    },
+    {
+      "file": "../specification/schemas/progress.schema.json",
+      "sha256": "d761b45e330479a5fea984a2bccbad3f9d3f617041ae90d233068d9239cd0954"
+    }
+  ]
+}

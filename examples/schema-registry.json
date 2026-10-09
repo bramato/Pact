@@ -1,0 +1,5 @@
+{
+  "https://example.org/contracts/document-review/1.0.0/input.schema.json": "contracts/document-review/1.0.0/input.schema.json",
+  "https://example.org/contracts/document-review/1.0.0/output.schema.json": "contracts/document-review/1.0.0/output.schema.json",
+  "https://example.org/contracts/document-review/1.0.0/answer.schema.json": "contracts/document-review/1.0.0/answer.schema.json"
+}

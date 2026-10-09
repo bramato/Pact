@@ -1,0 +1,12 @@
+{
+  "question_id": "question-audience",
+  "task_id": "task-review",
+  "prompt": "Who is the intended audience?",
+  "answer_schema": {
+    "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+    "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+  },
+  "required": true,
+  "expires_at": "2026-10-09T09:00:00Z",
+  "status": "waiting"
+}

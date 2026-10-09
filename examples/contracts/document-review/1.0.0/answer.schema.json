@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+  "title": "Document review answer",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "audience"
+  ],
+  "properties": {
+    "audience": {
+      "enum": [
+        "technical",
+        "general"
+      ]
+    }
+  }
+}

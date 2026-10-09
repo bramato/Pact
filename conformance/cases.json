@@ -1,0 +1,217 @@
+{
+  "version": "0.1.0",
+  "cases": [
+    {
+      "id": "contract-valid",
+      "schema": "contract",
+      "file": "fixtures/contract-valid.json",
+      "valid": true
+    },
+    {
+      "id": "progress-valid",
+      "schema": "progress",
+      "file": "fixtures/progress-valid.json",
+      "valid": true
+    },
+    {
+      "id": "question-valid",
+      "schema": "question",
+      "file": "fixtures/question-valid.json",
+      "valid": true
+    },
+    {
+      "id": "answer-valid",
+      "schema": "answer",
+      "file": "fixtures/answer-valid.json",
+      "valid": true
+    },
+    {
+      "id": "event-valid",
+      "schema": "event",
+      "file": "fixtures/event-valid.json",
+      "valid": true
+    },
+    {
+      "id": "swarm-valid",
+      "schema": "swarm",
+      "file": "fixtures/swarm-valid.json",
+      "valid": true
+    },
+    {
+      "id": "extension-params-valid",
+      "schema": "extension-params",
+      "file": "fixtures/extension-params-valid.json",
+      "valid": true
+    },
+    {
+      "id": "metadata-valid",
+      "schema": "metadata",
+      "file": "fixtures/metadata-valid.json",
+      "valid": true
+    },
+    {
+      "id": "progress-unknown-total",
+      "schema": "progress",
+      "file": "fixtures/progress-unknown-total.json",
+      "valid": true
+    },
+    {
+      "id": "progress-half-up",
+      "schema": "progress",
+      "file": "fixtures/progress-half-up.json",
+      "valid": true
+    },
+    {
+      "id": "progress-wrong-percentage",
+      "schema": "progress",
+      "file": "fixtures/progress-wrong-percentage.json",
+      "valid": false,
+      "error": "PROGRESS_PERCENTAGE"
+    },
+    {
+      "id": "progress-over-total",
+      "schema": "progress",
+      "file": "fixtures/progress-over-total.json",
+      "valid": false,
+      "error": "PROGRESS_UNITS"
+    },
+    {
+      "id": "progress-null-total-number-percent",
+      "schema": "progress",
+      "file": "fixtures/progress-null-total-number-percent.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "progress-zero-total",
+      "schema": "progress",
+      "file": "fixtures/progress-zero-total.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "progress-negative-sequence",
+      "schema": "progress",
+      "file": "fixtures/progress-negative-sequence.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "progress-invalid-date",
+      "schema": "progress",
+      "file": "fixtures/progress-invalid-date.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "progress-extra-property",
+      "schema": "progress",
+      "file": "fixtures/progress-extra-property.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "question-invalid-status",
+      "schema": "question",
+      "file": "fixtures/question-invalid-status.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "contract-bad-digest",
+      "schema": "contract",
+      "file": "fixtures/contract-bad-digest.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "contract-missing-output",
+      "schema": "contract",
+      "file": "fixtures/contract-missing-output.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "metadata-wrong-version",
+      "schema": "metadata",
+      "file": "fixtures/metadata-wrong-version.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "metadata-extra-property",
+      "schema": "metadata",
+      "file": "fixtures/metadata-extra-property.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "answer-missing-response-to",
+      "schema": "answer",
+      "file": "fixtures/answer-missing-response-to.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "event-missing-producer",
+      "schema": "event",
+      "file": "fixtures/event-missing-producer.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    },
+    {
+      "id": "swarm-cycle",
+      "schema": "swarm",
+      "file": "fixtures/swarm-cycle.json",
+      "valid": false,
+      "error": "DAG_CYCLE"
+    },
+    {
+      "id": "swarm-unknown-dependency",
+      "schema": "swarm",
+      "file": "fixtures/swarm-unknown-dependency.json",
+      "valid": false,
+      "error": "DAG_DEPENDENCY"
+    },
+    {
+      "id": "swarm-started-too-early",
+      "schema": "swarm",
+      "file": "fixtures/swarm-started-too-early.json",
+      "valid": false,
+      "error": "DAG_NOT_READY"
+    },
+    {
+      "id": "swarm-quorum-valid",
+      "schema": "swarm",
+      "file": "fixtures/swarm-quorum-valid.json",
+      "valid": true
+    },
+    {
+      "id": "swarm-quorum-impossible",
+      "schema": "swarm",
+      "file": "fixtures/swarm-quorum-impossible.json",
+      "valid": false,
+      "error": "QUORUM_BOUNDS"
+    },
+    {
+      "id": "swarm-quorum-unknown-child",
+      "schema": "swarm",
+      "file": "fixtures/swarm-quorum-unknown-child.json",
+      "valid": false,
+      "error": "QUORUM_ELIGIBILITY"
+    },
+    {
+      "id": "contract-prerelease-valid",
+      "schema": "contract",
+      "file": "fixtures/contract-prerelease-valid.json",
+      "valid": true
+    },
+    {
+      "id": "contract-leading-zero-prerelease",
+      "schema": "contract",
+      "file": "fixtures/contract-leading-zero-prerelease.json",
+      "valid": false,
+      "error": "SCHEMA_INVALID"
+    }
+  ]
+}

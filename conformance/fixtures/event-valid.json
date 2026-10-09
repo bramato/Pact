@@ -1,0 +1,18 @@
+{
+  "event_id": "event-4",
+  "task_id": "task-review",
+  "sequence": 4,
+  "type": "progress",
+  "occurred_at": "2026-10-09T08:30:00Z",
+  "correlation_id": "corr-review",
+  "causation_id": "message-input",
+  "producer_id": "agent-reviewer",
+  "payload": {
+    "sequence": 4,
+    "stage": "reviewing",
+    "completed_units": 35,
+    "total_units": 100,
+    "percentage": 35,
+    "updated_at": "2026-10-09T08:30:00Z"
+  }
+}

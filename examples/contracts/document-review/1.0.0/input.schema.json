@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+  "title": "Document review input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document",
+    "locale"
+  ],
+  "properties": {
+    "document": {
+      "type": "string",
+      "minLength": 1
+    },
+    "locale": {
+      "enum": [
+        "it",
+        "en"
+      ]
+    }
+  }
+}

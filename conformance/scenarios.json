@@ -1,0 +1,1925 @@
+{
+  "version": "0.1.0",
+  "scenarios": [
+    {
+      "id": "event-replay-order-restart",
+      "kind": "event",
+      "steps": [
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "event-4",
+              "task_id": "task-review",
+              "sequence": 4,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 4,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "outcome": "accepted",
+            "applied": true
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "event-4",
+              "task_id": "task-review",
+              "sequence": 4,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 4,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "outcome": "duplicate",
+            "applied": false
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "event-3",
+              "task_id": "task-review",
+              "sequence": 3,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 3,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "outcome": "stale",
+            "applied": false
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "event-3",
+              "task_id": "task-review",
+              "sequence": 3,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 3,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "outcome": "duplicate",
+            "applied": false
+          }
+        },
+        {
+          "action": "restart",
+          "expected": {
+            "restored": true
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "event-4",
+              "task_id": "task-review",
+              "sequence": 4,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 4,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "outcome": "duplicate",
+            "applied": false
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "event-2",
+              "task_id": "task-review",
+              "sequence": 2,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 2,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "outcome": "stale",
+            "applied": false
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "event-5",
+              "task_id": "task-review",
+              "sequence": 5,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 5,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "outcome": "accepted",
+            "applied": true
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "event-4",
+              "task_id": "task-review",
+              "sequence": 4,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:31:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 4,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "error": "EVENT_CONFLICT"
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "raw": "{\n  \"event_id\": \"event-4\",\n  \"task_id\": \"task-review\",\n  \"sequence\": 4,\n  \"type\": \"progress\",\n  \"occurred_at\": \"2026-10-09T08:30:00Z\",\n  \"correlation_id\": \"corr-review\",\n  \"causation_id\": \"message-input\",\n  \"producer_id\": \"agent-reviewer\",\n  \"payload\": {\n    \"sequence\": 4,\n    \"stage\": \"reviewing\",\n    \"completed_units\": 35,\n    \"total_units\": 100,\n    \"percentage\": 35,\n    \"updated_at\": \"2026-10-09T08:30:00Z\"\n  }\n}"
+          },
+          "expected": {
+            "error": "EVENT_CONFLICT"
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "event-4",
+              "task_id": "other-task",
+              "sequence": 4,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 4,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "error": "EVENT_CONFLICT"
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-b",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "event-4",
+              "task_id": "task-review",
+              "sequence": 4,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 4,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "outcome": "accepted",
+            "applied": true
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "forged-peer",
+            "event": {
+              "event_id": "event-4",
+              "task_id": "task-review",
+              "sequence": 4,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 4,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "error": "PRODUCER_IDENTITY"
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "producerId": "agent-reviewer",
+            "event": {
+              "event_id": "invalid-new-event",
+              "task_id": "task-review",
+              "sequence": 99,
+              "type": "progress",
+              "occurred_at": "2026-10-09T08:30:00Z",
+              "correlation_id": "corr-review",
+              "causation_id": "message-input",
+              "producer_id": "agent-reviewer",
+              "payload": {
+                "sequence": 4,
+                "stage": "reviewing",
+                "completed_units": 35,
+                "total_units": 100,
+                "percentage": 35,
+                "updated_at": "2026-10-09T08:30:00Z"
+              }
+            }
+          },
+          "expected": {
+            "error": "EVENT_SEQUENCE"
+          }
+        }
+      ]
+    },
+    {
+      "id": "command-receipt-scoping",
+      "kind": "idempotency",
+      "steps": [
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "callerId": "caller-a",
+            "key": "command-1",
+            "raw": "{\"document\":\"review\"}",
+            "taskId": "task-1"
+          },
+          "expected": {
+            "taskId": "task-1",
+            "duplicate": false
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "callerId": "caller-a",
+            "key": "command-1",
+            "raw": "{\"document\":\"review\"}",
+            "taskId": "must-not-be-created"
+          },
+          "expected": {
+            "taskId": "task-1",
+            "duplicate": true
+          }
+        },
+        {
+          "action": "restart",
+          "expected": {
+            "restored": true
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "callerId": "caller-a",
+            "key": "command-1",
+            "raw": "{\"document\":\"review\"}",
+            "taskId": "task-1"
+          },
+          "expected": {
+            "taskId": "task-1",
+            "duplicate": true
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "callerId": "caller-a",
+            "key": "command-1",
+            "raw": "{\"document\":\"different\"}",
+            "taskId": "task-1"
+          },
+          "expected": {
+            "error": "COMMAND_CONFLICT"
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-b",
+            "callerId": "caller-a",
+            "key": "command-1",
+            "raw": "{\"document\":\"review\"}",
+            "taskId": "task-2"
+          },
+          "expected": {
+            "taskId": "task-2",
+            "duplicate": false
+          }
+        },
+        {
+          "input": {
+            "tenant": "tenant-a",
+            "callerId": "caller-b",
+            "key": "command-1",
+            "raw": "{\"document\":\"review\"}",
+            "taskId": "task-3"
+          },
+          "expected": {
+            "taskId": "task-3",
+            "duplicate": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "lifecycle-authority",
+      "kind": "lifecycle",
+      "steps": [
+        {
+          "input": {
+            "previous": "TASK_STATE_SUBMITTED",
+            "next": "TASK_STATE_WORKING"
+          },
+          "expected": {
+            "state": "TASK_STATE_WORKING"
+          }
+        },
+        {
+          "input": {
+            "previous": "TASK_STATE_WORKING",
+            "next": "TASK_STATE_INPUT_REQUIRED"
+          },
+          "expected": {
+            "state": "TASK_STATE_INPUT_REQUIRED"
+          }
+        },
+        {
+          "input": {
+            "previous": "TASK_STATE_INPUT_REQUIRED",
+            "next": "TASK_STATE_WORKING"
+          },
+          "expected": {
+            "state": "TASK_STATE_WORKING"
+          }
+        },
+        {
+          "input": {
+            "previous": "TASK_STATE_WORKING",
+            "next": "TASK_STATE_COMPLETED"
+          },
+          "expected": {
+            "error": "OUTPUT_REQUIRED"
+          }
+        },
+        {
+          "input": {
+            "previous": "TASK_STATE_WORKING",
+            "next": "TASK_STATE_COMPLETED",
+            "outputValidated": true,
+            "requiredQuestions": [
+              {
+                "question_id": "question-audience",
+                "task_id": "task-review",
+                "prompt": "Who is the intended audience?",
+                "answer_schema": {
+                  "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                  "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+                },
+                "required": true,
+                "expires_at": "2026-10-09T09:00:00Z",
+                "status": "open"
+              }
+            ]
+          },
+          "expected": {
+            "error": "QUESTION_REQUIRED"
+          }
+        },
+        {
+          "input": {
+            "previous": "TASK_STATE_WORKING",
+            "next": "TASK_STATE_COMPLETED",
+            "outputValidated": true,
+            "requiredQuestions": [
+              {
+                "question_id": "question-audience",
+                "task_id": "task-review",
+                "prompt": "Who is the intended audience?",
+                "answer_schema": {
+                  "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                  "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+                },
+                "required": true,
+                "expires_at": "2026-10-09T09:00:00Z",
+                "status": "expired"
+              }
+            ]
+          },
+          "expected": {
+            "error": "QUESTION_REQUIRED"
+          }
+        },
+        {
+          "input": {
+            "previous": "TASK_STATE_WORKING",
+            "next": "TASK_STATE_COMPLETED",
+            "outputValidated": true,
+            "requiredQuestions": [
+              {
+                "question_id": "question-audience",
+                "task_id": "task-review",
+                "prompt": "Who is the intended audience?",
+                "answer_schema": {
+                  "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                  "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+                },
+                "required": true,
+                "expires_at": "2026-10-09T09:00:00Z",
+                "status": "answered"
+              }
+            ]
+          },
+          "expected": {
+            "state": "TASK_STATE_COMPLETED"
+          }
+        },
+        {
+          "input": {
+            "previous": "TASK_STATE_COMPLETED",
+            "next": "TASK_STATE_WORKING"
+          },
+          "expected": {
+            "error": "TASK_TERMINAL"
+          }
+        },
+        {
+          "input": {
+            "previous": "TASK_STATE_WORKING",
+            "next": "done"
+          },
+          "expected": {
+            "error": "TASK_STATE"
+          }
+        }
+      ]
+    },
+    {
+      "id": "question-correlation-and-time",
+      "kind": "question",
+      "steps": [
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "open"
+            },
+            "answer": {
+              "response_to": "question-audience",
+              "task_id": "task-review",
+              "value": {
+                "audience": "technical"
+              }
+            },
+            "contextId": "context-review",
+            "questionContextId": "context-review",
+            "now": "2026-10-09T08:32:00Z"
+          },
+          "expected": {
+            "status": "answered"
+          }
+        },
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "open"
+            },
+            "answer": {
+              "response_to": "wrong-question",
+              "task_id": "task-review",
+              "value": {
+                "audience": "technical"
+              }
+            },
+            "contextId": "context-review",
+            "questionContextId": "context-review",
+            "now": "2026-10-09T08:32:00Z"
+          },
+          "expected": {
+            "error": "QUESTION_CORRELATION"
+          }
+        },
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "open"
+            },
+            "answer": {
+              "response_to": "question-audience",
+              "task_id": "other-task",
+              "value": {
+                "audience": "technical"
+              }
+            },
+            "contextId": "context-review",
+            "questionContextId": "context-review",
+            "now": "2026-10-09T08:32:00Z"
+          },
+          "expected": {
+            "error": "QUESTION_CORRELATION"
+          }
+        },
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "open"
+            },
+            "answer": {
+              "response_to": "question-audience",
+              "task_id": "task-review",
+              "value": {
+                "audience": "technical"
+              }
+            },
+            "contextId": "other-context",
+            "questionContextId": "context-review",
+            "now": "2026-10-09T08:32:00Z"
+          },
+          "expected": {
+            "error": "QUESTION_CONTEXT"
+          }
+        },
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "open"
+            },
+            "answer": {
+              "response_to": "question-audience",
+              "task_id": "task-review",
+              "value": {
+                "audience": "technical"
+              }
+            },
+            "contextId": "context-review",
+            "questionContextId": "context-review",
+            "now": "2026-10-09T09:00:00Z"
+          },
+          "expected": {
+            "error": "QUESTION_EXPIRED"
+          }
+        },
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "answered"
+            },
+            "answer": {
+              "response_to": "question-audience",
+              "task_id": "task-review",
+              "value": {
+                "audience": "technical"
+              }
+            },
+            "contextId": "context-review",
+            "questionContextId": "context-review",
+            "now": "2026-10-09T08:32:00Z"
+          },
+          "expected": {
+            "error": "QUESTION_CLOSED"
+          }
+        },
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "open"
+            },
+            "answer": {
+              "response_to": "question-audience",
+              "task_id": "task-review",
+              "value": {
+                "audience": "unsupported"
+              }
+            },
+            "contextId": "context-review",
+            "questionContextId": "context-review",
+            "now": "2026-10-09T08:32:00Z"
+          },
+          "expected": {
+            "error": "CONTRACT_INVALID"
+          }
+        },
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": null,
+              "status": "open"
+            },
+            "answer": {
+              "response_to": "question-audience",
+              "task_id": "task-review",
+              "value": {
+                "audience": "technical"
+              }
+            },
+            "contextId": "context-review",
+            "questionContextId": "context-review",
+            "now": "2027-01-01T00:00:00Z"
+          },
+          "expected": {
+            "status": "answered"
+          }
+        }
+      ]
+    },
+    {
+      "id": "question-deterministic-expiration",
+      "kind": "expiry",
+      "steps": [
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "open"
+            },
+            "now": "2026-10-09T08:59:59Z"
+          },
+          "expected": {
+            "status": "open",
+            "taskState": null
+          }
+        },
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "open"
+            },
+            "now": "2026-10-09T09:00:00Z"
+          },
+          "expected": {
+            "status": "expired",
+            "taskState": "TASK_STATE_FAILED"
+          }
+        },
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": false,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "open"
+            },
+            "now": "2026-10-09T09:00:00Z"
+          },
+          "expected": {
+            "status": "expired",
+            "taskState": null
+          }
+        },
+        {
+          "input": {
+            "question": {
+              "question_id": "question-audience",
+              "task_id": "task-review",
+              "prompt": "Who is the intended audience?",
+              "answer_schema": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              },
+              "required": true,
+              "expires_at": "2026-10-09T09:00:00Z",
+              "status": "answered"
+            },
+            "now": "2026-10-09T09:00:00Z"
+          },
+          "expected": {
+            "status": "answered",
+            "taskState": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "swarm-aggregation-and-parent-validation",
+      "kind": "swarm",
+      "steps": [
+        {
+          "input": {
+            "parent_task_id": "task-swarm",
+            "coordinator_id": "agent-coordinator",
+            "children": [
+              {
+                "child_id": "extract",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-extract",
+                "depends_on": [],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-extract"
+                ]
+              },
+              {
+                "child_id": "review",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-review",
+                "depends_on": [
+                  "extract"
+                ],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-review"
+                ]
+              },
+              {
+                "child_id": "optional-style",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-optional-style",
+                "depends_on": [
+                  "extract"
+                ],
+                "required": false,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_FAILED",
+                "result_artifact_ids": []
+              }
+            ],
+            "policy": {
+              "type": "all_required"
+            },
+            "provenance": {
+              "coordinator_id": "agent-coordinator",
+              "contributors": [
+                {
+                  "child_id": "extract",
+                  "artifact_ids": [
+                    "artifact-extract"
+                  ],
+                  "validation_verdict": "valid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "review",
+                  "artifact_ids": [
+                    "artifact-review"
+                  ],
+                  "validation_verdict": "valid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "optional-style",
+                  "artifact_ids": [],
+                  "validation_verdict": "pending",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_FAILED",
+                      "occurred_at": "2026-10-09T08:35:00Z",
+                      "error_code": "CHILD_FAILED"
+                    }
+                  ]
+                }
+              ]
+            },
+            "parent_output_validated": true
+          },
+          "expected": {
+            "successful": [
+              "extract",
+              "review"
+            ],
+            "aggregationReady": true,
+            "canComplete": true
+          }
+        },
+        {
+          "input": {
+            "parent_task_id": "task-swarm",
+            "coordinator_id": "agent-coordinator",
+            "children": [
+              {
+                "child_id": "extract",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-extract",
+                "depends_on": [],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-extract"
+                ]
+              },
+              {
+                "child_id": "review",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-review",
+                "depends_on": [
+                  "extract"
+                ],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-review"
+                ]
+              },
+              {
+                "child_id": "optional-style",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-optional-style",
+                "depends_on": [
+                  "extract"
+                ],
+                "required": false,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_FAILED",
+                "result_artifact_ids": []
+              }
+            ],
+            "policy": {
+              "type": "all_required"
+            },
+            "provenance": {
+              "coordinator_id": "agent-coordinator",
+              "contributors": [
+                {
+                  "child_id": "extract",
+                  "artifact_ids": [
+                    "artifact-extract"
+                  ],
+                  "validation_verdict": "valid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "review",
+                  "artifact_ids": [
+                    "artifact-review"
+                  ],
+                  "validation_verdict": "valid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "optional-style",
+                  "artifact_ids": [],
+                  "validation_verdict": "pending",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_FAILED",
+                      "occurred_at": "2026-10-09T08:35:00Z",
+                      "error_code": "CHILD_FAILED"
+                    }
+                  ]
+                }
+              ]
+            },
+            "parent_output_validated": false
+          },
+          "expected": {
+            "successful": [
+              "extract",
+              "review"
+            ],
+            "aggregationReady": true,
+            "canComplete": false
+          }
+        },
+        {
+          "input": {
+            "parent_task_id": "task-swarm",
+            "coordinator_id": "agent-coordinator",
+            "children": [
+              {
+                "child_id": "extract",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-extract",
+                "depends_on": [],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-extract"
+                ]
+              },
+              {
+                "child_id": "review",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-review",
+                "depends_on": [
+                  "extract"
+                ],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-review"
+                ]
+              },
+              {
+                "child_id": "optional-style",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-optional-style",
+                "depends_on": [
+                  "extract"
+                ],
+                "required": false,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_FAILED",
+                "result_artifact_ids": []
+              }
+            ],
+            "policy": {
+              "type": "quorum",
+              "min_success": 2,
+              "eligible_child_ids": [
+                "extract",
+                "review"
+              ]
+            },
+            "provenance": {
+              "coordinator_id": "agent-coordinator",
+              "contributors": [
+                {
+                  "child_id": "extract",
+                  "artifact_ids": [
+                    "artifact-extract"
+                  ],
+                  "validation_verdict": "valid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "review",
+                  "artifact_ids": [
+                    "artifact-review"
+                  ],
+                  "validation_verdict": "valid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "optional-style",
+                  "artifact_ids": [],
+                  "validation_verdict": "pending",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_FAILED",
+                      "occurred_at": "2026-10-09T08:35:00Z",
+                      "error_code": "CHILD_FAILED"
+                    }
+                  ]
+                }
+              ]
+            },
+            "parent_output_validated": true
+          },
+          "expected": {
+            "successful": [
+              "extract",
+              "review"
+            ],
+            "aggregationReady": true,
+            "canComplete": true
+          }
+        },
+        {
+          "input": {
+            "parent_task_id": "task-swarm",
+            "coordinator_id": "agent-coordinator",
+            "children": [
+              {
+                "child_id": "extract",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-extract",
+                "depends_on": [],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-extract"
+                ]
+              },
+              {
+                "child_id": "review",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-review",
+                "depends_on": [
+                  "extract"
+                ],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_FAILED",
+                "result_artifact_ids": []
+              },
+              {
+                "child_id": "optional-style",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-optional-style",
+                "depends_on": [
+                  "extract"
+                ],
+                "required": false,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_FAILED",
+                "result_artifact_ids": []
+              }
+            ],
+            "policy": {
+              "type": "all_required"
+            },
+            "provenance": {
+              "coordinator_id": "agent-coordinator",
+              "contributors": [
+                {
+                  "child_id": "extract",
+                  "artifact_ids": [
+                    "artifact-extract"
+                  ],
+                  "validation_verdict": "valid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "review",
+                  "artifact_ids": [],
+                  "validation_verdict": "pending",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "optional-style",
+                  "artifact_ids": [],
+                  "validation_verdict": "pending",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_FAILED",
+                      "occurred_at": "2026-10-09T08:35:00Z",
+                      "error_code": "CHILD_FAILED"
+                    }
+                  ]
+                }
+              ]
+            },
+            "parent_output_validated": true
+          },
+          "expected": {
+            "successful": [
+              "extract"
+            ],
+            "aggregationReady": false,
+            "canComplete": false
+          }
+        },
+        {
+          "input": {
+            "parent_task_id": "task-swarm",
+            "coordinator_id": "agent-coordinator",
+            "children": [
+              {
+                "child_id": "extract",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-extract",
+                "depends_on": [],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-extract"
+                ]
+              },
+              {
+                "child_id": "review",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-review",
+                "depends_on": [
+                  "extract"
+                ],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-review"
+                ]
+              },
+              {
+                "child_id": "optional-style",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-optional-style",
+                "depends_on": [
+                  "extract"
+                ],
+                "required": false,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_FAILED",
+                "result_artifact_ids": []
+              }
+            ],
+            "policy": {
+              "type": "all_required"
+            },
+            "provenance": {
+              "coordinator_id": "agent-coordinator",
+              "contributors": [
+                {
+                  "child_id": "extract",
+                  "artifact_ids": [
+                    "artifact-extract"
+                  ],
+                  "validation_verdict": "valid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "review",
+                  "artifact_ids": [
+                    "artifact-review"
+                  ],
+                  "validation_verdict": "invalid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "optional-style",
+                  "artifact_ids": [],
+                  "validation_verdict": "pending",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_FAILED",
+                      "occurred_at": "2026-10-09T08:35:00Z",
+                      "error_code": "CHILD_FAILED"
+                    }
+                  ]
+                }
+              ]
+            },
+            "parent_output_validated": true
+          },
+          "expected": {
+            "successful": [
+              "extract"
+            ],
+            "aggregationReady": false,
+            "canComplete": false
+          }
+        },
+        {
+          "input": {
+            "parent_task_id": "task-swarm",
+            "coordinator_id": "agent-coordinator",
+            "children": [
+              {
+                "child_id": "extract",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-extract",
+                "depends_on": [],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_FAILED",
+                "result_artifact_ids": []
+              },
+              {
+                "child_id": "review",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-review",
+                "depends_on": [],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_INPUT_REQUIRED",
+                "result_artifact_ids": []
+              },
+              {
+                "child_id": "optional-style",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-optional-style",
+                "depends_on": [],
+                "required": false,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-optional-style"
+                ]
+              }
+            ],
+            "policy": {
+              "type": "all_required"
+            },
+            "provenance": {
+              "coordinator_id": "agent-coordinator",
+              "contributors": [
+                {
+                  "child_id": "extract",
+                  "artifact_ids": [],
+                  "validation_verdict": "pending",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_FAILED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "review",
+                  "artifact_ids": [],
+                  "validation_verdict": "pending",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_INPUT_REQUIRED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "optional-style",
+                  "artifact_ids": [
+                    "artifact-optional-style"
+                  ],
+                  "validation_verdict": "valid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                }
+              ]
+            },
+            "parent_output_validated": true
+          },
+          "expected": {
+            "successful": [
+              "optional-style"
+            ],
+            "aggregationReady": false,
+            "canComplete": false
+          }
+        },
+        {
+          "input": {
+            "parent_task_id": "task-swarm",
+            "coordinator_id": "agent-coordinator",
+            "children": [
+              {
+                "child_id": "extract",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-extract",
+                "depends_on": [],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_FAILED",
+                "result_artifact_ids": []
+              },
+              {
+                "child_id": "review",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-review",
+                "depends_on": [],
+                "required": true,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_INPUT_REQUIRED",
+                "result_artifact_ids": []
+              },
+              {
+                "child_id": "optional-style",
+                "parent_task_id": "task-swarm",
+                "assignee_id": "agent-optional-style",
+                "depends_on": [],
+                "required": false,
+                "weight": 1,
+                "contract_id": "document-review",
+                "state": "TASK_STATE_COMPLETED",
+                "result_artifact_ids": [
+                  "artifact-optional-style"
+                ]
+              }
+            ],
+            "policy": {
+              "type": "quorum",
+              "min_success": 1,
+              "eligible_child_ids": [
+                "optional-style"
+              ]
+            },
+            "provenance": {
+              "coordinator_id": "agent-coordinator",
+              "contributors": [
+                {
+                  "child_id": "extract",
+                  "artifact_ids": [],
+                  "validation_verdict": "pending",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_FAILED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "review",
+                  "artifact_ids": [],
+                  "validation_verdict": "pending",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_INPUT_REQUIRED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                },
+                {
+                  "child_id": "optional-style",
+                  "artifact_ids": [
+                    "artifact-optional-style"
+                  ],
+                  "validation_verdict": "valid",
+                  "attempts": [
+                    {
+                      "state": "TASK_STATE_COMPLETED",
+                      "occurred_at": "2026-10-09T08:35:00Z"
+                    }
+                  ]
+                }
+              ]
+            },
+            "parent_output_validated": true
+          },
+          "expected": {
+            "successful": [
+              "optional-style"
+            ],
+            "aggregationReady": true,
+            "canComplete": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "discovery-exact-negotiation",
+      "kind": "negotiation",
+      "steps": [
+        {
+          "input": {
+            "params": {
+              "versions": [
+                "0.1.0"
+              ],
+              "contracts": [
+                {
+                  "contract_id": "document-review",
+                  "version": "1.0.0",
+                  "input": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                    "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+                  },
+                  "output": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                    "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+                  },
+                  "question_answer": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                    "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+                  }
+                }
+              ]
+            },
+            "version": "0.1.0",
+            "contract": {
+              "contract_id": "document-review",
+              "version": "1.0.0",
+              "input": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+              },
+              "output": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+              },
+              "question_answer": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              }
+            },
+            "activated": true
+          },
+          "expected": {
+            "mode": "pact",
+            "version": "0.1.0"
+          }
+        },
+        {
+          "input": {
+            "params": {
+              "versions": [
+                "0.1.0"
+              ],
+              "contracts": [
+                {
+                  "contract_id": "document-review",
+                  "version": "1.0.0",
+                  "input": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                    "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+                  },
+                  "output": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                    "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+                  },
+                  "question_answer": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                    "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+                  }
+                }
+              ]
+            },
+            "version": "0.1.0",
+            "contract": {
+              "contract_id": "document-review",
+              "version": "1.0.0",
+              "input": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+              },
+              "output": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+              },
+              "question_answer": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              }
+            },
+            "activated": false
+          },
+          "expected": {
+            "error": "PACT_UNSUPPORTED"
+          }
+        },
+        {
+          "input": {
+            "params": null,
+            "version": "0.1.0",
+            "contract": {
+              "contract_id": "document-review",
+              "version": "1.0.0",
+              "input": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+              },
+              "output": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+              },
+              "question_answer": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              }
+            },
+            "activated": true
+          },
+          "expected": {
+            "error": "PACT_UNSUPPORTED"
+          }
+        },
+        {
+          "input": {
+            "params": null,
+            "version": "0.1.0",
+            "contract": {
+              "contract_id": "document-review",
+              "version": "1.0.0",
+              "input": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+              },
+              "output": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+              },
+              "question_answer": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              }
+            },
+            "activated": true,
+            "allowDowngrade": true
+          },
+          "expected": {
+            "mode": "a2a"
+          }
+        },
+        {
+          "input": {
+            "params": {
+              "versions": [
+                "0.1.0"
+              ],
+              "contracts": [
+                {
+                  "contract_id": "document-review",
+                  "version": "1.0.0",
+                  "input": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                    "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+                  },
+                  "output": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                    "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+                  },
+                  "question_answer": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                    "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+                  }
+                }
+              ]
+            },
+            "version": "0.2.0",
+            "contract": {
+              "contract_id": "document-review",
+              "version": "1.0.0",
+              "input": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+              },
+              "output": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+              },
+              "question_answer": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              }
+            },
+            "activated": true
+          },
+          "expected": {
+            "error": "PACT_VERSION"
+          }
+        },
+        {
+          "input": {
+            "params": {
+              "versions": [
+                "0.1.0"
+              ],
+              "contracts": [
+                {
+                  "contract_id": "document-review",
+                  "version": "1.0.0",
+                  "input": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                    "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+                  },
+                  "output": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                    "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+                  },
+                  "question_answer": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                    "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+                  }
+                }
+              ]
+            },
+            "version": "0.1.0",
+            "contract": {
+              "contract_id": "document-review",
+              "version": "2.0.0",
+              "input": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+              },
+              "output": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+              },
+              "question_answer": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              }
+            },
+            "activated": true
+          },
+          "expected": {
+            "error": "CONTRACT_UNSUPPORTED"
+          }
+        },
+        {
+          "input": {
+            "params": {
+              "versions": [
+                "0.1.0"
+              ],
+              "contracts": [
+                {
+                  "contract_id": "document-review",
+                  "version": "1.0.0",
+                  "input": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                    "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+                  },
+                  "output": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                    "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+                  },
+                  "question_answer": {
+                    "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                    "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+                  }
+                }
+              ]
+            },
+            "version": "0.1.0",
+            "contract": {
+              "contract_id": "document-review",
+              "version": "1.0.0",
+              "input": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+                "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+              },
+              "output": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+                "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+              },
+              "question_answer": {
+                "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+                "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+              }
+            },
+            "activated": true
+          },
+          "expected": {
+            "error": "CONTRACT_MISMATCH"
+          }
+        }
+      ]
+    }
+  ]
+}

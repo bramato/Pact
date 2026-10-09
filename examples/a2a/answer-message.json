@@ -1,0 +1,37 @@
+{
+  "jsonrpc": "2.0",
+  "id": "request-2",
+  "method": "SendMessage",
+  "params": {
+    "message": {
+      "messageId": "message-answer",
+      "contextId": "context-review",
+      "taskId": "task-review",
+      "role": "ROLE_USER",
+      "parts": [
+        {
+          "data": {
+            "audience": "technical"
+          },
+          "mediaType": "application/json"
+        }
+      ],
+      "extensions": [
+        "https://example.org/pact/v1"
+      ],
+      "metadata": {
+        "https://example.org/pact/v1": {
+          "version": "0.1.0",
+          "correlation_id": "corr-review",
+          "answer": {
+            "response_to": "question-audience",
+            "task_id": "task-review",
+            "value": {
+              "audience": "technical"
+            }
+          }
+        }
+      }
+    }
+  }
+}

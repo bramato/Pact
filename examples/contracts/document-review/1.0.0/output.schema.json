@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+  "title": "Document review output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary",
+    "approved",
+    "issues"
+  ],
+  "properties": {
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "approved": {
+      "type": "boolean"
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

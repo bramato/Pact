@@ -1,0 +1,16 @@
+{
+  "contract_id": "document-review",
+  "version": "1.0.0-01",
+  "input": {
+    "schema_uri": "https://example.org/contracts/document-review/1.0.0/input.schema.json",
+    "sha256": "862b244dcad5f33d1bc178a0c95b60f86e3982e001e4e56b1bf1a3ff58229dd2"
+  },
+  "output": {
+    "schema_uri": "https://example.org/contracts/document-review/1.0.0/output.schema.json",
+    "sha256": "cc22295d22683b8d863a3c80ec5480eaa53d358c812767a9b6ba918ddd12aebc"
+  },
+  "question_answer": {
+    "schema_uri": "https://example.org/contracts/document-review/1.0.0/answer.schema.json",
+    "sha256": "dc37e35c341f908918662bb7d85e2d4c5f493c30ccda35d2767731f70e5e3ebf"
+  }
+}

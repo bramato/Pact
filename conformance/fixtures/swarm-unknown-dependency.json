@@ -1,0 +1,94 @@
+{
+  "parent_task_id": "task-swarm",
+  "coordinator_id": "agent-coordinator",
+  "children": [
+    {
+      "child_id": "extract",
+      "parent_task_id": "task-swarm",
+      "assignee_id": "agent-extract",
+      "depends_on": [],
+      "required": true,
+      "weight": 1,
+      "contract_id": "document-review",
+      "state": "TASK_STATE_COMPLETED",
+      "result_artifact_ids": [
+        "artifact-extract"
+      ]
+    },
+    {
+      "child_id": "review",
+      "parent_task_id": "task-swarm",
+      "assignee_id": "agent-review",
+      "depends_on": [
+        "missing"
+      ],
+      "required": true,
+      "weight": 1,
+      "contract_id": "document-review",
+      "state": "TASK_STATE_COMPLETED",
+      "result_artifact_ids": [
+        "artifact-review"
+      ]
+    },
+    {
+      "child_id": "optional-style",
+      "parent_task_id": "task-swarm",
+      "assignee_id": "agent-optional-style",
+      "depends_on": [
+        "extract"
+      ],
+      "required": false,
+      "weight": 1,
+      "contract_id": "document-review",
+      "state": "TASK_STATE_FAILED",
+      "result_artifact_ids": []
+    }
+  ],
+  "policy": {
+    "type": "all_required"
+  },
+  "provenance": {
+    "coordinator_id": "agent-coordinator",
+    "contributors": [
+      {
+        "child_id": "extract",
+        "artifact_ids": [
+          "artifact-extract"
+        ],
+        "validation_verdict": "valid",
+        "attempts": [
+          {
+            "state": "TASK_STATE_COMPLETED",
+            "occurred_at": "2026-10-09T08:35:00Z"
+          }
+        ]
+      },
+      {
+        "child_id": "review",
+        "artifact_ids": [
+          "artifact-review"
+        ],
+        "validation_verdict": "valid",
+        "attempts": [
+          {
+            "state": "TASK_STATE_COMPLETED",
+            "occurred_at": "2026-10-09T08:35:00Z"
+          }
+        ]
+      },
+      {
+        "child_id": "optional-style",
+        "artifact_ids": [],
+        "validation_verdict": "pending",
+        "attempts": [
+          {
+            "state": "TASK_STATE_FAILED",
+            "occurred_at": "2026-10-09T08:35:00Z",
+            "error_code": "CHILD_FAILED"
+          }
+        ]
+      }
+    ]
+  },
+  "parent_output_validated": true
+}
