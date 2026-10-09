@@ -23,7 +23,7 @@ final class Client
                     $headers[strtolower(trim($key))] = trim($value);
                 }
 
-return strlen($line);
+                return strlen($line);
             }]);
         $bytes = curl_exec($curl);
         $status = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
@@ -73,6 +73,10 @@ return strlen($line);
         if ($task->status->state === 'TASK_STATE_COMPLETED') {
             Pact::ensure(count($task->artifacts ?? []) > 0, 'OUTPUT_REQUIRED', 'No output artifact');
             foreach ($task->artifacts as $artifact) {
+                Pact::ensure(is_array($artifact->parts ?? null) && count($artifact->parts) === 1, 'OUTPUT_REQUIRED', 'One structured output part required');
+                foreach ($artifact->parts as $part) {
+                    Pact::ensure($part instanceof stdClass && count(array_intersect(['text', 'data', 'raw', 'url'], array_keys(get_object_vars($part)))) === 1, 'A2A_PART', 'A2A Part must have exactly one content field');
+                }
                 Pact::ensure(in_array(Pact::CORE_URI, $artifact->extensions ?? [], true) && count($artifact->parts ?? []) === 1 && isset($artifact->parts[0]->data), 'OUTPUT_REQUIRED', 'Structured Core artifact required');
                 Pact::ensure(Pact::canonical($artifact->metadata->{Pact::CORE_URI}->contract) === Pact::canonical($this->contract), 'CONTRACT_MISMATCH', 'Artifact contract differs');
                 $pact->contractData($this->contract->output, $artifact->parts[0]->data, $this->registryPath);

@@ -185,6 +185,22 @@ export class PactClient {
       );
       for (const artifact of task.artifacts!) {
         ensure(
+          Array.isArray(artifact.parts) && artifact.parts.length === 1,
+          "OUTPUT_REQUIRED",
+          "One structured output part required",
+        );
+        for (const part of artifact.parts)
+          ensure(
+            part !== null &&
+              typeof part === "object" &&
+              !Array.isArray(part) &&
+              ["text", "data", "raw", "url"].filter((key) =>
+                Object.hasOwn(part, key),
+              ).length === 1,
+            "A2A_PART",
+            "A2A Part must have exactly one content field",
+          );
+        ensure(
           artifact.extensions?.includes(CORE_URI),
           "OUTPUT_REQUIRED",
           "Artifact must label Core content",

@@ -17,10 +17,19 @@
     "conformance": "node tools/conformance.mjs",
     "validate": "node tools/validate.mjs",
     "check": "npm test && npm run conformance && node tools/check-repository.mjs",
-    "pretest": "npm run build:sdk"
+    "pretest": "npm run build:sdk",
+    "test:integration": "node --test --test-reporter=spec tests/integration/*.test.mjs",
+    "demo": "node examples/v0.2/demo.mjs",
+    "demo:swarm": "node examples/v0.2/demo.mjs --swarm",
+    "check:all": "npm run check && npm run test:integration",
+    "package:smoke": "node tools/package-smoke.mjs",
+    "demo:verify": "node tools/verify-demo.mjs"
   },
   "dependencies": {
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1"
+  },
+  "bin": {
+    "pact": "tools/pact.mjs"
   }
 }

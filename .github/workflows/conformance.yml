@@ -32,4 +32,6 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run build:sdk
       - run: composer install --working-dir=sdk/php --no-interaction --no-progress
-      - run: npm run check
+      - run: composer install --working-dir=reference --no-interaction --no-progress
+      - run: npm run check:all
+      - run: npm run package:smoke

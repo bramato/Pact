@@ -1,0 +1,46 @@
+{
+  "name": "pact-protocol/reference-demo",
+  "description": "Deterministic Laravel routing demo for the PACT protocol",
+  "license": "MIT",
+  "require": {
+    "illuminate/events": "^12.0",
+    "pact-protocol/laravel": "0.2.0",
+    "php": "^8.2",
+    "ext-pdo": "*",
+    "ext-pdo_sqlite": "*"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../sdk/php",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "pact-protocol/core": "0.2.0"
+        }
+      }
+    },
+    {
+      "type": "path",
+      "url": "../sdk/laravel",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "pact-protocol/laravel": "0.2.0"
+        }
+      }
+    }
+  ],
+  "config": {
+    "allow-plugins": false,
+    "sort-packages": true,
+    "platform": {
+      "php": "8.2.0"
+    }
+  },
+  "require-dev": {
+    "laravel/pint": "^1.0",
+    "ext-posix": "*"
+  },
+  "type": "project"
+}
