@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">PACT project mark</title>
+  <desc id="desc">Two linked blue contract frames surrounding one shared node.</desc>
+  <g fill="none" stroke-width="10" stroke-linejoin="round">
+    <rect x="19" y="39" width="74" height="82" rx="16" stroke="#111111"/>
+    <rect x="67" y="39" width="74" height="82" rx="16" stroke="#1687d9"/>
+  </g>
+  <circle cx="80" cy="80" r="13" fill="#1687d9" stroke="#ffffff" stroke-width="4"/>
+</svg>
