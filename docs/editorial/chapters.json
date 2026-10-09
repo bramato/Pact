@@ -1,0 +1,201 @@
+{
+  "title": "Guida illustrata al protocollo PACT",
+  "subtitle": "Contratti domande eventi e coordinamento tra agenti",
+  "date": "9 ottobre 2026",
+  "version": "0.2.0",
+  "introduction": [
+    "PACT definisce come agenti costruiti da sviluppatori diversi possano concordare i dati di un incarico, chiedere chiarimenti e consegnare un risultato verificabile. Usa le risorse native di A2A e aggiunge regole esplicite per contratti, domande, eventi e avanzamento.",
+    "La bozza 0.2.0 comprende due implementazioni indipendenti, una demo HTTP e prove di recupero dopo un arresto del coordinatore. Questa guida accompagna le undici sezioni della documentazione e spiega cosa è stato realizzato, come usarlo e quali sviluppi restano da affrontare."
+  ],
+  "sections": [
+    {
+      "id": "00-overview",
+      "nav": "Overview",
+      "title": "Il progetto e il suo scopo",
+      "asset": "00-overview.png",
+      "alt": "Il robot PACT collega due sistemi indipendenti e mostra un documento verificato",
+      "caption": "Due agenti possono collaborare se condividono un accordo esplicito sui dati.",
+      "lead": "Un agente può ricevere un messaggio e restituire una risposta senza che il chiamante sappia quali campi aspettarsi o quando il lavoro sia davvero concluso. PACT rende questo accordo controllabile da entrambi i lati.",
+      "blocks": [
+        {"heading": "Un profilo sopra A2A", "paragraphs": ["A2A fornisce la scoperta delle capacità, i messaggi, i task e gli artefatti. PACT usa questi oggetti e inserisce i propri dati nei metadati dell’estensione negoziata. Lo stato nativo del task resta il riferimento per stabilire se il lavoro è in corso, interrotto, fallito o completato."]},
+        {"heading": "Core e Swarm", "paragraphs": ["Core contiene le regole necessarie per un singolo task. Swarm è un’estensione opzionale per coordinare più contributori e dipende da Core. Un agente che supporta solo Core può partecipare a uno scambio singolo; il chiamante attiva Swarm soltanto quando entrambe le parti lo dichiarano."]},
+        {"heading": "La bozza disponibile", "paragraphs": ["La repository contiene specifiche, schemi, SDK TypeScript e PHP, un adapter Laravel, esempi e verifiche eseguibili. PACT è una proposta indipendente. La v0.2 è verificata localmente; documenti e pacchetti attendono la pubblicazione del proprietario della repository."]}
+      ],
+      "source": "README.md"
+    },
+    {
+      "id": "01-quickstart",
+      "nav": "Quickstart",
+      "title": "Avviare il primo scambio",
+      "asset": "01-quickstart.png",
+      "alt": "Il robot legge una guida e collega un terminale con il simbolo di avvio",
+      "caption": "La prima demo verifica un task completo senza richiedere un modello AI.",
+      "lead": "La demo mette in comunicazione un chiamante TypeScript e un servizio PHP attraverso HTTP. È deterministica: il risultato dipende dal testo ricevuto e dalle risposte ai chiarimenti.",
+      "blocks": [
+        {"heading": "Preparare il progetto", "paragraphs": ["Servono Node.js 22 o successivo, PHP 8.2 o successivo e Composer 2. PHP deve includere JSON, mbstring, BCMath, cURL e SQLite. Si installano le dipendenze, si costruiscono le risorse delle SDK e si esegue il setup della reference. I test di arresto del processo usano anche i segnali POSIX su macOS o Linux."], "code": ["npm ci --ignore-scripts", "npm run build:sdk", "composer install --working-dir=sdk/php", "composer install --working-dir=reference", "php reference/bin/setup.php"]},
+        {"heading": "Seguire un task", "paragraphs": ["Nel progetto locale Herd serve http://pact.test. La demo Core invia il testo PACT connects three careful agents, riceve due domande richieste e risponde a entrambe. Il chiamante verifica poi un artefatto con cinque parole e approved uguale a true."], "code": ["npm run demo"]},
+        {"heading": "Eseguire la collaborazione", "paragraphs": ["Per Swarm si avvia il worker in un terminale con php reference/bin/worker.php --watch e si esegue npm run demo:swarm in un altro. Il setup conserva la configurazione esistente e crea token casuali privati nello storage locale escluso da Git."]}
+      ],
+      "source": "docs/quickstart.md"
+    },
+    {
+      "id": "02-core",
+      "nav": "Core specification",
+      "title": "Concordare il contratto del task",
+      "asset": "02-core.png",
+      "alt": "Il robot confronta forme strutturate con un documento e ottiene un output verificato",
+      "caption": "Lo schema fissa la forma dei dati e il digest identifica i byte esatti dello schema.",
+      "lead": "Core trasforma l’accordo sui dati in un insieme di regole verificabili. Un contratto identifica gli schemi di input e output e può includere uno schema per le risposte ai chiarimenti.",
+      "blocks": [
+        {"heading": "Identificare e validare i dati", "paragraphs": ["Ogni descrittore contiene un URI dello schema e il suo SHA 256. Il ricevente risolve soltanto file autorizzati, verifica i byte esatti, la versione dello standard JSON Schema e l’identificatore dichiarato, quindi valida il valore ricevuto. Le SDK usano un registro locale e rifiutano riferimenti esterni agli schemi. Questa validazione controlla la struttura dei dati; l’applicazione deve valutare il contenuto."]},
+        {"heading": "Chiedere chiarimenti insieme", "paragraphs": ["Un task può avere più domande aperte contemporaneamente. Ogni risposta identifica la domanda e lo stesso task e contesto. Un gruppo di risposte viene validato in modo atomico: se una risposta è invalida, nessuna viene salvata. Il task riparte quando tutte le domande richieste che lo bloccano sono risolte. La scadenza di una domanda richiesta provoca il fallimento del task."]},
+        {"heading": "Dimostrare il completamento", "paragraphs": ["Il ricevente deriva il proprio verdetto dai dati degli artefatti e dallo schema concordato. Il completamento richiede un output valido e nessuna domanda richiesta irrisolta. Un codice HTTP positivo o un avanzamento del 100 per cento, da soli, non dimostrano che il risultato soddisfi il contratto."]},
+        {"heading": "Misurare il lavoro corrente", "page_break": true, "paragraphs": ["L’avanzamento Core riporta fase, sequenza, unità completate, totale e percentuale. Quando il totale è sconosciuto, anche la percentuale è null. Con un totale noto si controllano i contatori e si arrotonda a due decimali. Un nuovo tentativo può ridurre l’avanzamento corrente; un massimo storico resta una misura distinta."]},
+        {"heading": "Controllare gli eventi", "paragraphs": ["Un evento collega produttore, task, sequenza, tipo, momento e payload. Il suo digest è calcolato sull’intero evento canonico, escluso il solo campo del digest. Il ricevente verifica forma e integrità prima di applicarlo. Il digest rileva alterazioni ma non autentica il produttore: l’identità arriva dal trasporto e dal contesto fidato dell’adapter."]},
+        {"heading": "Gestire duplicati e ritardi", "paragraphs": ["Il replay conserva i byte originariamente accettati. Lo stesso identificatore con byte diversi produce un conflitto, anche se il JSON ha lo stesso significato. Eventi validi ma vecchi restano registrati senza sovrascrivere lo stato più recente. Gli stati terminali restano immutabili e gli errori espongono un codice, un messaggio sicuro e l’indicazione di ritentabilità."]},
+        {"heading": "Separare consegna e risultato", "paragraphs": ["Una notifica viene riconosciuta dopo il commit della ricevuta e dello stato. Errori di connessione e alcuni errori HTTP possono richiedere una nuova consegna con gli stessi byte. L’esaurimento dei tentativi viene registrato come problema di consegna; non viene convertito in successo del task."]}
+      ],
+      "source": "specification/PACT-CORE-v0.2.md"
+    },
+    {
+      "id": "03-swarm",
+      "nav": "Swarm specification",
+      "title": "Coordinare contributori con dipendenze",
+      "asset": "03-swarm.png",
+      "alt": "Un coordinatore e tre robot contributori sono collegati secondo un grafo di dipendenze",
+      "caption": "Ogni contributore parte quando dispone degli output validati dei propri predecessori.",
+      "lead": "Swarm organizza un task padre e un grafo aciclico di contributori. Un coordinatore autenticato conserva il piano, assegna i task figli e raccoglie gli output necessari al risultato finale.",
+      "blocks": [
+        {"heading": "Usare dati prodotti davvero", "paragraphs": ["La demo esegue extract, review e assemble su tre endpoint HTTP. Review riceve il dato validato di extract; assemble riceve quelli di entrambi. Un audit opzionale può fallire senza bloccare il lavoro richiesto. Il primo tentativo di review può fallire, mentre il secondo crea un nuovo task e conserva la storia del precedente."]},
+        {"heading": "Misurare lo sforzo", "paragraphs": ["Nella demo i contributori richiesti pesano 1, 2 e 1. Le fasi di esecuzione, aggregazione e validazione pesano 80, 10 e 10. Il calcolo usa l’espressione razionale completa e arrotonda soltanto alla fine. Il lavoro opzionale resta visibile fuori dal calcolo richiesto. Il massimo storico viene conservato se un retry riduce la percentuale corrente."]},
+        {"heading": "Conservare provenienza e controllo", "paragraphs": ["La provenienza registra task reali, tentativi, stati, artefatti e digest dei dati. Il padre valida anche l’output assemblato. La cancellazione registra prima l’intenzione e poi le osservazioni dei figli: il comando del padre non dimostra che ogni agente remoto si sia fermato. Il profilo definisce anche quorum, mentre la reference esegue soltanto la politica all_required."]}
+      ],
+      "source": "specification/PACT-SWARM-v0.2.md"
+    },
+    {
+      "id": "04-typescript",
+      "nav": "TypeScript SDK",
+      "title": "Integrare un chiamante TypeScript",
+      "asset": "04-typescript.png",
+      "alt": "Il robot controlla una tessera di dati tipizzati accanto a una finestra di codice",
+      "caption": "Il chiamante verifica autonomamente ciò che riceve dal servizio remoto.",
+      "lead": "La SDK TypeScript offre le regole del profilo e un client HTTP. Consente di costruire uno scambio PACT senza copiare la logica della reference PHP.",
+      "blocks": [
+        {"heading": "Un nucleo utilizzabile", "paragraphs": ["La classe Pact controlla risorse, contratti, risposte, transizioni, grafi e avanzamento. La SDK include gli schemi della propria versione e un’implementazione della canonicalizzazione e dei digest. L’avanzamento pesato usa aritmetica razionale con BigInt, così il risultato non dipende da arrotondamenti intermedi."]},
+        {"heading": "Verificare lo scambio HTTP", "paragraphs": ["PactClient gestisce lo scambio del binding JSON RPC usato dal progetto. Controlla l’attivazione delle estensioni, il contratto e gli artefatti ricevuti. Quando il task dichiara di essere completato, il client valida i dati dell’output contro il registro locale concordato. La fiducia nel servizio non sostituisce questo controllo."]},
+        {"heading": "Adottare il pacchetto", "paragraphs": ["La build produce codice e tipi per Node.js 22 o successivo. L’archivio npm è stato installato e importato in un’applicazione temporanea esterna al checkout. Il pacchetto è pronto come archivio locale; la pubblicazione sul registro resta un’attività di release. La SDK non fornisce da sola un database o un coordinatore durabile."]}
+      ],
+      "source": "sdk/typescript/README.md"
+    },
+    {
+      "id": "05-php",
+      "nav": "PHP SDK",
+      "title": "Integrare un servizio PHP",
+      "asset": "05-php.png",
+      "alt": "Il robot controlla documenti strutturati su un server e restituisce un risultato verificato",
+      "caption": "La seconda implementazione esegue le stesse regole in modo indipendente.",
+      "lead": "La SDK PHP implementa Core e Swarm senza dipendere da Laravel. Un’applicazione PHP può usarla per validare i dati e applicare le regole del profilo nel proprio servizio.",
+      "blocks": [
+        {"heading": "Regole indipendenti", "paragraphs": ["Pact esegue controlli di forma e di comportamento, valida i contratti registrati e calcola eventi e avanzamento. PHP usa Opis per JSON Schema e BCMath per l’aritmetica esatta dello Swarm. La canonicalizzazione è implementata nella SDK e viene confrontata con i risultati attesi degli stessi vettori portabili usati da TypeScript."]},
+        {"heading": "Un client essenziale", "paragraphs": ["Il client PHP consegna comandi HTTP e controlla i task ottenuti, incluse le prove di output completato. È usato dal worker della reference per parlare con i contributori. La superficie pubblica del client è essenziale e non espone ogni comodità del client TypeScript."]},
+        {"heading": "Installazione e responsabilità", "paragraphs": ["Il pacchetto richiede PHP 8.2 o successivo e le estensioni dichiarate in Composer. L’archivio include risorse e licenza ed è stato provato in un’applicazione separata. Autenticazione, persistenza e consegna atomica restano responsabilità dell’applicazione che integra la SDK. La pubblicazione del pacchetto Composer è ancora da eseguire."]}
+      ],
+      "source": "sdk/php/README.md"
+    },
+    {
+      "id": "06-laravel",
+      "nav": "Laravel adapter",
+      "title": "Collegare il profilo alle rotte Laravel",
+      "asset": "06-laravel.png",
+      "alt": "Il robot collega una scheda dati a una giunzione di rotte mediante un adapter",
+      "caption": "L’adapter traduce il confine HTTP lasciando le regole nella SDK Core.",
+      "lead": "L’adapter Laravel collega un servizio che implementa il binding PACT al router del framework. La logica di protocollo resta nel nucleo PHP, che può essere usato anche in altre applicazioni.",
+      "blocks": [
+        {"heading": "Un confine piccolo", "paragraphs": ["Routes registra le rotte del binding e passa al servizio metodo, percorso, header e corpo della richiesta. La risposta mantiene il codice HTTP, gli header di attivazione e il corpo del binding. Questa separazione consente di testare le regole del profilo senza costruire un’applicazione Laravel completa."]},
+        {"heading": "Un uso reale nella reference", "paragraphs": ["Il servizio locale usa il router Illuminate 12 per lo scambio delle demo e delle prove HTTP. Nel documento l’adapter rappresenta un’integrazione verificata sul binding dichiarato: non implica il supporto di tutte le modalità di trasporto e notifica di A2A."]},
+        {"heading": "Definire l’identità sul server", "paragraphs": ["L’applicazione stabilisce l’identità autenticata, il tenant e i diritti di delega. I metadati pubblici di un messaggio non possono concedere queste autorizzazioni. La reference usa token configurati localmente; un’installazione operativa deve definire la propria gestione delle credenziali e dei confini di accesso."]}
+      ],
+      "source": "sdk/laravel/README.md"
+    },
+    {
+      "id": "07-conformance",
+      "nav": "Conformance",
+      "title": "Verificare le regole e gli endpoint",
+      "asset": "07-conformance.png",
+      "alt": "Il robot esamina casi validi e invalidi con una lente e una lista di verifiche",
+      "caption": "Un controllo utile confronta i risultati con aspettative esplicite e prova anche i rifiuti.",
+      "lead": "La conformità del profilo viene verificata su due livelli: casi portabili con risultati attesi e scambi reali attraverso HTTP. L’accordo tra due SDK, da solo, potrebbe nascondere lo stesso errore in entrambe.",
+      "blocks": [
+        {"heading": "Confrontare valori ed errori", "paragraphs": ["I 147 vettori condivisi vengono eseguiti indipendentemente da TypeScript e PHP. Entrambe le implementazioni devono produrre il valore o il codice di errore dichiarato. I casi coprono digest, Unicode, schemi, domande concorrenti, transizioni, grafi e calcoli pesati. Il corpus storico v0.1 conserva i suoi 88 controlli separati."]},
+        {"heading": "Provare un servizio vero", "paragraphs": ["La CLI scopre l’Agent Card e controlla attivazione, contratto, output, replay e stati terminali. La suite della reference verifica anche autenticazione, isolamento dei tenant, risposte atomiche, scadenze, cancellazione ed eventi fuori ordine. Un peer costruito appositamente con output invalido viene rifiutato e la CLI termina con errore."]},
+        {"heading": "Leggere la prova nel suo ambito", "paragraphs": ["Al 9 ottobre 2026 risultano passati 178 test Node, 11 test HTTP e 14 controlli live su pact.test. Sono stati verificati anche tre archivi di pacchetto separati. Queste prove riguardano il profilo e il binding dichiarati. Non certificano ogni funzione A2A, la verità del contenuto prodotto o l’operatività in produzione."]}
+      ],
+      "source": "conformance/v0.2/README.md"
+    },
+    {
+      "id": "08-durability",
+      "nav": "Durability & recovery",
+      "title": "Riprendere il lavoro dopo un arresto",
+      "asset": "08-durability.png",
+      "alt": "Il robot conserva un documento in un database e riconcilia la consegna con una freccia di ritorno",
+      "caption": "Il recupero ritrova il comando accettato e conserva un solo effetto registrato.",
+      "lead": "Una risposta persa non permette di sapere se il servizio remoto abbia eseguito il comando. La reference conserva abbastanza informazioni per riconciliare quel caso senza inventare un nuovo task.",
+      "blocks": [
+        {"heading": "Salvare prima di consegnare", "paragraphs": ["SQLite registra task, domande, ricevute e notifiche pendenti nella stessa transazione. La outbox conserva i byte serializzati, il numero di tentativi e la prossima consegna. Una chiave di idempotenza lega il comando al task accettato nel contesto autenticato di tenant e chiamante."]},
+        {"heading": "Proteggere il worker corrente", "paragraphs": ["Il worker acquisisce una lease di sei secondi e usa un timeout HTTP di cinque. Ritenta gli errori ammessi fino a cinque consegne con attesa esponenziale e jitter. Un worker con una lease sostituita non può confermare il risultato o far fallire il lavoro del successore. La cancellazione dopo una ricevuta persa continua a riconciliare il figlio già accettato."]},
+        {"heading": "Provare un recupero concreto", "paragraphs": ["Il test arresta davvero il processo con SIGKILL dopo il commit del figlio remoto e prima della conferma locale. Riavvia il worker sullo stesso database e controlla task originale, comando identico ed effetto registrato una sola volta. Un secondo caso chiude la connessione dopo il commit. Il test dimostra deduplicazione nella reference; il failover distribuito resta da realizzare."]}
+      ],
+      "source": "docs/implementation.md"
+    },
+    {
+      "id": "09-compatibility",
+      "nav": "Compatibility",
+      "title": "Dichiarare versioni e confini di fiducia",
+      "asset": "09-compatibility.png",
+      "alt": "Il robot allinea connettori compatibili e tiene separato un collegamento opzionale",
+      "caption": "Le capacità vengono dichiarate e attivate prima di interpretare i dati vincolati.",
+      "lead": "Due agenti devono concordare la stessa versione, lo stesso contratto e le estensioni necessarie. Il semplice fatto che entrambi parlino HTTP non basta a garantire uno scambio PACT.",
+      "blocks": [
+        {"heading": "Un binding dichiarato", "paragraphs": ["La v0.2 usa il binding JSON RPC A2A 1.0, con SendMessage, GetTask e CancelTask. La richiesta invia A2A-Version e le estensioni da attivare; la risposta conferma quelle effettivamente attivate. Core è richiesto nella reference e Swarm è opzionale. Un downgrade deve essere autorizzato dal chiamante."]},
+        {"heading": "Proteggere il contesto", "paragraphs": ["L’identità del produttore e il tenant arrivano dall’autenticazione gestita dal server. Il registro degli schemi limita i file ammessi e ne controlla i digest. Un hash integro non concede un’autorizzazione e uno schema valido non dimostra che un’affermazione sia vera. HTTPS, conservazione dei dati e politiche operative spettano all’applicazione."]},
+        {"heading": "Conservare la storia del progetto", "paragraphs": ["La proposta originale v0.1 e lo schema progress fornito restano invariati. La nuova bozza usa identificatori nel namespace della repository del proprietario e attende la pubblicazione. Streaming, altri binding A2A e passaggio di proprietà tra coordinatori non sono verificati da questa reference."]}
+      ],
+      "source": "docs/compatibility.md"
+    },
+    {
+      "id": "10-roadmap",
+      "nav": "Roadmap",
+      "title": "Far crescere la bozza con prove indipendenti",
+      "asset": "10-roadmap.png",
+      "alt": "Il robot segue un percorso con una tappa verificata e due tappe future aperte",
+      "caption": "Le prossime tappe distinguono nuove prove di interoperabilità dalla pubblicazione.",
+      "lead": "La v0.2 offre una base locale implementata e verificata. Il passo successivo più utile è osservare come un altro sviluppatore interpreta la specifica senza riusare le nostre implementazioni.",
+      "blocks": [
+        {"heading": "Validare una terza implementazione", "paragraphs": ["Una nuova implementazione costruita dalla sola specifica può rivelare ambiguità che TypeScript e PHP condividono. Deve consumare i vettori portabili e poi partecipare a uno scambio live. Le discrepanze devono diventare casi riproducibili o chiarimenti della specifica."]},
+        {"heading": "Estendere coordinamento e trasporto", "paragraphs": ["Il lavoro successivo comprende worker concorrenti, trasferimento del coordinamento, quorum eseguibile e piani annidati. Streaming e configurazione delle notifiche push A2A richiedono adapter e prove dedicate. L’avanzamento deve continuare a distinguere il lavoro corrente, il massimo storico e la validità del risultato."]},
+        {"heading": "Preparare una release", "paragraphs": ["Prima di pubblicare si riesaminano specifiche, dipendenze, licenze e canali privati di segnalazione. Il proprietario decide push, tag e pubblicazione dei documenti e dei pacchetti. La repository mantiene la licenza MIT; la proposta originale di Apache 2.0 resta una decisione di governance aperta."]}
+      ],
+      "source": "docs/roadmap.md"
+    }
+  ],
+  "references": [
+    {"title": "Specifica Core", "path": "specification/PACT-CORE-v0.2.md"},
+    {"title": "Specifica Swarm", "path": "specification/PACT-SWARM-v0.2.md"},
+    {"title": "Avvio e demo", "path": "docs/quickstart.md"},
+    {"title": "Persistenza e recupero", "path": "docs/implementation.md"},
+    {"title": "Audit delle verifiche locali", "path": "docs/delivery-plan.md"},
+    {"title": "Compatibilità", "path": "docs/compatibility.md"},
+    {"title": "Governance e licenza", "path": "GOVERNANCE.md"},
+    {"title": "Politica di sicurezza", "path": "SECURITY.md"},
+    {"title": "Contributi", "path": "CONTRIBUTING.md"}
+  ],
+  "glossary": [
+    ["Task", "Incarico con identità, contesto e stato nativo A2A."],
+    ["Artefatto", "Dato di output che il ricevente valida contro il contratto."],
+    ["Digest", "Impronta dei byte o dei dati canonici; non è una firma."],
+    ["Outbox", "Registro durabile dei comandi e delle notifiche da consegnare."],
+    ["Lease", "Possesso temporaneo di un lavoro, rinnovabile o sostituibile."],
+    ["Tenant", "Contesto di accesso e isolamento assegnato dall’applicazione."],
+    ["High watermark", "Massimo storico della percentuale nella stessa generazione."]
+  ]
+}

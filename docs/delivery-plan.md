@@ -37,7 +37,7 @@ Verified on 2026-10-09 using Node.js 22.22.3, PHP 8.4.25 and Illuminate 12.69.3.
 | HTTP lease/cancellation/optional-exhaustion races | A replaced worker leaves the successor's receipt and parent intact; cancellation after lost acknowledgment reconciles the original committed child; five failed optional deliveries retain an unconfirmed error while required output completes |
 | Weighted progress vectors and runtime snapshots | Required scope excludes optional audit; fixed 80:10:10 stages; retry can lower current progress while preserving high watermark; null propagation, settled failure and one final half-up rounding agree across languages |
 | `npm run package:smoke` | npm, PHP Composer and Laravel Composer archives install/import in separate temporary applications; package resources and licenses are present; no checkout-relative runtime dependency |
-| `npm run docs:build` and browser inspection | 27 generated pages and 3 resource indexes; overview, search filter and Laravel navigation inspected on Herd; transparent README art retained and validated |
+| `npm run docs:build` and browser inspection | 28 generated pages and 3 resource indexes; overview, search filter and Laravel navigation inspected on Herd; transparent README art retained and validated |
 
 The original proposal and supplied progress schema pass their recorded exact-byte digests. Local tokens, databases, transcripts, generated site, compiled code and dependency directories are ignored and excluded from commits. Library dependencies are installed normally; schema validation itself never fetches arbitrary contract URLs.
 

@@ -38,6 +38,8 @@ The demo runs on Herd at **http://pact.test**. It receives two typed questions, 
 
 Start with [Core v0.2](specification/PACT-CORE-v0.2.md), [optional Swarm](specification/PACT-SWARM-v0.2.md), and the [SDK guides](sdk/typescript/README.md). The supplied [v0.1 proposal](specification/PACT-SPEC-v0.1.md) remains an archived source record.
 
+Read the [illustrated Italian guide](docs/editorial/README.md) for an editorial explanation of all eleven documentation sections, with reusable transparent illustrations and an editable Word document.
+
 ## Agree on data before doing work
 
 <img src="docs/readme/scene-concept.png" width="360" alt="The robot compares structured input fields with the exact shape required by a contract">
