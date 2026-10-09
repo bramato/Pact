@@ -1,0 +1,6 @@
+{
+  "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json": "contracts/input.schema.json",
+  "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json": "contracts/output.schema.json",
+  "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json": "contracts/answer.schema.json",
+  "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/external.schema.json": "contracts/external.schema.json"
+}

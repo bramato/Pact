@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/metadata.schema.json",
+  "title": "PACT metadata v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version"
+  ],
+  "properties": {
+    "version": {
+      "const": "0.2.0"
+    },
+    "contract": {
+      "$ref": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/contract.schema.json"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 1000,
+      "items": {
+        "$ref": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/question.schema.json"
+      }
+    },
+    "answers": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 1000,
+      "items": {
+        "$ref": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/answer.schema.json"
+      }
+    },
+    "progress": {
+      "$ref": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/progress.schema.json"
+    },
+    "event": {
+      "$ref": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/event.schema.json"
+    },
+    "error": {
+      "$ref": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/error.schema.json"
+    }
+  }
+}

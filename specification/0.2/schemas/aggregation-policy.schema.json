@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/aggregation-policy.schema.json",
+  "title": "PACT aggregation-policy v0.2",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "all_required"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "min_success",
+        "eligible_child_ids"
+      ],
+      "properties": {
+        "type": {
+          "const": "quorum"
+        },
+        "min_success": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "eligible_child_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    }
+  ]
+}

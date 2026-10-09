@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/external.schema.json",
+  "$ref": "https://unregistered.invalid/schema.json"
+}

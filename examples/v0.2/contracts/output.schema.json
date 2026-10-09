@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary",
+    "word_count",
+    "approved"
+  ],
+  "properties": {
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000
+    },
+    "word_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "approved": {
+      "type": "boolean"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json"
+}

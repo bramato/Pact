@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/answer.schema.json",
+  "title": "PACT answer v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "response_to",
+    "task_id",
+    "value"
+  ],
+  "properties": {
+    "response_to": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "value": {}
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "version": "0.2.0",
+  "core_uri": "https://github.com/bramato/Pact/blob/main/specification/PACT-CORE-v0.2.md",
+  "swarm_uri": "https://github.com/bramato/Pact/blob/main/specification/PACT-SWARM-v0.2.md",
+  "schema_base": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/",
+  "status": "draft",
+  "a2a": "1.0",
+  "event_digest": "sha256(jcs(event without top-level sha256))"
+}

@@ -1,0 +1,3495 @@
+[
+  {
+    "id": "jcs-0",
+    "op": "canonical",
+    "args": [
+      {
+        "b": 1,
+        "a": 2
+      }
+    ],
+    "expected": "{\"a\":2,\"b\":1}"
+  },
+  {
+    "id": "jcs-1",
+    "op": "canonical",
+    "args": [
+      {
+        "x": "  ",
+        "y": 1e-7
+      }
+    ],
+    "expected": "{\"x\":\"  \",\"y\":1e-7}"
+  },
+  {
+    "id": "jcs-2",
+    "op": "canonical",
+    "args": [
+      [
+        333333333.3333333,
+        0.000001,
+        1e-7,
+        4.5,
+        0.002,
+        0
+      ]
+    ],
+    "expected": "[333333333.3333333,0.000001,1e-7,4.5,0.002,0]"
+  },
+  {
+    "id": "jcs-3",
+    "op": "canonical",
+    "args": [
+      {
+        "😀": 1,
+        "": 2
+      }
+    ],
+    "expected": "{\"😀\":1,\"\":2}"
+  },
+  {
+    "id": "jcs-4",
+    "op": "canonical",
+    "args": [
+      {
+        "empty": {},
+        "list": []
+      }
+    ],
+    "expected": "{\"empty\":{},\"list\":[]}"
+  },
+  {
+    "id": "round-half-up",
+    "op": "progress",
+    "args": [
+      {
+        "sequence": 1,
+        "stage": "execution",
+        "completed_units": 1,
+        "total_units": 32,
+        "percentage": 3.13,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "expected": {
+      "sequence": 1,
+      "stage": "execution",
+      "completed_units": 1,
+      "total_units": 32,
+      "percentage": 3.13,
+      "updated_at": "2026-10-09T12:00:00Z"
+    }
+  },
+  {
+    "id": "unknown-total",
+    "op": "progress",
+    "args": [
+      {
+        "sequence": 1,
+        "stage": "execution",
+        "completed_units": 1,
+        "total_units": null,
+        "percentage": null,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "expected": {
+      "sequence": 1,
+      "stage": "execution",
+      "completed_units": 1,
+      "total_units": null,
+      "percentage": null,
+      "updated_at": "2026-10-09T12:00:00Z"
+    }
+  },
+  {
+    "id": "bad-percentage",
+    "op": "progress",
+    "args": [
+      {
+        "sequence": 1,
+        "stage": "execution",
+        "completed_units": 1,
+        "total_units": 32,
+        "percentage": 3.12,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "error": "PROGRESS_PERCENTAGE"
+  },
+  {
+    "id": "over-total",
+    "op": "progress",
+    "args": [
+      {
+        "sequence": 1,
+        "stage": "execution",
+        "completed_units": 33,
+        "total_units": 32,
+        "percentage": 3.13,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "error": "PROGRESS_UNITS"
+  },
+  {
+    "id": "unsafe-counter",
+    "op": "progress",
+    "args": [
+      {
+        "sequence": 9007199254740992,
+        "stage": "execution",
+        "completed_units": 1,
+        "total_units": 32,
+        "percentage": 3.13,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "error": "SCHEMA_INVALID"
+  },
+  {
+    "id": "unknown-reports-percent",
+    "op": "progress",
+    "args": [
+      {
+        "sequence": 1,
+        "stage": "execution",
+        "completed_units": 1,
+        "total_units": null,
+        "percentage": 3.13,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "error": "SCHEMA_INVALID"
+  },
+  {
+    "id": "invalid-date",
+    "op": "progress",
+    "args": [
+      {
+        "sequence": 1,
+        "stage": "execution",
+        "completed_units": 1,
+        "total_units": 32,
+        "percentage": 3.13,
+        "updated_at": "2026-02-30T12:00:00Z"
+      }
+    ],
+    "error": "SCHEMA_INVALID"
+  },
+  {
+    "id": "old-progress",
+    "op": "progress",
+    "args": [
+      {
+        "sequence": 1,
+        "stage": "execution",
+        "completed_units": 1,
+        "total_units": 32,
+        "percentage": 3.13,
+        "updated_at": "2026-10-09T12:00:00Z"
+      },
+      1
+    ],
+    "error": "PROGRESS_SEQUENCE"
+  },
+  {
+    "id": "contract-input",
+    "op": "contractData",
+    "args": [
+      {
+        "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+        "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+      },
+      {
+        "text": "hello world",
+        "clarify": false,
+        "swarm": false
+      }
+    ],
+    "expected": "valid"
+  },
+  {
+    "id": "contract-wrong-shape",
+    "op": "contractData",
+    "args": [
+      {
+        "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+        "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+      },
+      {
+        "word_count": -1
+      }
+    ],
+    "error": "CONTRACT_INVALID"
+  },
+  {
+    "id": "contract-digest",
+    "op": "contractData",
+    "args": [
+      {
+        "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+        "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {}
+    ],
+    "error": "SCHEMA_DIGEST"
+  },
+  {
+    "id": "concurrent-answers",
+    "op": "answers",
+    "args": [
+      [
+        {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        },
+        {
+          "question_id": "q2",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": false,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        }
+      ],
+      [
+        {
+          "response_to": "q1",
+          "task_id": "task1",
+          "value": {
+            "approved": true
+          }
+        },
+        {
+          "response_to": "q2",
+          "task_id": "task1",
+          "value": {
+            "approved": true
+          }
+        }
+      ],
+      {
+        "taskId": "task1",
+        "contextId": "ctx",
+        "expectedContextId": "ctx",
+        "now": "2026-10-09T12:00:00.499Z"
+      }
+    ],
+    "expected": [
+      {
+        "question_id": "q1",
+        "task_id": "task1",
+        "prompt": "Approve?",
+        "answer_schema": {
+          "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+          "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+        },
+        "required": true,
+        "expires_at": "2026-10-09T12:00:00.500Z",
+        "status": "answered"
+      },
+      {
+        "question_id": "q2",
+        "task_id": "task1",
+        "prompt": "Approve?",
+        "answer_schema": {
+          "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+          "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+        },
+        "required": false,
+        "expires_at": "2026-10-09T12:00:00.500Z",
+        "status": "answered"
+      }
+    ]
+  },
+  {
+    "id": "optional-open",
+    "op": "answers",
+    "args": [
+      [
+        {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        },
+        {
+          "question_id": "q2",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": false,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        }
+      ],
+      [
+        {
+          "response_to": "q1",
+          "task_id": "task1",
+          "value": {
+            "approved": true
+          }
+        }
+      ],
+      {
+        "taskId": "task1",
+        "contextId": "ctx",
+        "expectedContextId": "ctx",
+        "now": "2026-10-09T12:00:00.499Z"
+      }
+    ],
+    "expected": [
+      {
+        "question_id": "q1",
+        "task_id": "task1",
+        "prompt": "Approve?",
+        "answer_schema": {
+          "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+          "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+        },
+        "required": true,
+        "expires_at": "2026-10-09T12:00:00.500Z",
+        "status": "answered"
+      },
+      {
+        "question_id": "q2",
+        "task_id": "task1",
+        "prompt": "Approve?",
+        "answer_schema": {
+          "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+          "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+        },
+        "required": false,
+        "expires_at": "2026-10-09T12:00:00.500Z",
+        "status": "open"
+      }
+    ]
+  },
+  {
+    "id": "duplicate-answer",
+    "op": "answers",
+    "args": [
+      [
+        {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        }
+      ],
+      [
+        {
+          "response_to": "q1",
+          "task_id": "task1",
+          "value": {
+            "approved": true
+          }
+        },
+        {
+          "response_to": "q1",
+          "task_id": "task1",
+          "value": {
+            "approved": true
+          }
+        }
+      ],
+      {
+        "taskId": "task1",
+        "contextId": "ctx",
+        "expectedContextId": "ctx",
+        "now": "2026-10-09T12:00:00.499Z"
+      }
+    ],
+    "error": "ANSWER_DUPLICATE"
+  },
+  {
+    "id": "wrong-task",
+    "op": "answers",
+    "args": [
+      [
+        {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        }
+      ],
+      [
+        {
+          "response_to": "q1",
+          "task_id": "other",
+          "value": {
+            "approved": true
+          }
+        }
+      ],
+      {
+        "taskId": "task1",
+        "contextId": "ctx",
+        "expectedContextId": "ctx",
+        "now": "2026-10-09T12:00:00.499Z"
+      }
+    ],
+    "error": "QUESTION_CORRELATION"
+  },
+  {
+    "id": "wrong-context",
+    "op": "answers",
+    "args": [
+      [
+        {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        }
+      ],
+      [
+        {
+          "response_to": "q1",
+          "task_id": "task1",
+          "value": {
+            "approved": true
+          }
+        }
+      ],
+      {
+        "taskId": "task1",
+        "contextId": "other",
+        "expectedContextId": "ctx",
+        "now": "2026-10-09T12:00:00.499Z"
+      }
+    ],
+    "error": "QUESTION_CONTEXT"
+  },
+  {
+    "id": "at-deadline",
+    "op": "answers",
+    "args": [
+      [
+        {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        }
+      ],
+      [
+        {
+          "response_to": "q1",
+          "task_id": "task1",
+          "value": {
+            "approved": true
+          }
+        }
+      ],
+      {
+        "taskId": "task1",
+        "contextId": "ctx",
+        "expectedContextId": "ctx",
+        "now": "2026-10-09T12:00:00.500Z"
+      }
+    ],
+    "error": "QUESTION_EXPIRED"
+  },
+  {
+    "id": "closed-question",
+    "op": "answers",
+    "args": [
+      [
+        {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "answered"
+        }
+      ],
+      [
+        {
+          "response_to": "q1",
+          "task_id": "task1",
+          "value": {
+            "approved": true
+          }
+        }
+      ],
+      {
+        "taskId": "task1",
+        "contextId": "ctx",
+        "expectedContextId": "ctx",
+        "now": "2026-10-09T12:00:00.499Z"
+      }
+    ],
+    "error": "QUESTION_CLOSED"
+  },
+  {
+    "id": "atomic-invalid-batch",
+    "op": "answers",
+    "args": [
+      [
+        {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        },
+        {
+          "question_id": "q2",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": false,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        }
+      ],
+      [
+        {
+          "response_to": "q1",
+          "task_id": "task1",
+          "value": {
+            "approved": true
+          }
+        },
+        {
+          "response_to": "q2",
+          "task_id": "task1",
+          "value": {
+            "approved": "yes"
+          }
+        }
+      ],
+      {
+        "taskId": "task1",
+        "contextId": "ctx",
+        "expectedContextId": "ctx",
+        "now": "2026-10-09T12:00:00.499Z"
+      }
+    ],
+    "error": "CONTRACT_INVALID"
+  },
+  {
+    "id": "state-UNSPECIFIED-UNSPECIFIED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_UNSPECIFIED",
+      "TASK_STATE_UNSPECIFIED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_UNSPECIFIED"
+  },
+  {
+    "id": "state-UNSPECIFIED-SUBMITTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_UNSPECIFIED",
+      "TASK_STATE_SUBMITTED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_SUBMITTED"
+  },
+  {
+    "id": "state-UNSPECIFIED-WORKING",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_UNSPECIFIED",
+      "TASK_STATE_WORKING",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-UNSPECIFIED-INPUT_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_UNSPECIFIED",
+      "TASK_STATE_INPUT_REQUIRED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-UNSPECIFIED-AUTH_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_UNSPECIFIED",
+      "TASK_STATE_AUTH_REQUIRED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-UNSPECIFIED-COMPLETED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_UNSPECIFIED",
+      "TASK_STATE_COMPLETED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-UNSPECIFIED-FAILED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_UNSPECIFIED",
+      "TASK_STATE_FAILED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-UNSPECIFIED-CANCELED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_UNSPECIFIED",
+      "TASK_STATE_CANCELED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-UNSPECIFIED-REJECTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_UNSPECIFIED",
+      "TASK_STATE_REJECTED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_REJECTED"
+  },
+  {
+    "id": "state-SUBMITTED-UNSPECIFIED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_SUBMITTED",
+      "TASK_STATE_UNSPECIFIED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-SUBMITTED-SUBMITTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_SUBMITTED",
+      "TASK_STATE_SUBMITTED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_SUBMITTED"
+  },
+  {
+    "id": "state-SUBMITTED-WORKING",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_SUBMITTED",
+      "TASK_STATE_WORKING",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_WORKING"
+  },
+  {
+    "id": "state-SUBMITTED-INPUT_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_SUBMITTED",
+      "TASK_STATE_INPUT_REQUIRED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_INPUT_REQUIRED"
+  },
+  {
+    "id": "state-SUBMITTED-AUTH_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_SUBMITTED",
+      "TASK_STATE_AUTH_REQUIRED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_AUTH_REQUIRED"
+  },
+  {
+    "id": "state-SUBMITTED-COMPLETED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_SUBMITTED",
+      "TASK_STATE_COMPLETED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-SUBMITTED-FAILED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_SUBMITTED",
+      "TASK_STATE_FAILED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_FAILED"
+  },
+  {
+    "id": "state-SUBMITTED-CANCELED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_SUBMITTED",
+      "TASK_STATE_CANCELED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_CANCELED"
+  },
+  {
+    "id": "state-SUBMITTED-REJECTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_SUBMITTED",
+      "TASK_STATE_REJECTED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_REJECTED"
+  },
+  {
+    "id": "state-WORKING-UNSPECIFIED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_UNSPECIFIED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-WORKING-SUBMITTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_SUBMITTED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-WORKING-WORKING",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_WORKING",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_WORKING"
+  },
+  {
+    "id": "state-WORKING-INPUT_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_INPUT_REQUIRED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_INPUT_REQUIRED"
+  },
+  {
+    "id": "state-WORKING-AUTH_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_AUTH_REQUIRED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_AUTH_REQUIRED"
+  },
+  {
+    "id": "state-WORKING-COMPLETED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_COMPLETED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_COMPLETED"
+  },
+  {
+    "id": "state-WORKING-FAILED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_FAILED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_FAILED"
+  },
+  {
+    "id": "state-WORKING-CANCELED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_CANCELED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_CANCELED"
+  },
+  {
+    "id": "state-WORKING-REJECTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_REJECTED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_REJECTED"
+  },
+  {
+    "id": "state-INPUT_REQUIRED-UNSPECIFIED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_INPUT_REQUIRED",
+      "TASK_STATE_UNSPECIFIED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-INPUT_REQUIRED-SUBMITTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_INPUT_REQUIRED",
+      "TASK_STATE_SUBMITTED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-INPUT_REQUIRED-WORKING",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_INPUT_REQUIRED",
+      "TASK_STATE_WORKING",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_WORKING"
+  },
+  {
+    "id": "state-INPUT_REQUIRED-INPUT_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_INPUT_REQUIRED",
+      "TASK_STATE_INPUT_REQUIRED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_INPUT_REQUIRED"
+  },
+  {
+    "id": "state-INPUT_REQUIRED-AUTH_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_INPUT_REQUIRED",
+      "TASK_STATE_AUTH_REQUIRED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_AUTH_REQUIRED"
+  },
+  {
+    "id": "state-INPUT_REQUIRED-COMPLETED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_INPUT_REQUIRED",
+      "TASK_STATE_COMPLETED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-INPUT_REQUIRED-FAILED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_INPUT_REQUIRED",
+      "TASK_STATE_FAILED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_FAILED"
+  },
+  {
+    "id": "state-INPUT_REQUIRED-CANCELED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_INPUT_REQUIRED",
+      "TASK_STATE_CANCELED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_CANCELED"
+  },
+  {
+    "id": "state-INPUT_REQUIRED-REJECTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_INPUT_REQUIRED",
+      "TASK_STATE_REJECTED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_REJECTED"
+  },
+  {
+    "id": "state-AUTH_REQUIRED-UNSPECIFIED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_AUTH_REQUIRED",
+      "TASK_STATE_UNSPECIFIED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-AUTH_REQUIRED-SUBMITTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_AUTH_REQUIRED",
+      "TASK_STATE_SUBMITTED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-AUTH_REQUIRED-WORKING",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_AUTH_REQUIRED",
+      "TASK_STATE_WORKING",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_WORKING"
+  },
+  {
+    "id": "state-AUTH_REQUIRED-INPUT_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_AUTH_REQUIRED",
+      "TASK_STATE_INPUT_REQUIRED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_INPUT_REQUIRED"
+  },
+  {
+    "id": "state-AUTH_REQUIRED-AUTH_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_AUTH_REQUIRED",
+      "TASK_STATE_AUTH_REQUIRED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_AUTH_REQUIRED"
+  },
+  {
+    "id": "state-AUTH_REQUIRED-COMPLETED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_AUTH_REQUIRED",
+      "TASK_STATE_COMPLETED",
+      true,
+      []
+    ],
+    "error": "TASK_TRANSITION"
+  },
+  {
+    "id": "state-AUTH_REQUIRED-FAILED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_AUTH_REQUIRED",
+      "TASK_STATE_FAILED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_FAILED"
+  },
+  {
+    "id": "state-AUTH_REQUIRED-CANCELED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_AUTH_REQUIRED",
+      "TASK_STATE_CANCELED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_CANCELED"
+  },
+  {
+    "id": "state-AUTH_REQUIRED-REJECTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_AUTH_REQUIRED",
+      "TASK_STATE_REJECTED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_REJECTED"
+  },
+  {
+    "id": "state-COMPLETED-UNSPECIFIED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_COMPLETED",
+      "TASK_STATE_UNSPECIFIED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-COMPLETED-SUBMITTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_COMPLETED",
+      "TASK_STATE_SUBMITTED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-COMPLETED-WORKING",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_COMPLETED",
+      "TASK_STATE_WORKING",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-COMPLETED-INPUT_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_COMPLETED",
+      "TASK_STATE_INPUT_REQUIRED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-COMPLETED-AUTH_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_COMPLETED",
+      "TASK_STATE_AUTH_REQUIRED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-COMPLETED-COMPLETED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_COMPLETED",
+      "TASK_STATE_COMPLETED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_COMPLETED"
+  },
+  {
+    "id": "state-COMPLETED-FAILED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_COMPLETED",
+      "TASK_STATE_FAILED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-COMPLETED-CANCELED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_COMPLETED",
+      "TASK_STATE_CANCELED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-COMPLETED-REJECTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_COMPLETED",
+      "TASK_STATE_REJECTED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-FAILED-UNSPECIFIED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_FAILED",
+      "TASK_STATE_UNSPECIFIED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-FAILED-SUBMITTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_FAILED",
+      "TASK_STATE_SUBMITTED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-FAILED-WORKING",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_FAILED",
+      "TASK_STATE_WORKING",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-FAILED-INPUT_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_FAILED",
+      "TASK_STATE_INPUT_REQUIRED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-FAILED-AUTH_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_FAILED",
+      "TASK_STATE_AUTH_REQUIRED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-FAILED-COMPLETED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_FAILED",
+      "TASK_STATE_COMPLETED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-FAILED-FAILED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_FAILED",
+      "TASK_STATE_FAILED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_FAILED"
+  },
+  {
+    "id": "state-FAILED-CANCELED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_FAILED",
+      "TASK_STATE_CANCELED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-FAILED-REJECTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_FAILED",
+      "TASK_STATE_REJECTED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-CANCELED-UNSPECIFIED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_CANCELED",
+      "TASK_STATE_UNSPECIFIED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-CANCELED-SUBMITTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_CANCELED",
+      "TASK_STATE_SUBMITTED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-CANCELED-WORKING",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_CANCELED",
+      "TASK_STATE_WORKING",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-CANCELED-INPUT_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_CANCELED",
+      "TASK_STATE_INPUT_REQUIRED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-CANCELED-AUTH_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_CANCELED",
+      "TASK_STATE_AUTH_REQUIRED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-CANCELED-COMPLETED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_CANCELED",
+      "TASK_STATE_COMPLETED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-CANCELED-FAILED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_CANCELED",
+      "TASK_STATE_FAILED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-CANCELED-CANCELED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_CANCELED",
+      "TASK_STATE_CANCELED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_CANCELED"
+  },
+  {
+    "id": "state-CANCELED-REJECTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_CANCELED",
+      "TASK_STATE_REJECTED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-REJECTED-UNSPECIFIED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_REJECTED",
+      "TASK_STATE_UNSPECIFIED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-REJECTED-SUBMITTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_REJECTED",
+      "TASK_STATE_SUBMITTED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-REJECTED-WORKING",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_REJECTED",
+      "TASK_STATE_WORKING",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-REJECTED-INPUT_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_REJECTED",
+      "TASK_STATE_INPUT_REQUIRED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-REJECTED-AUTH_REQUIRED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_REJECTED",
+      "TASK_STATE_AUTH_REQUIRED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-REJECTED-COMPLETED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_REJECTED",
+      "TASK_STATE_COMPLETED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-REJECTED-FAILED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_REJECTED",
+      "TASK_STATE_FAILED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-REJECTED-CANCELED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_REJECTED",
+      "TASK_STATE_CANCELED",
+      true,
+      []
+    ],
+    "error": "TASK_TERMINAL"
+  },
+  {
+    "id": "state-REJECTED-REJECTED",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_REJECTED",
+      "TASK_STATE_REJECTED",
+      true,
+      []
+    ],
+    "expected": "TASK_STATE_REJECTED"
+  },
+  {
+    "id": "completion-output-gate",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_COMPLETED",
+      false,
+      []
+    ],
+    "error": "OUTPUT_REQUIRED"
+  },
+  {
+    "id": "completion-question-gate",
+    "op": "transition",
+    "args": [
+      "TASK_STATE_WORKING",
+      "TASK_STATE_COMPLETED",
+      true,
+      [
+        {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        }
+      ]
+    ],
+    "error": "QUESTION_REQUIRED"
+  },
+  {
+    "id": "core-only",
+    "op": "negotiate",
+    "args": [
+      {
+        "versions": [
+          "0.2.0"
+        ],
+        "contracts": [
+          {
+            "contract_id": "document-review",
+            "version": "2.0.0",
+            "input": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+              "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+            },
+            "output": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+              "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+            },
+            "question_answer": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+              "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+            }
+          }
+        ],
+        "features": [
+          "contracts",
+          "questions",
+          "events",
+          "progress",
+          "swarm"
+        ]
+      },
+      {
+        "version": "0.2.0",
+        "contract": {
+          "contract_id": "document-review",
+          "version": "2.0.0",
+          "input": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+            "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+          },
+          "output": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+            "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+          },
+          "question_answer": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          }
+        },
+        "active": [
+          "https://github.com/bramato/Pact/blob/main/specification/PACT-CORE-v0.2.md"
+        ]
+      }
+    ],
+    "expected": {
+      "mode": "pact",
+      "extensions": [
+        "https://github.com/bramato/Pact/blob/main/specification/PACT-CORE-v0.2.md"
+      ]
+    }
+  },
+  {
+    "id": "swarm-active",
+    "op": "negotiate",
+    "args": [
+      {
+        "versions": [
+          "0.2.0"
+        ],
+        "contracts": [
+          {
+            "contract_id": "document-review",
+            "version": "2.0.0",
+            "input": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+              "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+            },
+            "output": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+              "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+            },
+            "question_answer": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+              "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+            }
+          }
+        ],
+        "features": [
+          "contracts",
+          "questions",
+          "events",
+          "progress",
+          "swarm"
+        ]
+      },
+      {
+        "version": "0.2.0",
+        "contract": {
+          "contract_id": "document-review",
+          "version": "2.0.0",
+          "input": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+            "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+          },
+          "output": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+            "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+          },
+          "question_answer": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          }
+        },
+        "active": [
+          "https://github.com/bramato/Pact/blob/main/specification/PACT-CORE-v0.2.md",
+          "https://github.com/bramato/Pact/blob/main/specification/PACT-SWARM-v0.2.md"
+        ],
+        "swarm": true
+      }
+    ],
+    "expected": {
+      "mode": "pact",
+      "extensions": [
+        "https://github.com/bramato/Pact/blob/main/specification/PACT-CORE-v0.2.md",
+        "https://github.com/bramato/Pact/blob/main/specification/PACT-SWARM-v0.2.md"
+      ]
+    }
+  },
+  {
+    "id": "swarm-not-active",
+    "op": "negotiate",
+    "args": [
+      {
+        "versions": [
+          "0.2.0"
+        ],
+        "contracts": [
+          {
+            "contract_id": "document-review",
+            "version": "2.0.0",
+            "input": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+              "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+            },
+            "output": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+              "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+            },
+            "question_answer": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+              "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+            }
+          }
+        ],
+        "features": [
+          "contracts",
+          "questions",
+          "events",
+          "progress",
+          "swarm"
+        ]
+      },
+      {
+        "version": "0.2.0",
+        "contract": {
+          "contract_id": "document-review",
+          "version": "2.0.0",
+          "input": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+            "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+          },
+          "output": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+            "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+          },
+          "question_answer": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          }
+        },
+        "active": [
+          "https://github.com/bramato/Pact/blob/main/specification/PACT-CORE-v0.2.md"
+        ],
+        "swarm": true
+      }
+    ],
+    "error": "SWARM_REQUIRED"
+  },
+  {
+    "id": "no-core",
+    "op": "negotiate",
+    "args": [
+      {
+        "versions": [
+          "0.2.0"
+        ],
+        "contracts": [
+          {
+            "contract_id": "document-review",
+            "version": "2.0.0",
+            "input": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+              "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+            },
+            "output": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+              "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+            },
+            "question_answer": {
+              "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+              "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+            }
+          }
+        ],
+        "features": [
+          "contracts",
+          "questions",
+          "events",
+          "progress",
+          "swarm"
+        ]
+      },
+      {
+        "version": "0.2.0",
+        "contract": {
+          "contract_id": "document-review",
+          "version": "2.0.0",
+          "input": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+            "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+          },
+          "output": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+            "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+          },
+          "question_answer": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          }
+        },
+        "active": []
+      }
+    ],
+    "error": "PACT_UNSUPPORTED"
+  },
+  {
+    "id": "explicit-downgrade",
+    "op": "negotiate",
+    "args": [
+      null,
+      {
+        "version": "0.2.0",
+        "contract": {
+          "contract_id": "document-review",
+          "version": "2.0.0",
+          "input": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+            "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+          },
+          "output": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+            "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+          },
+          "question_answer": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          }
+        },
+        "active": [
+          "https://github.com/bramato/Pact/blob/main/specification/PACT-CORE-v0.2.md"
+        ],
+        "allowDowngrade": true
+      }
+    ],
+    "expected": {
+      "mode": "a2a"
+    }
+  },
+  {
+    "id": "weighted",
+    "op": "swarmProgress",
+    "args": [
+      {
+        "generation": 1,
+        "sequence": 1,
+        "scope_child_ids": [
+          "a",
+          "b"
+        ],
+        "children": [
+          {
+            "child_id": "a",
+            "weight": 1,
+            "percentage": 100,
+            "attempt": 1,
+            "state": "TASK_STATE_COMPLETED",
+            "settled": true
+          },
+          {
+            "child_id": "b",
+            "weight": 3,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_WORKING",
+            "settled": false
+          },
+          {
+            "child_id": "optional",
+            "weight": 100,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_FAILED",
+            "settled": true
+          }
+        ],
+        "stages": [
+          {
+            "id": "execution",
+            "weight": 80,
+            "percentage": null
+          },
+          {
+            "id": "aggregation",
+            "weight": 10,
+            "percentage": 0
+          },
+          {
+            "id": "validation",
+            "weight": 10,
+            "percentage": 0
+          }
+        ],
+        "previous_high_watermark": null,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "expected": {
+      "generation": 1,
+      "sequence": 1,
+      "scope_child_ids": [
+        "a",
+        "b"
+      ],
+      "children": [
+        {
+          "child_id": "a",
+          "weight": 1,
+          "percentage": 100,
+          "attempt": 1,
+          "state": "TASK_STATE_COMPLETED",
+          "settled": true
+        },
+        {
+          "child_id": "b",
+          "weight": 3,
+          "percentage": 0,
+          "attempt": 1,
+          "state": "TASK_STATE_WORKING",
+          "settled": false
+        },
+        {
+          "child_id": "optional",
+          "weight": 100,
+          "percentage": 0,
+          "attempt": 1,
+          "state": "TASK_STATE_FAILED",
+          "settled": true
+        }
+      ],
+      "stages": [
+        {
+          "id": "execution",
+          "weight": 80,
+          "percentage": 25
+        },
+        {
+          "id": "aggregation",
+          "weight": 10,
+          "percentage": 0
+        },
+        {
+          "id": "validation",
+          "weight": 10,
+          "percentage": 0
+        }
+      ],
+      "updated_at": "2026-10-09T12:00:00Z",
+      "percentage": 20,
+      "execution_percentage": 25,
+      "high_watermark": 20
+    }
+  },
+  {
+    "id": "retry-regression",
+    "op": "swarmProgress",
+    "args": [
+      {
+        "generation": 1,
+        "sequence": 1,
+        "scope_child_ids": [
+          "a",
+          "b"
+        ],
+        "children": [
+          {
+            "child_id": "a",
+            "weight": 1,
+            "percentage": 100,
+            "attempt": 1,
+            "state": "TASK_STATE_COMPLETED",
+            "settled": true
+          },
+          {
+            "child_id": "b",
+            "weight": 3,
+            "percentage": 10,
+            "attempt": 2,
+            "state": "TASK_STATE_WORKING",
+            "settled": false
+          },
+          {
+            "child_id": "optional",
+            "weight": 100,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_FAILED",
+            "settled": true
+          }
+        ],
+        "stages": [
+          {
+            "id": "execution",
+            "weight": 80,
+            "percentage": null
+          },
+          {
+            "id": "aggregation",
+            "weight": 10,
+            "percentage": 0
+          },
+          {
+            "id": "validation",
+            "weight": 10,
+            "percentage": 0
+          }
+        ],
+        "previous_high_watermark": 70,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "expected": {
+      "generation": 1,
+      "sequence": 1,
+      "scope_child_ids": [
+        "a",
+        "b"
+      ],
+      "children": [
+        {
+          "child_id": "a",
+          "weight": 1,
+          "percentage": 100,
+          "attempt": 1,
+          "state": "TASK_STATE_COMPLETED",
+          "settled": true
+        },
+        {
+          "child_id": "b",
+          "weight": 3,
+          "percentage": 10,
+          "attempt": 2,
+          "state": "TASK_STATE_WORKING",
+          "settled": false
+        },
+        {
+          "child_id": "optional",
+          "weight": 100,
+          "percentage": 0,
+          "attempt": 1,
+          "state": "TASK_STATE_FAILED",
+          "settled": true
+        }
+      ],
+      "stages": [
+        {
+          "id": "execution",
+          "weight": 80,
+          "percentage": 32.5
+        },
+        {
+          "id": "aggregation",
+          "weight": 10,
+          "percentage": 0
+        },
+        {
+          "id": "validation",
+          "weight": 10,
+          "percentage": 0
+        }
+      ],
+      "updated_at": "2026-10-09T12:00:00Z",
+      "percentage": 26,
+      "execution_percentage": 32.5,
+      "high_watermark": 70
+    }
+  },
+  {
+    "id": "unknown-child",
+    "op": "swarmProgress",
+    "args": [
+      {
+        "generation": 1,
+        "sequence": 1,
+        "scope_child_ids": [
+          "a",
+          "b"
+        ],
+        "children": [
+          {
+            "child_id": "a",
+            "weight": 1,
+            "percentage": 100,
+            "attempt": 1,
+            "state": "TASK_STATE_COMPLETED",
+            "settled": true
+          },
+          {
+            "child_id": "b",
+            "weight": 3,
+            "percentage": null,
+            "attempt": 1,
+            "state": "TASK_STATE_WORKING",
+            "settled": false
+          },
+          {
+            "child_id": "optional",
+            "weight": 100,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_FAILED",
+            "settled": true
+          }
+        ],
+        "stages": [
+          {
+            "id": "execution",
+            "weight": 80,
+            "percentage": null
+          },
+          {
+            "id": "aggregation",
+            "weight": 10,
+            "percentage": 0
+          },
+          {
+            "id": "validation",
+            "weight": 10,
+            "percentage": 0
+          }
+        ],
+        "previous_high_watermark": 70,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "expected": {
+      "generation": 1,
+      "sequence": 1,
+      "scope_child_ids": [
+        "a",
+        "b"
+      ],
+      "children": [
+        {
+          "child_id": "a",
+          "weight": 1,
+          "percentage": 100,
+          "attempt": 1,
+          "state": "TASK_STATE_COMPLETED",
+          "settled": true
+        },
+        {
+          "child_id": "b",
+          "weight": 3,
+          "percentage": null,
+          "attempt": 1,
+          "state": "TASK_STATE_WORKING",
+          "settled": false
+        },
+        {
+          "child_id": "optional",
+          "weight": 100,
+          "percentage": 0,
+          "attempt": 1,
+          "state": "TASK_STATE_FAILED",
+          "settled": true
+        }
+      ],
+      "stages": [
+        {
+          "id": "execution",
+          "weight": 80,
+          "percentage": null
+        },
+        {
+          "id": "aggregation",
+          "weight": 10,
+          "percentage": 0
+        },
+        {
+          "id": "validation",
+          "weight": 10,
+          "percentage": 0
+        }
+      ],
+      "updated_at": "2026-10-09T12:00:00Z",
+      "percentage": null,
+      "execution_percentage": null,
+      "high_watermark": 70
+    }
+  },
+  {
+    "id": "settled-failure",
+    "op": "swarmProgress",
+    "args": [
+      {
+        "generation": 1,
+        "sequence": 1,
+        "scope_child_ids": [
+          "a",
+          "b"
+        ],
+        "children": [
+          {
+            "child_id": "a",
+            "weight": 1,
+            "percentage": 100,
+            "attempt": 1,
+            "state": "TASK_STATE_COMPLETED",
+            "settled": true
+          },
+          {
+            "child_id": "b",
+            "weight": 3,
+            "percentage": null,
+            "attempt": 1,
+            "state": "TASK_STATE_FAILED",
+            "settled": true
+          },
+          {
+            "child_id": "optional",
+            "weight": 100,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_FAILED",
+            "settled": true
+          }
+        ],
+        "stages": [
+          {
+            "id": "execution",
+            "weight": 80,
+            "percentage": null
+          },
+          {
+            "id": "aggregation",
+            "weight": 10,
+            "percentage": 0
+          },
+          {
+            "id": "validation",
+            "weight": 10,
+            "percentage": 0
+          }
+        ],
+        "previous_high_watermark": null,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "expected": {
+      "generation": 1,
+      "sequence": 1,
+      "scope_child_ids": [
+        "a",
+        "b"
+      ],
+      "children": [
+        {
+          "child_id": "a",
+          "weight": 1,
+          "percentage": 100,
+          "attempt": 1,
+          "state": "TASK_STATE_COMPLETED",
+          "settled": true
+        },
+        {
+          "child_id": "b",
+          "weight": 3,
+          "percentage": null,
+          "attempt": 1,
+          "state": "TASK_STATE_FAILED",
+          "settled": true
+        },
+        {
+          "child_id": "optional",
+          "weight": 100,
+          "percentage": 0,
+          "attempt": 1,
+          "state": "TASK_STATE_FAILED",
+          "settled": true
+        }
+      ],
+      "stages": [
+        {
+          "id": "execution",
+          "weight": 80,
+          "percentage": 100
+        },
+        {
+          "id": "aggregation",
+          "weight": 10,
+          "percentage": 0
+        },
+        {
+          "id": "validation",
+          "weight": 10,
+          "percentage": 0
+        }
+      ],
+      "updated_at": "2026-10-09T12:00:00Z",
+      "percentage": 80,
+      "execution_percentage": 100,
+      "high_watermark": 80
+    }
+  },
+  {
+    "id": "round-once",
+    "op": "swarmProgress",
+    "args": [
+      {
+        "generation": 1,
+        "sequence": 1,
+        "scope_child_ids": [
+          "a",
+          "b"
+        ],
+        "children": [
+          {
+            "child_id": "a",
+            "weight": 1,
+            "percentage": 100,
+            "attempt": 1,
+            "state": "TASK_STATE_WORKING",
+            "settled": false
+          },
+          {
+            "child_id": "b",
+            "weight": 2,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_WORKING",
+            "settled": false
+          }
+        ],
+        "stages": [
+          {
+            "id": "execution",
+            "weight": 1,
+            "percentage": null
+          },
+          {
+            "id": "validation",
+            "weight": 2,
+            "percentage": 0
+          }
+        ],
+        "previous_high_watermark": null,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "expected": {
+      "generation": 1,
+      "sequence": 1,
+      "scope_child_ids": [
+        "a",
+        "b"
+      ],
+      "children": [
+        {
+          "child_id": "a",
+          "weight": 1,
+          "percentage": 100,
+          "attempt": 1,
+          "state": "TASK_STATE_WORKING",
+          "settled": false
+        },
+        {
+          "child_id": "b",
+          "weight": 2,
+          "percentage": 0,
+          "attempt": 1,
+          "state": "TASK_STATE_WORKING",
+          "settled": false
+        }
+      ],
+      "stages": [
+        {
+          "id": "execution",
+          "weight": 1,
+          "percentage": 33.33
+        },
+        {
+          "id": "validation",
+          "weight": 2,
+          "percentage": 0
+        }
+      ],
+      "updated_at": "2026-10-09T12:00:00Z",
+      "percentage": 11.11,
+      "execution_percentage": 33.33,
+      "high_watermark": 11.11
+    }
+  },
+  {
+    "id": "dag-valid",
+    "op": "graph",
+    "args": [
+      {
+        "children": [
+          {
+            "child_id": "a",
+            "depends_on": [],
+            "required": true,
+            "weight": 1
+          },
+          {
+            "child_id": "b",
+            "depends_on": [
+              "a"
+            ],
+            "required": true,
+            "weight": 1
+          },
+          {
+            "child_id": "c",
+            "depends_on": [
+              "a",
+              "b"
+            ],
+            "required": false,
+            "weight": 1
+          }
+        ],
+        "aggregation_policy": {
+          "type": "all_required"
+        }
+      }
+    ],
+    "expected": [
+      "a",
+      "b",
+      "c"
+    ]
+  },
+  {
+    "id": "dag-cycle",
+    "op": "graph",
+    "args": [
+      {
+        "children": [
+          {
+            "child_id": "a",
+            "depends_on": [
+              "b"
+            ],
+            "required": true,
+            "weight": 1
+          },
+          {
+            "child_id": "b",
+            "depends_on": [
+              "a"
+            ],
+            "required": true,
+            "weight": 1
+          },
+          {
+            "child_id": "c",
+            "depends_on": [
+              "a",
+              "b"
+            ],
+            "required": false,
+            "weight": 1
+          }
+        ],
+        "aggregation_policy": {
+          "type": "all_required"
+        }
+      }
+    ],
+    "error": "DAG_CYCLE"
+  },
+  {
+    "id": "dag-unknown",
+    "op": "graph",
+    "args": [
+      {
+        "children": [
+          {
+            "child_id": "a",
+            "depends_on": [
+              "missing"
+            ],
+            "required": true,
+            "weight": 1
+          },
+          {
+            "child_id": "b",
+            "depends_on": [
+              "a"
+            ],
+            "required": true,
+            "weight": 1
+          },
+          {
+            "child_id": "c",
+            "depends_on": [
+              "a",
+              "b"
+            ],
+            "required": false,
+            "weight": 1
+          }
+        ],
+        "aggregation_policy": {
+          "type": "all_required"
+        }
+      }
+    ],
+    "error": "DAG_DEPENDENCY"
+  },
+  {
+    "id": "dag-quorum",
+    "op": "graph",
+    "args": [
+      {
+        "children": [
+          {
+            "child_id": "a",
+            "depends_on": [],
+            "required": true,
+            "weight": 1
+          },
+          {
+            "child_id": "b",
+            "depends_on": [
+              "a"
+            ],
+            "required": true,
+            "weight": 1
+          },
+          {
+            "child_id": "c",
+            "depends_on": [
+              "a",
+              "b"
+            ],
+            "required": false,
+            "weight": 1
+          }
+        ],
+        "aggregation_policy": {
+          "type": "quorum",
+          "eligible_child_ids": [
+            "a"
+          ],
+          "min_success": 2
+        }
+      }
+    ],
+    "error": "QUORUM_ELIGIBILITY"
+  },
+  {
+    "id": "duplicate-json-members",
+    "op": "parse",
+    "args": [
+      "{\"nested\":{\"x\":1,\"x\":2}}"
+    ],
+    "error": "JSON_DUPLICATE"
+  },
+  {
+    "id": "escaped-duplicate-members",
+    "op": "parse",
+    "args": [
+      "{\"x\":1,\"\\u0078\":2}"
+    ],
+    "error": "JSON_DUPLICATE"
+  },
+  {
+    "id": "json-array-objects",
+    "op": "parse",
+    "args": [
+      "[{\"x\":[1,{\"y\":\"a,b{}\"}]},{\"x\":2}]"
+    ],
+    "expected": [
+      {
+        "x": [
+          1,
+          {
+            "y": "a,b{}"
+          }
+        ]
+      },
+      {
+        "x": 2
+      }
+    ]
+  },
+  {
+    "id": "json-safe-numbers",
+    "op": "parse",
+    "args": [
+      "{\"x\":9007199254740992}"
+    ],
+    "error": "JSON_NUMBER"
+  },
+  {
+    "id": "json-invalid-unicode",
+    "op": "parse",
+    "args": [
+      "{\"x\":\"\\ud800\"}"
+    ],
+    "error": "JSON_SYNTAX"
+  },
+  {
+    "id": "catalog-task.status",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "task.status",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "state": "TASK_STATE_WORKING"
+        },
+        "sha256": "1c06131f45f44019775b15b1331dcbf2152a7d11c731f4233ff05ccf54d6acd1"
+      },
+      true
+    ],
+    "expected": {
+      "event_id": "golden-event",
+      "task_id": "task1",
+      "producer_id": "worker",
+      "sequence": 1,
+      "type": "task.status",
+      "occurred_at": "2026-10-09T12:00:00Z",
+      "correlation_id": "ctx",
+      "causation_id": null,
+      "payload": {
+        "state": "TASK_STATE_WORKING"
+      },
+      "sha256": "1c06131f45f44019775b15b1331dcbf2152a7d11c731f4233ff05ccf54d6acd1"
+    }
+  },
+  {
+    "id": "catalog-task.progress",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "task.progress",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "sequence": 1,
+          "stage": "execution",
+          "completed_units": 1,
+          "total_units": 32,
+          "percentage": 3.13,
+          "updated_at": "2026-10-09T12:00:00Z"
+        },
+        "sha256": "f200a73278efa00329325dcdaf8482074fd4b5340ec38da808bd342e54031292"
+      },
+      true
+    ],
+    "expected": {
+      "event_id": "golden-event",
+      "task_id": "task1",
+      "producer_id": "worker",
+      "sequence": 1,
+      "type": "task.progress",
+      "occurred_at": "2026-10-09T12:00:00Z",
+      "correlation_id": "ctx",
+      "causation_id": null,
+      "payload": {
+        "sequence": 1,
+        "stage": "execution",
+        "completed_units": 1,
+        "total_units": 32,
+        "percentage": 3.13,
+        "updated_at": "2026-10-09T12:00:00Z"
+      },
+      "sha256": "f200a73278efa00329325dcdaf8482074fd4b5340ec38da808bd342e54031292"
+    }
+  },
+  {
+    "id": "catalog-question.opened",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "question.opened",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        },
+        "sha256": "7fd62830263fc8df0a816bb13a1c200d3f357a5ed641defb3b6acd45d46a5753"
+      },
+      true
+    ],
+    "expected": {
+      "event_id": "golden-event",
+      "task_id": "task1",
+      "producer_id": "worker",
+      "sequence": 1,
+      "type": "question.opened",
+      "occurred_at": "2026-10-09T12:00:00Z",
+      "correlation_id": "ctx",
+      "causation_id": null,
+      "payload": {
+        "question_id": "q1",
+        "task_id": "task1",
+        "prompt": "Approve?",
+        "answer_schema": {
+          "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+          "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+        },
+        "required": true,
+        "expires_at": "2026-10-09T12:00:00.500Z",
+        "status": "open"
+      },
+      "sha256": "7fd62830263fc8df0a816bb13a1c200d3f357a5ed641defb3b6acd45d46a5753"
+    }
+  },
+  {
+    "id": "catalog-question.closed",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "question.closed",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "question_id": "q1",
+          "task_id": "task1",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "answered"
+        },
+        "sha256": "c4868452bb59e945005b454c72221bd1c857c2d44ff781b50a36e9e59ea6230c"
+      },
+      true
+    ],
+    "expected": {
+      "event_id": "golden-event",
+      "task_id": "task1",
+      "producer_id": "worker",
+      "sequence": 1,
+      "type": "question.closed",
+      "occurred_at": "2026-10-09T12:00:00Z",
+      "correlation_id": "ctx",
+      "causation_id": null,
+      "payload": {
+        "question_id": "q1",
+        "task_id": "task1",
+        "prompt": "Approve?",
+        "answer_schema": {
+          "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+          "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+        },
+        "required": true,
+        "expires_at": "2026-10-09T12:00:00.500Z",
+        "status": "answered"
+      },
+      "sha256": "c4868452bb59e945005b454c72221bd1c857c2d44ff781b50a36e9e59ea6230c"
+    }
+  },
+  {
+    "id": "catalog-artifact.validated",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "artifact.validated",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "artifact_id": "a",
+          "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "verdict": "valid"
+        },
+        "sha256": "a1d2e40cb039f046eaa48d504c8468fd3812878ca46281731057d01e815620c6"
+      },
+      true
+    ],
+    "expected": {
+      "event_id": "golden-event",
+      "task_id": "task1",
+      "producer_id": "worker",
+      "sequence": 1,
+      "type": "artifact.validated",
+      "occurred_at": "2026-10-09T12:00:00Z",
+      "correlation_id": "ctx",
+      "causation_id": null,
+      "payload": {
+        "artifact_id": "a",
+        "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "verdict": "valid"
+      },
+      "sha256": "a1d2e40cb039f046eaa48d504c8468fd3812878ca46281731057d01e815620c6"
+    }
+  },
+  {
+    "id": "catalog-child.status",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "child.status",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "child_id": "child",
+          "task_id": "child-task",
+          "attempt": 1,
+          "state": "TASK_STATE_WORKING"
+        },
+        "sha256": "e61c57d9c27dc57166208afa193cd3c1f6deec3d5b974d093fead61589367540"
+      },
+      true
+    ],
+    "expected": {
+      "event_id": "golden-event",
+      "task_id": "task1",
+      "producer_id": "worker",
+      "sequence": 1,
+      "type": "child.status",
+      "occurred_at": "2026-10-09T12:00:00Z",
+      "correlation_id": "ctx",
+      "causation_id": null,
+      "payload": {
+        "child_id": "child",
+        "task_id": "child-task",
+        "attempt": 1,
+        "state": "TASK_STATE_WORKING"
+      },
+      "sha256": "e61c57d9c27dc57166208afa193cd3c1f6deec3d5b974d093fead61589367540"
+    }
+  },
+  {
+    "id": "catalog-swarm.progress",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "swarm.progress",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "generation": 1,
+          "sequence": 1,
+          "scope_child_ids": [
+            "a",
+            "b"
+          ],
+          "children": [
+            {
+              "child_id": "a",
+              "weight": 1,
+              "percentage": 100,
+              "attempt": 1,
+              "state": "TASK_STATE_COMPLETED",
+              "settled": true
+            },
+            {
+              "child_id": "b",
+              "weight": 3,
+              "percentage": 0,
+              "attempt": 1,
+              "state": "TASK_STATE_WORKING",
+              "settled": false
+            },
+            {
+              "child_id": "optional",
+              "weight": 100,
+              "percentage": 0,
+              "attempt": 1,
+              "state": "TASK_STATE_FAILED",
+              "settled": true
+            }
+          ],
+          "stages": [
+            {
+              "id": "execution",
+              "weight": 80,
+              "percentage": 25
+            },
+            {
+              "id": "aggregation",
+              "weight": 10,
+              "percentage": 0
+            },
+            {
+              "id": "validation",
+              "weight": 10,
+              "percentage": 0
+            }
+          ],
+          "updated_at": "2026-10-09T12:00:00Z",
+          "percentage": 20,
+          "execution_percentage": 25,
+          "high_watermark": 20
+        },
+        "sha256": "545c3e560a168fb777de380a555cd2209547782f2b5f6c02c4aa27347edf809b"
+      },
+      true
+    ],
+    "expected": {
+      "event_id": "golden-event",
+      "task_id": "task1",
+      "producer_id": "worker",
+      "sequence": 1,
+      "type": "swarm.progress",
+      "occurred_at": "2026-10-09T12:00:00Z",
+      "correlation_id": "ctx",
+      "causation_id": null,
+      "payload": {
+        "generation": 1,
+        "sequence": 1,
+        "scope_child_ids": [
+          "a",
+          "b"
+        ],
+        "children": [
+          {
+            "child_id": "a",
+            "weight": 1,
+            "percentage": 100,
+            "attempt": 1,
+            "state": "TASK_STATE_COMPLETED",
+            "settled": true
+          },
+          {
+            "child_id": "b",
+            "weight": 3,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_WORKING",
+            "settled": false
+          },
+          {
+            "child_id": "optional",
+            "weight": 100,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_FAILED",
+            "settled": true
+          }
+        ],
+        "stages": [
+          {
+            "id": "execution",
+            "weight": 80,
+            "percentage": 25
+          },
+          {
+            "id": "aggregation",
+            "weight": 10,
+            "percentage": 0
+          },
+          {
+            "id": "validation",
+            "weight": 10,
+            "percentage": 0
+          }
+        ],
+        "updated_at": "2026-10-09T12:00:00Z",
+        "percentage": 20,
+        "execution_percentage": 25,
+        "high_watermark": 20
+      },
+      "sha256": "545c3e560a168fb777de380a555cd2209547782f2b5f6c02c4aa27347edf809b"
+    }
+  },
+  {
+    "id": "catalog-cancellation.requested",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "cancellation.requested",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "child_ids": [
+            "child"
+          ]
+        },
+        "sha256": "c05af517fc37178e5a0224e45c25050d0c8321ae0fcc74a24cf400e032efb1ab"
+      },
+      true
+    ],
+    "expected": {
+      "event_id": "golden-event",
+      "task_id": "task1",
+      "producer_id": "worker",
+      "sequence": 1,
+      "type": "cancellation.requested",
+      "occurred_at": "2026-10-09T12:00:00Z",
+      "correlation_id": "ctx",
+      "causation_id": null,
+      "payload": {
+        "child_ids": [
+          "child"
+        ]
+      },
+      "sha256": "c05af517fc37178e5a0224e45c25050d0c8321ae0fcc74a24cf400e032efb1ab"
+    }
+  },
+  {
+    "id": "catalog-cancellation.observed",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "cancellation.observed",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "child_id": "child",
+          "task_id": "child-task",
+          "state": "TASK_STATE_CANCELED"
+        },
+        "sha256": "d83b87c8e10dad054e48948d8905d1332098b752e2a3423dca3c779bf4096653"
+      },
+      true
+    ],
+    "expected": {
+      "event_id": "golden-event",
+      "task_id": "task1",
+      "producer_id": "worker",
+      "sequence": 1,
+      "type": "cancellation.observed",
+      "occurred_at": "2026-10-09T12:00:00Z",
+      "correlation_id": "ctx",
+      "causation_id": null,
+      "payload": {
+        "child_id": "child",
+        "task_id": "child-task",
+        "state": "TASK_STATE_CANCELED"
+      },
+      "sha256": "d83b87c8e10dad054e48948d8905d1332098b752e2a3423dca3c779bf4096653"
+    }
+  },
+  {
+    "id": "digest-identity",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "other",
+        "sequence": 1,
+        "type": "task.status",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "state": "TASK_STATE_WORKING"
+        },
+        "sha256": "1c06131f45f44019775b15b1331dcbf2152a7d11c731f4233ff05ccf54d6acd1"
+      },
+      true
+    ],
+    "error": "EVENT_DIGEST"
+  },
+  {
+    "id": "closed-catalog",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "unknown",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "state": "TASK_STATE_WORKING"
+        },
+        "sha256": "e5a6ce096cff30bd479e0c3db4f42a474e7e0cfb416cb5876399d79970963958"
+      },
+      true
+    ],
+    "error": "SCHEMA_INVALID"
+  },
+  {
+    "id": "typed-payload",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "task.status",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "state": "TASK_STATE_WORKING",
+          "extra": 1
+        },
+        "sha256": "3f63f1540b7e8ad981abaf00d0c18c7d2f88a0f406e18a972fbde6ffd58a18f3"
+      },
+      true
+    ],
+    "error": "SCHEMA_INVALID"
+  },
+  {
+    "id": "progress-sequence",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "task.progress",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "sequence": 2,
+          "stage": "execution",
+          "completed_units": 1,
+          "total_units": 32,
+          "percentage": 3.13,
+          "updated_at": "2026-10-09T12:00:00Z"
+        },
+        "sha256": "f414b13de18ef91d4266c40bef1b9c0a68498c89ec98ec33c2f1f962f7991c6e"
+      },
+      true
+    ],
+    "error": "EVENT_SEQUENCE"
+  },
+  {
+    "id": "question-task",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "question.opened",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "question_id": "q1",
+          "task_id": "other",
+          "prompt": "Approve?",
+          "answer_schema": {
+            "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+            "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+          },
+          "required": true,
+          "expires_at": "2026-10-09T12:00:00.500Z",
+          "status": "open"
+        },
+        "sha256": "75e733a88747a1a6dfac2534115ad295b19eabd6ada8c0db790b3b91f40708a5"
+      },
+      true
+    ],
+    "error": "QUESTION_CORRELATION"
+  },
+  {
+    "id": "child-needs-swarm",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "child.status",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "child_id": "c",
+          "task_id": "c-task",
+          "attempt": 1,
+          "state": "TASK_STATE_WORKING"
+        },
+        "sha256": "85f7d7d66a15121bd35a73b51e022e7a8c703d4c80a516d8ad1fa1cae0eb8e62"
+      },
+      false
+    ],
+    "error": "SWARM_REQUIRED"
+  },
+  {
+    "id": "swarm-forged-percentage",
+    "op": "event",
+    "args": [
+      {
+        "event_id": "golden-event",
+        "task_id": "task1",
+        "producer_id": "worker",
+        "sequence": 1,
+        "type": "swarm.progress",
+        "occurred_at": "2026-10-09T12:00:00Z",
+        "correlation_id": "ctx",
+        "causation_id": null,
+        "payload": {
+          "generation": 1,
+          "sequence": 1,
+          "scope_child_ids": [
+            "a",
+            "b"
+          ],
+          "children": [
+            {
+              "child_id": "a",
+              "weight": 1,
+              "percentage": 100,
+              "attempt": 1,
+              "state": "TASK_STATE_COMPLETED",
+              "settled": true
+            },
+            {
+              "child_id": "b",
+              "weight": 3,
+              "percentage": 0,
+              "attempt": 1,
+              "state": "TASK_STATE_WORKING",
+              "settled": false
+            },
+            {
+              "child_id": "optional",
+              "weight": 100,
+              "percentage": 0,
+              "attempt": 1,
+              "state": "TASK_STATE_FAILED",
+              "settled": true
+            }
+          ],
+          "stages": [
+            {
+              "id": "execution",
+              "weight": 80,
+              "percentage": 25
+            },
+            {
+              "id": "aggregation",
+              "weight": 10,
+              "percentage": 0
+            },
+            {
+              "id": "validation",
+              "weight": 10,
+              "percentage": 0
+            }
+          ],
+          "updated_at": "2026-10-09T12:00:00Z",
+          "percentage": 100,
+          "execution_percentage": 25,
+          "high_watermark": 20
+        },
+        "sha256": "fe4e0020ac6a0a8ca54678ae50a6523abe7b1c9975a34d50f57efffdc146f0b4"
+      },
+      true
+    ],
+    "error": "SWARM_PERCENTAGE"
+  },
+  {
+    "id": "snapshot-correct",
+    "op": "swarmSnapshot",
+    "args": [
+      {
+        "generation": 1,
+        "sequence": 1,
+        "scope_child_ids": [
+          "a",
+          "b"
+        ],
+        "children": [
+          {
+            "child_id": "a",
+            "weight": 1,
+            "percentage": 100,
+            "attempt": 1,
+            "state": "TASK_STATE_COMPLETED",
+            "settled": true
+          },
+          {
+            "child_id": "b",
+            "weight": 3,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_WORKING",
+            "settled": false
+          },
+          {
+            "child_id": "optional",
+            "weight": 100,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_FAILED",
+            "settled": true
+          }
+        ],
+        "stages": [
+          {
+            "id": "execution",
+            "weight": 80,
+            "percentage": 25
+          },
+          {
+            "id": "aggregation",
+            "weight": 10,
+            "percentage": 0
+          },
+          {
+            "id": "validation",
+            "weight": 10,
+            "percentage": 0
+          }
+        ],
+        "updated_at": "2026-10-09T12:00:00Z",
+        "percentage": 20,
+        "execution_percentage": 25,
+        "high_watermark": 20
+      }
+    ],
+    "expected": {
+      "generation": 1,
+      "sequence": 1,
+      "scope_child_ids": [
+        "a",
+        "b"
+      ],
+      "children": [
+        {
+          "child_id": "a",
+          "weight": 1,
+          "percentage": 100,
+          "attempt": 1,
+          "state": "TASK_STATE_COMPLETED",
+          "settled": true
+        },
+        {
+          "child_id": "b",
+          "weight": 3,
+          "percentage": 0,
+          "attempt": 1,
+          "state": "TASK_STATE_WORKING",
+          "settled": false
+        },
+        {
+          "child_id": "optional",
+          "weight": 100,
+          "percentage": 0,
+          "attempt": 1,
+          "state": "TASK_STATE_FAILED",
+          "settled": true
+        }
+      ],
+      "stages": [
+        {
+          "id": "execution",
+          "weight": 80,
+          "percentage": 25
+        },
+        {
+          "id": "aggregation",
+          "weight": 10,
+          "percentage": 0
+        },
+        {
+          "id": "validation",
+          "weight": 10,
+          "percentage": 0
+        }
+      ],
+      "updated_at": "2026-10-09T12:00:00Z",
+      "percentage": 20,
+      "execution_percentage": 25,
+      "high_watermark": 20
+    }
+  },
+  {
+    "id": "snapshot-forged",
+    "op": "swarmSnapshot",
+    "args": [
+      {
+        "generation": 1,
+        "sequence": 1,
+        "scope_child_ids": [
+          "a",
+          "b"
+        ],
+        "children": [
+          {
+            "child_id": "a",
+            "weight": 1,
+            "percentage": 100,
+            "attempt": 1,
+            "state": "TASK_STATE_COMPLETED",
+            "settled": true
+          },
+          {
+            "child_id": "b",
+            "weight": 3,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_WORKING",
+            "settled": false
+          },
+          {
+            "child_id": "optional",
+            "weight": 100,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_FAILED",
+            "settled": true
+          }
+        ],
+        "stages": [
+          {
+            "id": "execution",
+            "weight": 80,
+            "percentage": 25
+          },
+          {
+            "id": "aggregation",
+            "weight": 10,
+            "percentage": 0
+          },
+          {
+            "id": "validation",
+            "weight": 10,
+            "percentage": 0
+          }
+        ],
+        "updated_at": "2026-10-09T12:00:00Z",
+        "percentage": 20,
+        "execution_percentage": 100,
+        "high_watermark": 20
+      }
+    ],
+    "error": "SWARM_PERCENTAGE"
+  },
+  {
+    "id": "external-ref-is-rejected-offline",
+    "op": "contractData",
+    "args": [
+      {
+        "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/external.schema.json",
+        "sha256": "2317e593e59d027964b0f05b0098da4807409709cfc44f899853fde98d8710fb"
+      },
+      {}
+    ],
+    "error": "SCHEMA_REF"
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/contract.schema.json",
+  "title": "PACT contract v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "version",
+    "input",
+    "output"
+  ],
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "input": {
+      "$ref": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/schema-reference.schema.json"
+    },
+    "output": {
+      "$ref": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/schema-reference.schema.json"
+    },
+    "question_answer": {
+      "$ref": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/schema-reference.schema.json"
+    }
+  }
+}

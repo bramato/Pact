@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "text",
+    "clarify",
+    "swarm"
+  ],
+  "properties": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000
+    },
+    "clarify": {
+      "type": "boolean"
+    },
+    "swarm": {
+      "type": "boolean"
+    },
+    "optional_failure": {
+      "type": "boolean"
+    },
+    "retry_review": {
+      "type": "boolean"
+    },
+    "deadline": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "defer_review": {
+      "type": "boolean"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json"
+}

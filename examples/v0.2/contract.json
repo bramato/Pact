@@ -1,0 +1,16 @@
+{
+  "contract_id": "document-review",
+  "version": "2.0.0",
+  "input": {
+    "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/input.schema.json",
+    "sha256": "8047efd0aa2201604645f07cc03236bfaa8d11b864eddc2262db5fde175a6134"
+  },
+  "output": {
+    "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/output.schema.json",
+    "sha256": "e00c0fe9caa999b2c7b12214ee87301f58baa4aa6703ac14962c190a04c51720"
+  },
+  "question_answer": {
+    "schema_uri": "https://github.com/bramato/Pact/blob/main/examples/v0.2/contracts/answer.schema.json",
+    "sha256": "ca2c4b8ac9ff6061cf46cd5585d1a2d83dd0e4a8a531e09138610e7df9bf8a1b"
+  }
+}
