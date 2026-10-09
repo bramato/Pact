@@ -177,7 +177,7 @@ final class Pact
 
     private static function basisPoints(int|float $value): string
     {
-        self::ensure($value >= 0 && $value <= 100 && abs($value * 100 - round($value * 100)) < 1e-8, 'PROGRESS_PRECISION', 'Percentage precision');
+        self::ensure($value >= 0 && $value <= 100 && (float) round($value, 2) === (float) $value, 'PROGRESS_PRECISION', 'Percentage precision');
 
         return (string) (int) round($value * 100);
     }
@@ -386,6 +386,16 @@ final class Pact
     public function swarmProgress(stdClass $input): stdClass
     {
         $this->shape('swarm-progress-input', $input);
+        foreach ($input->children as $child) {
+            if ($child->percentage !== null) {
+                self::basisPoints($child->percentage);
+            }
+        }
+        foreach ($input->stages as $stage) {
+            if ($stage->percentage !== null) {
+                self::basisPoints($stage->percentage);
+            }
+        }
         if ($input->previous_high_watermark !== null) {
             self::basisPoints($input->previous_high_watermark);
         }

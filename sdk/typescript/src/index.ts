@@ -298,7 +298,7 @@ function basisPoints(value: number): bigint {
     Number.isFinite(value) &&
       value >= 0 &&
       value <= 100 &&
-      Math.abs(value * 100 - Math.round(value * 100)) < 1e-8,
+      Number(value.toFixed(2)) === value,
     "PROGRESS_PRECISION",
     "Percentage must have at most two decimal places",
   );
@@ -681,6 +681,10 @@ export class Pact {
   }
   swarmProgress(input: SwarmProgressInput): SwarmProgress {
     this.shape("swarm-progress-input", input);
+    for (const child of input.children)
+      if (child.percentage !== null) basisPoints(child.percentage);
+    for (const stage of input.stages)
+      if (stage.percentage !== null) basisPoints(stage.percentage);
     if (input.previous_high_watermark !== null)
       basisPoints(input.previous_high_watermark);
     const children = new Map(

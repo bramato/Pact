@@ -3491,5 +3491,125 @@
       {}
     ],
     "error": "SCHEMA_REF"
+  },
+  {
+    "id": "tiny-fraction-is-not-two-decimals",
+    "op": "swarmProgress",
+    "args": [
+      {
+        "generation": 1,
+        "sequence": 1,
+        "scope_child_ids": [
+          "a",
+          "b"
+        ],
+        "children": [
+          {
+            "child_id": "a",
+            "weight": 1,
+            "percentage": 100,
+            "attempt": 1,
+            "state": "TASK_STATE_COMPLETED",
+            "settled": true
+          },
+          {
+            "child_id": "b",
+            "weight": 3,
+            "percentage": 1e-11,
+            "attempt": 1,
+            "state": "TASK_STATE_WORKING",
+            "settled": false
+          },
+          {
+            "child_id": "optional",
+            "weight": 100,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_FAILED",
+            "settled": true
+          }
+        ],
+        "stages": [
+          {
+            "id": "execution",
+            "weight": 80,
+            "percentage": null
+          },
+          {
+            "id": "aggregation",
+            "weight": 10,
+            "percentage": 0
+          },
+          {
+            "id": "validation",
+            "weight": 10,
+            "percentage": 0
+          }
+        ],
+        "previous_high_watermark": null,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "error": "PROGRESS_PRECISION"
+  },
+  {
+    "id": "optional-child-still-needs-valid-precision",
+    "op": "swarmProgress",
+    "args": [
+      {
+        "generation": 1,
+        "sequence": 1,
+        "scope_child_ids": [
+          "a",
+          "b"
+        ],
+        "children": [
+          {
+            "child_id": "a",
+            "weight": 1,
+            "percentage": 100,
+            "attempt": 1,
+            "state": "TASK_STATE_COMPLETED",
+            "settled": true
+          },
+          {
+            "child_id": "b",
+            "weight": 3,
+            "percentage": 0,
+            "attempt": 1,
+            "state": "TASK_STATE_WORKING",
+            "settled": false
+          },
+          {
+            "child_id": "optional",
+            "weight": 100,
+            "percentage": 1.234,
+            "attempt": 1,
+            "state": "TASK_STATE_FAILED",
+            "settled": true
+          }
+        ],
+        "stages": [
+          {
+            "id": "execution",
+            "weight": 80,
+            "percentage": null
+          },
+          {
+            "id": "aggregation",
+            "weight": 10,
+            "percentage": 0
+          },
+          {
+            "id": "validation",
+            "weight": 10,
+            "percentage": 0
+          }
+        ],
+        "previous_high_watermark": null,
+        "updated_at": "2026-10-09T12:00:00Z"
+      }
+    ],
+    "error": "PROGRESS_PRECISION"
   }
 ]
