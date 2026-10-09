@@ -11,7 +11,7 @@ This work implements the six improvements requested on 2026-10-09. The objective
 | 5 | Weighted parent progress across stages, optional failure and retries | Shared numerical vectors plus runtime parent progress in the swarm demo | Complete locally |
 | 6 | Small usable SDKs, copyable examples, navigable documentation, permanent identity and optional swarm negotiation | Independently usable npm/Composer packages, built/browsed docs, URI tied to controlled repository, core-only and swarm negotiation tests | Complete locally |
 
-The original v0.1 proposal and supplied progress schema remain source records. Incompatible executable changes use a new v0.2 draft instead of mutating those source records. Reference service development uses Herd's existing `pact.test` site and scheme. Publication, Git pushes, tags and PRs remain under the user's control.
+The original v0.1 proposal and supplied progress schema remain source records. Incompatible executable changes use a new v0.2 draft instead of mutating those source records. The reference service uses a configurable URL and a PHP-compatible web server with `public/` as its document root. Publication, Git pushes, tags and PRs are maintainer release operations.
 
 ## Delivered architecture
 
@@ -29,7 +29,7 @@ Verified on 2026-10-09 using Node.js 22.22.3, PHP 8.4.25 and Illuminate 12.69.3.
 | Command / observation | Actual evidence |
 | --- | --- |
 | `npm run check:all` | 178 passing Node tests, including 147 shared expected-value/error vectors evaluated independently by TypeScript and PHP; 88/88 archived checks; source integrity, links, resources and docs build; 11 passing HTTP tests |
-| `node tools/pact.mjs test http://pact.test/a2a --config storage/demo-config.json --reference-suite` | 14 passing live checks through Laravel routes: discovery, activation, contract/output, replay/conflict, terminal behavior, native/profile versions, authentication, tenants, concurrent atomic answers, expiry, cancellation and event ordering |
+| Live CLI run against the configured reference endpoint with `--reference-suite` | 14 passing live checks through Laravel routes: discovery, activation, contract/output, replay/conflict, terminal behavior, native/profile versions, authentication, tenants, concurrent atomic answers, expiry, cancellation and event ordering |
 | `npm run demo:verify` | Core clarification/result exchange and a real three-agent HTTP dependency run complete with independently validated five-word output; optional audit failure and distinct failed/successful review tasks retained |
 | HTTP kill/restart test | OS SIGKILL after child commit and before local acknowledgment; same SQLite database after lease expiry; identical raw command retried; original child task reconciled; committed child effect stays exactly one |
 | HTTP dropped-response test | Remote commit succeeds, connection closes before response; two delivery attempts reuse command bytes and produce one committed child effect |
@@ -37,7 +37,7 @@ Verified on 2026-10-09 using Node.js 22.22.3, PHP 8.4.25 and Illuminate 12.69.3.
 | HTTP lease/cancellation/optional-exhaustion races | A replaced worker leaves the successor's receipt and parent intact; cancellation after lost acknowledgment reconciles the original committed child; five failed optional deliveries retain an unconfirmed error while required output completes |
 | Weighted progress vectors and runtime snapshots | Required scope excludes optional audit; fixed 80:10:10 stages; retry can lower current progress while preserving high watermark; null propagation, settled failure and one final half-up rounding agree across languages |
 | `npm run package:smoke` | npm, PHP Composer and Laravel Composer archives install/import in separate temporary applications; package resources and licenses are present; no checkout-relative runtime dependency |
-| `npm run docs:build` and browser inspection | 28 generated pages and 3 resource indexes; overview, search filter and Laravel navigation inspected on Herd; transparent README art retained and validated |
+| `npm run docs:build` and browser inspection | 28 generated pages and 3 resource indexes; overview, search filter and Laravel navigation inspected through the reference web server; transparent README art retained and validated |
 
 The original proposal and supplied progress schema pass their recorded exact-byte digests. Local tokens, databases, transcripts, generated site, compiled code and dependency directories are ignored and excluded from commits. Library dependencies are installed normally; schema validation itself never fetches arbitrary contract URLs.
 

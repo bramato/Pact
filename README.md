@@ -29,12 +29,17 @@ composer install --working-dir=sdk/php --no-interaction
 composer install --working-dir=reference --no-interaction
 php reference/bin/setup.php
 npm run check
-node examples/v0.2/demo.mjs
 ```
 
-The demo runs on Herd at **http://pact.test**. It receives two typed questions, answers them, and independently validates the PHP/Laravel artifact. For the three-contributor demo, run `php reference/bin/worker.php --watch` in another terminal, then `npm run demo:swarm`.
+Start the reference service in one terminal:
 
-[Quickstart](docs/quickstart.md) explains private local configuration and worker operation. `npm run docs:build` builds navigable documentation at **http://pact.test/docs/**. No model API key is needed.
+```sh
+php -S 127.0.0.1:8080 -t public reference/router.php
+```
+
+In another terminal, run `npm run demo`. The caller receives two typed questions, answers them, and independently validates the PHP/Laravel artifact. For the three-contributor demo, run `php reference/bin/worker.php --watch` in another terminal, then `npm run demo:swarm`.
+
+[Quickstart](docs/quickstart.md) explains private configuration, custom URLs and worker operation. The default endpoint is **http://127.0.0.1:8080**; any PHP-compatible server can use `public/` as its document root. `npm run docs:build` builds navigable documentation at `/docs/` on that server. No model API key is needed.
 
 Start with [Core v0.2](specification/PACT-CORE-v0.2.md), [optional Swarm](specification/PACT-SWARM-v0.2.md), and the [SDK guides](sdk/typescript/README.md). The supplied [v0.1 proposal](specification/PACT-SPEC-v0.1.md) remains an archived source record.
 
@@ -87,7 +92,7 @@ Progress at 100% does not complete a task. HTTP success does not complete a task
 The shared v0.2 vectors compare independent implementations against expected results. The legacy corpus retains its original 88 checks. Live tests exercise negotiation, concurrent answers, tenant isolation, cancellation, conflicting/duplicate/stale events, dropped responses, bounded retries and a real coordinator process kill/restart.
 
 ```sh
-node tools/pact.mjs test http://pact.test/a2a \
+node tools/pact.mjs test http://127.0.0.1:8080/a2a \
   --config storage/demo-config.json --reference-suite
 npm run test:integration
 ```

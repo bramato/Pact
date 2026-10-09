@@ -5,7 +5,7 @@ use PactReference\Store;
 
 require __DIR__.'/../bootstrap.php';
 $directory = $argv[1] ?? __DIR__.'/../../storage';
-$url = $argv[2] ?? 'http://pact.test';
+$url = $argv[2] ?? 'http://127.0.0.1:8080';
 if (! is_dir($directory)) {
     mkdir($directory, 0700, true);
 }

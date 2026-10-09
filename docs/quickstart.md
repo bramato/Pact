@@ -16,9 +16,25 @@ npm run check
 npm run docs:build
 ```
 
-The local Herd demo runs at **http://pact.test** over HTTP. Herd serves `public/`; storage and dependencies remain outside the document root. A deployed authenticated peer uses HTTPS and an authentication adapter supplied by its application.
-
 Setup creates private random tokens and a SQLite database under ignored `storage/`. It preserves existing configuration. Tokens do not appear in Agent Cards, transcripts, fixtures or CLI output. `PACT_CONFIG` can select a separate local configuration file. Never commit that file.
+
+## Start the reference service
+
+From the repository root, start PHP's development server in a separate terminal:
+
+```sh
+php -S 127.0.0.1:8080 -t public reference/router.php
+```
+
+The default setup targets **http://127.0.0.1:8080**. Keep this terminal running while using the demos and live CLI. Any PHP-compatible web server can serve the reference through `public/index.php`, with `public/` as its document root. Storage and dependencies remain outside that directory. A deployed authenticated peer uses HTTPS and an authentication adapter supplied by its application.
+
+To use another host or port, provide the storage directory and base URL when creating the configuration:
+
+```sh
+php reference/bin/setup.php /absolute/path/to/storage https://peer.example.org
+```
+
+Set `PACT_CONFIG` to that directory's `demo-config.json` for the web server, worker and caller. Setup preserves existing files; to change an existing endpoint, update its configuration's `url` field. Do not delete the database or regenerate tokens to change a URL.
 
 ## One task with clarification
 
@@ -47,17 +63,17 @@ The static plan dispatches `extract`, then `review`, then `assemble` through thr
 ## Test a peer
 
 ```sh
-node tools/pact.mjs test http://pact.test/a2a \
+node tools/pact.mjs test http://127.0.0.1:8080/a2a \
   --config storage/demo-config.json --reference-suite
 npm run test:integration
 ```
 
 The CLI emits a JSON report and exits nonzero on any mismatch. `--reference-suite` exercises the document-review fixture's concurrent questions, expiry and event endpoint. Baseline checks exercise this profile's synchronous completed task; another contract can be supplied with `--contract`, `--registry` and `--input`. For another service use `PACT_TOKEN` and omit local configuration. This is a bounded PACT binding suite, not a certification of every A2A feature or every asynchronous peer.
 
-Integration tests start disposable loopback HTTP fixtures, separate from the Herd site, and use temporary databases. They kill a worker after a remote commit, restart it, replace a lease, drop an HTTP response, exhaust required and optional retries, reconcile cancellation after a lost acknowledgment and reject a broken peer. They clean up their servers and databases.
+Integration tests start their own disposable loopback HTTP fixtures and use temporary databases. They kill a worker after a remote commit, restart it, replace a lease, drop an HTTP response, exhaust required and optional retries, reconcile cancellation after a lost acknowledgment and reject a broken peer. They clean up their servers and databases.
 
 ## Read the profile
 
-Run `npm run docs:build`, then open [the local docs](http://pact.test/docs/). The build writes an ignored `site/` directory with navigation and search. Specifications and SDK manuals remain normal Markdown source files in Git.
+Run `npm run docs:build`, then open `/docs/` on the configured reference URL; the default is [http://127.0.0.1:8080/docs/](http://127.0.0.1:8080/docs/). The build writes an ignored `site/` directory with navigation and search. Specifications and SDK manuals remain normal Markdown source files in Git.
 
 Core and Swarm have separate [project-controlled identifiers](../specification/0.2/manifest.json). Publishing the corresponding documents and packages requires the repository owner's release. This checkout does not push or publish them.

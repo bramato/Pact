@@ -1,7 +1,7 @@
 {
   "title": "Guida illustrata al protocollo PACT",
   "subtitle": "Contratti domande eventi e coordinamento tra agenti",
-  "date": "9 ottobre 2026",
+  "date": "10 ottobre 2026",
   "version": "0.2.0",
   "introduction": [
     "PACT definisce come agenti costruiti da sviluppatori diversi possano concordare i dati di un incarico, chiedere chiarimenti e consegnare un risultato verificabile. Usa le risorse native di A2A e aggiunge regole esplicite per contratti, domande, eventi e avanzamento.",
@@ -33,7 +33,7 @@
       "lead": "La demo mette in comunicazione un chiamante TypeScript e un servizio PHP attraverso HTTP. È deterministica: il risultato dipende dal testo ricevuto e dalle risposte ai chiarimenti.",
       "blocks": [
         {"heading": "Preparare il progetto", "paragraphs": ["Servono Node.js 22 o successivo, PHP 8.2 o successivo e Composer 2. PHP deve includere JSON, mbstring, BCMath, cURL e SQLite. Si installano le dipendenze, si costruiscono le risorse delle SDK e si esegue il setup della reference. I test di arresto del processo usano anche i segnali POSIX su macOS o Linux."], "code": ["npm ci --ignore-scripts", "npm run build:sdk", "composer install --working-dir=sdk/php", "composer install --working-dir=reference", "php reference/bin/setup.php"]},
-        {"heading": "Seguire un task", "paragraphs": ["Nel progetto locale Herd serve http://pact.test. La demo Core invia il testo PACT connects three careful agents, riceve due domande richieste e risponde a entrambe. Il chiamante verifica poi un artefatto con cinque parole e approved uguale a true."], "code": ["npm run demo"]},
+        {"heading": "Seguire un task", "paragraphs": ["Dalla radice del progetto si avvia il server di sviluppo PHP con php -S 127.0.0.1:8080 -t public reference/router.php. In un altro terminale si esegue la demo Core, che riceve due domande richieste e restituisce cinque parole con approved uguale a true. Qualsiasi server compatibile con PHP può usare public/ come radice web; l’URL viene concordato nella configurazione."], "code": ["npm run demo"]},
         {"heading": "Eseguire la collaborazione", "paragraphs": ["Per Swarm si avvia il worker in un terminale con php reference/bin/worker.php --watch e si esegue npm run demo:swarm in un altro. Il setup conserva la configurazione esistente e crea token casuali privati nello storage locale escluso da Git."]}
       ],
       "source": "docs/quickstart.md"
@@ -128,7 +128,7 @@
       "blocks": [
         {"heading": "Confrontare valori ed errori", "paragraphs": ["I 147 vettori condivisi vengono eseguiti indipendentemente da TypeScript e PHP. Entrambe le implementazioni devono produrre il valore o il codice di errore dichiarato. I casi coprono digest, Unicode, schemi, domande concorrenti, transizioni, grafi e calcoli pesati. Il corpus storico v0.1 conserva i suoi 88 controlli separati."]},
         {"heading": "Provare un servizio vero", "paragraphs": ["La CLI scopre l’Agent Card e controlla attivazione, contratto, output, replay e stati terminali. La suite della reference verifica anche autenticazione, isolamento dei tenant, risposte atomiche, scadenze, cancellazione ed eventi fuori ordine. Un peer costruito appositamente con output invalido viene rifiutato e la CLI termina con errore."]},
-        {"heading": "Leggere la prova nel suo ambito", "paragraphs": ["Al 9 ottobre 2026 risultano passati 178 test Node, 11 test HTTP e 14 controlli live su pact.test. Sono stati verificati anche tre archivi di pacchetto separati. Queste prove riguardano il profilo e il binding dichiarati. Non certificano ogni funzione A2A, la verità del contenuto prodotto o l’operatività in produzione."]}
+        {"heading": "Leggere la prova nel suo ambito", "paragraphs": ["Al 9 ottobre 2026 risultano passati 178 test Node, 11 test HTTP e 14 controlli live sul servizio di riferimento. Sono stati verificati anche tre archivi di pacchetto separati. Queste prove riguardano il profilo e il binding dichiarati. Non certificano ogni funzione A2A, la verità del contenuto prodotto o l’operatività in produzione."]}
       ],
       "source": "conformance/v0.2/README.md"
     },

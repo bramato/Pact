@@ -99,17 +99,31 @@ const waitTask = async (c, id) => {
 };
 await test("real HTTP interoperability and process recovery", async (t) => {
   try {
+    const defaults = resolve(dir, "defaults");
+    runPhp("reference/bin/setup.php", [defaults]);
+    const original = readFileSync(resolve(defaults, "demo-config.json"), "utf8");
+    assert.equal(JSON.parse(original).url, "http://127.0.0.1:8080");
+    runPhp("reference/bin/setup.php", [defaults, "https://peer.example.org"]);
+    assert.equal(
+      readFileSync(resolve(defaults, "demo-config.json"), "utf8"),
+      original,
+      "Setup must preserve an existing URL, database path and private tokens",
+    );
     const reservation = await listen((_, r) => r.end());
     const port = reservation.address().port;
     await new Promise((r) => reservation.close(r));
     base = `http://127.0.0.1:${port}`;
     runPhp("reference/bin/setup.php", [dir, base]);
     config = JSON.parse(readFileSync(resolve(dir, "demo-config.json")));
-    server = spawn(php, ["-S", `127.0.0.1:${port}`, "reference/router.php"], {
-      cwd: root,
-      env: { ...process.env, PACT_CONFIG: resolve(dir, "demo-config.json") },
-      stdio: "ignore",
-    });
+    server = spawn(
+      php,
+      ["-S", `127.0.0.1:${port}`, "-t", "public", "reference/router.php"],
+      {
+        cwd: root,
+        env: { ...process.env, PACT_CONFIG: resolve(dir, "demo-config.json") },
+        stdio: "ignore",
+      },
+    );
     for (let i = 0; i < 50; i++) {
       try {
         if ((await fetch(base + "/.well-known/agent-card.json")).ok) break;

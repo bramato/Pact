@@ -1,6 +1,6 @@
 # Guida illustrata al protocollo PACT
 
-**Bozza 0.2.0 · 9 ottobre 2026**
+**Bozza 0.2.0 · 10 ottobre 2026**
 
 [Scarica il documento Word modificabile](PACT-guida-illustrata.docx)
 
@@ -68,7 +68,7 @@ php reference/bin/setup.php
 
 ### Seguire un task
 
-Nel progetto locale Herd serve http://pact.test. La demo Core invia il testo PACT connects three careful agents, riceve due domande richieste e risponde a entrambe. Il chiamante verifica poi un artefatto con cinque parole e approved uguale a true.
+Dalla radice del progetto si avvia il server di sviluppo PHP con php -S 127.0.0.1:8080 -t public reference/router.php. In un altro terminale si esegue la demo Core, che riceve due domande richieste e restituisce cinque parole con approved uguale a true. Qualsiasi server compatibile con PHP può usare public/ come radice web; l’URL viene concordato nella configurazione.
 
 ```sh
 npm run demo
@@ -224,7 +224,7 @@ La CLI scopre l’Agent Card e controlla attivazione, contratto, output, replay 
 
 ### Leggere la prova nel suo ambito
 
-Al 9 ottobre 2026 risultano passati 178 test Node, 11 test HTTP e 14 controlli live su pact.test. Sono stati verificati anche tre archivi di pacchetto separati. Queste prove riguardano il profilo e il binding dichiarati. Non certificano ogni funzione A2A, la verità del contenuto prodotto o l’operatività in produzione.
+Al 9 ottobre 2026 risultano passati 178 test Node, 11 test HTTP e 14 controlli live sul servizio di riferimento. Sono stati verificati anche tre archivi di pacchetto separati. Queste prove riguardano il profilo e il binding dichiarati. Non certificano ogni funzione A2A, la verità del contenuto prodotto o l’operatività in produzione.
 
 [Approfondimento tecnico](../../conformance/v0.2/README.md)
 

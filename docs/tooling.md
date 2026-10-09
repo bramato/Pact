@@ -5,11 +5,11 @@ Current v0.2 commands:
 ```sh
 npm run check:all       # Unit/shared vectors, legacy corpus, repository/docs, HTTP faults
 npm run package:smoke   # Build/install three standalone SDK archives in temporary projects
-npm run demo:verify     # Verify Core and Swarm exchanges on the configured Herd site
-node tools/pact.mjs test http://pact.test/a2a --config storage/demo-config.json --reference-suite
+npm run demo:verify     # Verify Core and Swarm exchanges on the configured reference server
+node tools/pact.mjs test http://127.0.0.1:8080/a2a --config storage/demo-config.json --reference-suite
 ```
 
-[Quickstart](quickstart.md) installs PHP dependencies and explains private configuration. [Independent cases](../conformance/v0.2/README.md) define stable error expectations. `PACT_PHP` and `PACT_COMPOSER` optionally select executable paths. Test fixtures use disposable HTTP servers; the local application remains Herd's `pact.test`.
+[Quickstart](quickstart.md) installs PHP dependencies and explains server startup, private configuration and custom URLs. [Independent cases](../conformance/v0.2/README.md) define stable error expectations. `PACT_PHP` and `PACT_COMPOSER` optionally select executable paths. Test fixtures use disposable HTTP servers and temporary databases, independently of the configured reference server.
 
 ## Archived v0.1 validation
 

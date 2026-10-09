@@ -2,6 +2,7 @@
 
 ## 0.2.0 — draft, 2026-10-09
 
+- Document portable server startup and configurable reference URLs without prerequisites tied to one developer's environment.
 - Add an illustrated Italian guide covering all eleven documentation sections, an editable Word document and a coherent set of transparent chapter illustrations.
 - Separate mandatory Core and optional Swarm with repository-controlled identifiers.
 - Define typed event payloads and whole-envelope JCS SHA-256, exact-byte replay, concurrent atomic answers, lifecycle/output gates and bounded delivery.

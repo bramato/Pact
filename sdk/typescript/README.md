@@ -7,7 +7,7 @@ Build this checkout with `npm ci --ignore-scripts && npm run build:sdk` from its
 ```ts
 import { PactClient } from '@pact-protocol/core';
 
-const client = new PactClient('http://pact.test/a2a', {
+const client = new PactClient('https://peer.example.org/a2a', {
   token: process.env.PACT_TOKEN!,
   contract,                 // exact pinned descriptor from your registry
   registryPath: '/absolute/path/schema-registry.json',

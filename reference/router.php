@@ -1,4 +1,4 @@
 <?php
 
-// CI-only HTTP fixture router. Local development uses the existing Herd site.
+// Route PHP's development server and HTTP test fixtures through the front controller.
 require __DIR__.'/../public/index.php';
