@@ -53,3 +53,5 @@ $localPolicy = new Policy(new Pact\Pact, ['octodorabot.test']);
 if ($localPolicy->refresh(null, $local, $local->coordinator_url, Policy::etag($local), 200) !== $local) throw new LogicException('allowed local host');
 $public = clone $local; $public->coordinator_url = 'http://example.com/';
 rejected(fn () => (new Policy(new Pact\Pact, ['example.com', 'octodorabot.test']))->refresh(null, $public, $public->coordinator_url, Policy::etag($public), 200));
+
+rejected(fn () => $p->refresh($r, null, 'https://other.example/', $tag, 304));

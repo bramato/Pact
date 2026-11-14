@@ -26,7 +26,9 @@ final class Policy
     public function refresh(?stdClass $current, ?stdClass $incoming, string $coordinator, ?string $etag, int $status): ?stdClass
     {
         if ($status === 304) {
-            Pact::ensure($current !== null && $etag !== null && $etag === self::etag($current), 'FEDERATION_ROSTER', 'Unexpected not-modified response');
+            Pact::ensure($current !== null && $etag !== null, 'FEDERATION_ROSTER', 'Unexpected not-modified response');
+            $this->pact->federationRoster($current, $this->insecureLocalHosts);
+            Pact::ensure($current->coordinator_url === $coordinator && $etag === self::etag($current), 'FEDERATION_ROSTER', 'Unexpected not-modified response');
             return $current;
         }
         Pact::ensure($status === 200 && $incoming !== null, 'FEDERATION_ROSTER', 'Invalid roster response');

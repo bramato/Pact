@@ -844,7 +844,7 @@ export function federationAuthenticate(claims: { iss?: unknown; aud?: unknown; s
 
 export function federationRefresh(current: any | null, incoming: any | null, coordinator: string, etag: string | null, status: number, insecureLocalHosts: string[] = []): any {
   if (status === 304) {
-    ensure(current !== null && etag !== null && etag === federationRosterEtag(current, insecureLocalHosts), "FEDERATION_ROSTER", "Unexpected not-modified response");
+    ensure(current !== null && etag !== null && current.coordinator_url === coordinator && etag === federationRosterEtag(current, insecureLocalHosts), "FEDERATION_ROSTER", "Unexpected not-modified response");
     return current;
   }
   ensure(status === 200 && incoming !== null, "FEDERATION_ROSTER", "Invalid roster response");

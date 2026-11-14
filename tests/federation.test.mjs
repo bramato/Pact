@@ -49,3 +49,5 @@ test('HTTP requires explicit local allowlist and cannot allow public hosts', () 
   assert.equal(federationRefresh(null, local, local.coordinator_url, tag, 200, ['octodorabot.test']), local);
   assert.throws(() => new Pact().federationRoster({ ...local, coordinator_url: 'http://example.com/' }, ['example.com', 'octodorabot.test']));
 });
+
+test('304 cannot change coordinator authority', () => { assert.throws(() => federationRefresh(roster, null, 'https://other.example/', federationRosterEtag(roster), 304)); });
