@@ -53,7 +53,7 @@ final class McpDispatcher
             if (! $this->runtime->appendExchange($roster->federation_id, $actor, $id, $arguments['recipient_id'], $payload)) {
                 return $this->runtime->replayResult($roster->federation_id, $actor, $id);
             }
-            $result = $this->runtime->invoke($method, $actor, $arguments);
+            $result = json_decode(json_encode($this->runtime->invoke($method, $actor, $arguments), JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
             $this->runtime->saveResult($roster->federation_id, $actor, $id, $result);
             return $result;
         });
