@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require __DIR__.'/../reference/vendor/autoload.php';
+require getenv('PACT_TEST_AUTOLOAD') ?: __DIR__.'/../reference/vendor/autoload.php';
 
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;

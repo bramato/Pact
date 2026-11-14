@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-require __DIR__.'/../reference/vendor/autoload.php';
+require getenv('PACT_TEST_AUTOLOAD') ?: __DIR__.'/../reference/vendor/autoload.php';
 function config_path(string $path): string { return '/tmp/config/'.$path; }
 
 use Illuminate\Container\Container;

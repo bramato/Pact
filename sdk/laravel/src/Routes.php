@@ -23,7 +23,9 @@ final class Routes
             $transport = $binding ?? Container::getInstance()->make(HttpBinding::class);
             [$status, $responseHeaders, $body] = $transport->handle($request->method(), '/'.$request->path(), $headers, $request->getContent());
 
-            return new JsonResponse($body, $status, $responseHeaders + ['X-PACT-Adapter' => 'Illuminate 12']);
+            $version = \Composer\InstalledVersions::getVersion('illuminate/routing');
+            $major = $version === null ? '' : ' '.explode('.', $version)[0];
+            return new JsonResponse($body, $status, $responseHeaders + ['X-PACT-Adapter' => 'Illuminate'.$major]);
         };
         $router->group(['middleware' => $options['middleware'] ?? []], static function (Router $router) use ($handler, $options): void {
             foreach ($options['prefixes'] ?? ['', 'agents/extract', 'agents/review', 'agents/assemble'] as $prefix) {
