@@ -1,0 +1,1 @@
+{"federation_id":"personal-1","coordinator_url":"https://coordinator.example/","revision":1,"mcp_endpoint":"https://coordinator.example/mcp","members":[{"id":"alice","kind":"user","active":true},{"id":"bot","kind":"agent","active":true}]}

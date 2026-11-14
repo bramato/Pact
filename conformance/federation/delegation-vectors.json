@@ -1,0 +1,9 @@
+[
+  {"name":"valid-child", "valid":true, "delegation":{"root_task_id":"r","parent_task_id":"r","task_id":"t","delegation_id":"d","path":["a","b"],"steps":1,"delegations":1,"created_at":"2026-11-14T12:00:00Z","deadline":"2026-11-14T12:05:00Z"}},
+  {"name":"cycle", "valid":false, "delegation":{"root_task_id":"r","parent_task_id":"r","task_id":"t","delegation_id":"d","path":["a","b","a"],"steps":1,"delegations":1,"created_at":"2026-11-14T12:00:00Z","deadline":"2026-11-14T12:05:00Z"}},
+  {"name":"depth-five", "valid":false, "delegation":{"root_task_id":"r","parent_task_id":"r","task_id":"t","delegation_id":"d","path":["a","b","c","d","e"],"steps":1,"delegations":1,"created_at":"2026-11-14T12:00:00Z","deadline":"2026-11-14T12:05:00Z"}},
+  {"name":"delegations-nine", "valid":false, "delegation":{"root_task_id":"r","parent_task_id":"r","task_id":"t","delegation_id":"d","path":["a"],"steps":1,"delegations":9,"created_at":"2026-11-14T12:00:00Z","deadline":"2026-11-14T12:05:00Z"}},
+  {"name":"steps-seventeen", "valid":false, "delegation":{"root_task_id":"r","parent_task_id":"r","task_id":"t","delegation_id":"d","path":["a"],"steps":17,"delegations":1,"created_at":"2026-11-14T12:00:00Z","deadline":"2026-11-14T12:05:00Z"}},
+  {"name":"deadline-over-budget", "valid":false, "delegation":{"root_task_id":"r","parent_task_id":"r","task_id":"t","delegation_id":"d","path":["a"],"steps":1,"delegations":1,"created_at":"2026-11-14T12:00:00Z","deadline":"2026-11-14T12:05:01Z"}},
+  {"name":"same-task-as-parent", "valid":false, "delegation":{"root_task_id":"r","parent_task_id":"t","task_id":"t","delegation_id":"d","path":["a"],"steps":1,"delegations":1,"created_at":"2026-11-14T12:00:00Z","deadline":"2026-11-14T12:05:00Z"}}
+]

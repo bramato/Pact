@@ -330,6 +330,10 @@ export class Pact {
   }
   federationDelegation(value: unknown): void {
     this.shape("federation-delegation", value);
+    const d = value as { root_task_id: string; parent_task_id: string; task_id: string; delegation_id: string; created_at: string; deadline: string };
+    ensure(new Set([d.root_task_id, d.task_id, d.delegation_id]).size === 3 && d.task_id !== d.parent_task_id && d.delegation_id !== d.parent_task_id, "FEDERATION_DELEGATION", "Task and delegation identities must be distinct");
+    const duration = Date.parse(d.deadline) - Date.parse(d.created_at);
+    ensure(duration > 0 && duration <= 300000, "FEDERATION_DELEGATION", "Invalid root deadline");
   }
   shape(name: string, value: unknown): void {
     const validate = this.ajv.getSchema(`${SCHEMA_BASE}${name}.schema.json`);
@@ -813,3 +817,36 @@ export class EventReceipts {
 }
 
 export { PactClient, type ClientOptions } from "./client.js";
+
+/** Stable external agent identity, scoped to a product and user rather than a session. */
+export function federationAgentId(product: string, user: string): string {
+  ensure(product.length > 0 && user.length > 0, "FEDERATION_IDENTITY", "Product and user are required");
+  return `agent_${createHash("sha256").update(`${Buffer.byteLength(product)}:${product}${user}`).digest("hex")}`;
+}
+
+export function federationRosterEtag(roster: unknown): string {
+  new Pact().federationRoster(roster);
+  return `"${createHash("sha256").update(canonicalize(roster)).digest("hex")}"`;
+}
+
+/** Claims must already have been cryptographically verified by the host. */
+export function federationAuthenticate(claims: { iss?: unknown; aud?: unknown; sub?: unknown; exp?: unknown; nbf?: unknown }, issuer: string, audience: string, now: number): string {
+  ensure(claims.iss === issuer && claims.aud === audience && typeof claims.sub === "string" && claims.sub.length > 0 && Number.isSafeInteger(claims.exp) && (claims.exp as number) > now && (claims.nbf === undefined || (Number.isSafeInteger(claims.nbf) && (claims.nbf as number) <= now)), "FEDERATION_AUTH", "Invalid verified credential claims");
+  return claims.sub as string;
+}
+
+export function federationRefresh(current: any | null, incoming: any | null, coordinator: string, etag: string | null, status: number): any {
+  if (status === 304) {
+    ensure(current !== null && etag !== null && etag === federationRosterEtag(current), "FEDERATION_ROSTER", "Unexpected not-modified response");
+    return current;
+  }
+  ensure(status === 200 && incoming !== null, "FEDERATION_ROSTER", "Invalid roster response");
+  const incomingTag = federationRosterEtag(incoming);
+  ensure(incoming.coordinator_url === coordinator && incomingTag === etag, "FEDERATION_ROSTER", "Roster authority or ETag mismatch");
+  if (current !== null) {
+    const currentTag = federationRosterEtag(current);
+    ensure(current.federation_id === incoming.federation_id && current.coordinator_url === coordinator && incoming.revision >= current.revision, "FEDERATION_ROSTER", "Roster rollback or federation mismatch");
+    ensure(incoming.revision !== current.revision || currentTag === etag, "FEDERATION_ROSTER", "Revision reused with different content");
+  }
+  return incoming;
+}

@@ -58,6 +58,11 @@ final class Pact
     public function federationDelegation(mixed $value): void
     {
         $this->shape('federation-delegation', $value);
+        self::ensure(count(array_unique([$value->root_task_id, $value->task_id, $value->delegation_id])) === 3 && $value->task_id !== $value->parent_task_id && $value->delegation_id !== $value->parent_task_id, 'FEDERATION_DELEGATION', 'Task and delegation identities must be distinct');
+        $created = new \DateTimeImmutable($value->created_at);
+        $deadline = new \DateTimeImmutable($value->deadline);
+        $duration = (float) $deadline->format('U.u') - (float) $created->format('U.u');
+        self::ensure($duration > 0 && $duration <= 300, 'FEDERATION_DELEGATION', 'Invalid root deadline');
     }
 
     private static function jsonSafety(mixed $value): void
