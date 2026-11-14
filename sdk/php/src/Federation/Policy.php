@@ -11,7 +11,7 @@ use stdClass;
 /** Policy for claims already cryptographically verified by the host. */
 final class Policy
 {
-    public function __construct(private readonly Pact $pact = new Pact) {}
+    public function __construct(private readonly Pact $pact = new Pact, private readonly array $insecureLocalHosts = []) {}
 
     public function authenticate(stdClass $claims, string $issuer, string $audience, int $now): string
     {
@@ -30,10 +30,10 @@ final class Policy
             return $current;
         }
         Pact::ensure($status === 200 && $incoming !== null, 'FEDERATION_ROSTER', 'Invalid roster response');
-        $this->pact->federationRoster($incoming);
+        $this->pact->federationRoster($incoming, $this->insecureLocalHosts);
         Pact::ensure($incoming->coordinator_url === $coordinator && $etag === self::etag($incoming), 'FEDERATION_ROSTER', 'Roster authority or ETag mismatch');
         if ($current !== null) {
-            $this->pact->federationRoster($current);
+            $this->pact->federationRoster($current, $this->insecureLocalHosts);
             Pact::ensure($current->federation_id === $incoming->federation_id && $current->coordinator_url === $coordinator && $incoming->revision >= $current->revision, 'FEDERATION_ROSTER', 'Roster rollback or federation mismatch');
             Pact::ensure($incoming->revision !== $current->revision || hash_equals(self::etag($current), $etag), 'FEDERATION_ROSTER', 'Revision reused with different content');
         }
@@ -47,7 +47,7 @@ final class Policy
 
     public function member(stdClass $roster, string $id, ?string $kind = null): stdClass
     {
-        $this->pact->federationRoster($roster);
+        $this->pact->federationRoster($roster, $this->insecureLocalHosts);
         foreach ($roster->members as $member) {
             if ($member->id === $id && $member->active === true && ($kind === null || $member->kind === $kind)) return $member;
         }

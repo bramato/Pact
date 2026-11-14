@@ -41,3 +41,11 @@ test('shared roster and stable identity fixtures match PHP', () => {
   assert.equal(federationRosterEtag(fixture), expected.etag);
   assert.equal(federationAgentId('prodotto', 'utente'), expected.agent_id);
 });
+test('HTTP requires explicit local allowlist and cannot allow public hosts', () => {
+  const local = { ...roster, coordinator_url: 'http://octodorabot.test/', mcp_endpoint: 'http://octodorabot.test/mcp' };
+  assert.throws(() => new Pact().federationRoster(local));
+  new Pact().federationRoster(local, ['octodorabot.test']);
+  const tag = federationRosterEtag(local, ['octodorabot.test']);
+  assert.equal(federationRefresh(null, local, local.coordinator_url, tag, 200, ['octodorabot.test']), local);
+  assert.throws(() => new Pact().federationRoster({ ...local, coordinator_url: 'http://example.com/' }, ['example.com', 'octodorabot.test']));
+});

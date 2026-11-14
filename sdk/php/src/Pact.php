@@ -48,9 +48,15 @@ final class Pact
         }
     }
 
-    public function federationRoster(mixed $value): void
+    public function federationRoster(mixed $value, array $insecureLocalHosts = []): void
     {
         $this->shape('federation-roster', $value);
+        foreach ([$value->coordinator_url, $value->mcp_endpoint] as $url) {
+            $parts = parse_url($url);
+            $host = strtolower($parts['host'] ?? '');
+            $local = str_ends_with($host, '.test') || in_array($host, ['localhost', '127.0.0.1', '[::1]', '::1'], true);
+            self::ensure(($parts['scheme'] ?? '') === 'https' || (($parts['scheme'] ?? '') === 'http' && $local && in_array($host, $insecureLocalHosts, true)), 'FEDERATION_URL', 'HTTPS required except explicitly allowed local hosts');
+        }
         $ids = array_map(fn ($member) => $member->id, $value->members);
         self::ensure(count($ids) === count(array_unique($ids)), 'FEDERATION_MEMBER_DUPLICATE', 'Member IDs must be unique');
     }

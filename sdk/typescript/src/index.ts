@@ -322,9 +322,16 @@ export class Pact {
       this.ajv.getSchema(`${SCHEMA_BASE}${name}.schema.json`),
     );
   }
-  federationRoster(value: unknown): void {
+  federationRoster(value: unknown, insecureLocalHosts: string[] = []): void {
     this.shape("federation-roster", value);
-    const members = (value as { members: { id: string }[] }).members;
+    const roster = value as { coordinator_url: string; mcp_endpoint: string; members: { id: string }[] };
+    for (const raw of [roster.coordinator_url, roster.mcp_endpoint]) {
+      const url = new URL(raw);
+      const host = url.hostname.toLowerCase();
+      const local = host.endsWith(".test") || ["localhost", "127.0.0.1", "[::1]", "::1"].includes(host);
+      ensure(url.protocol === "https:" || (url.protocol === "http:" && local && insecureLocalHosts.includes(host)), "FEDERATION_URL", "HTTPS required except explicitly allowed local hosts");
+    }
+    const members = roster.members;
     ensure(new Set(members.map((member) => member.id)).size === members.length,
       "FEDERATION_MEMBER_DUPLICATE", "Member IDs must be unique");
   }
@@ -824,8 +831,8 @@ export function federationAgentId(product: string, user: string): string {
   return `agent_${createHash("sha256").update(`${Buffer.byteLength(product)}:${product}${user}`).digest("hex")}`;
 }
 
-export function federationRosterEtag(roster: unknown): string {
-  new Pact().federationRoster(roster);
+export function federationRosterEtag(roster: unknown, insecureLocalHosts: string[] = []): string {
+  new Pact().federationRoster(roster, insecureLocalHosts);
   return `"${createHash("sha256").update(canonicalize(roster)).digest("hex")}"`;
 }
 
@@ -835,16 +842,16 @@ export function federationAuthenticate(claims: { iss?: unknown; aud?: unknown; s
   return claims.sub as string;
 }
 
-export function federationRefresh(current: any | null, incoming: any | null, coordinator: string, etag: string | null, status: number): any {
+export function federationRefresh(current: any | null, incoming: any | null, coordinator: string, etag: string | null, status: number, insecureLocalHosts: string[] = []): any {
   if (status === 304) {
-    ensure(current !== null && etag !== null && etag === federationRosterEtag(current), "FEDERATION_ROSTER", "Unexpected not-modified response");
+    ensure(current !== null && etag !== null && etag === federationRosterEtag(current, insecureLocalHosts), "FEDERATION_ROSTER", "Unexpected not-modified response");
     return current;
   }
   ensure(status === 200 && incoming !== null, "FEDERATION_ROSTER", "Invalid roster response");
-  const incomingTag = federationRosterEtag(incoming);
+  const incomingTag = federationRosterEtag(incoming, insecureLocalHosts);
   ensure(incoming.coordinator_url === coordinator && incomingTag === etag, "FEDERATION_ROSTER", "Roster authority or ETag mismatch");
   if (current !== null) {
-    const currentTag = federationRosterEtag(current);
+    const currentTag = federationRosterEtag(current, insecureLocalHosts);
     ensure(current.federation_id === incoming.federation_id && current.coordinator_url === coordinator && incoming.revision >= current.revision, "FEDERATION_ROSTER", "Roster rollback or federation mismatch");
     ensure(incoming.revision !== current.revision || currentTag === etag, "FEDERATION_ROSTER", "Revision reused with different content");
   }
