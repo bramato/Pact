@@ -857,3 +857,35 @@ export function federationRefresh(current: any | null, incoming: any | null, coo
   }
   return incoming;
 }
+
+/** Federation MCP tool contracts. Host-specific tools may be advertised separately. */
+export function federationToolDefinitions(): Array<{name: string; inputSchema: {type: string; properties: Record<string, unknown>; required: string[]; additionalProperties: boolean}}> {
+  const string = {type: "string", minLength: 1};
+  const fields: Record<string, Record<string, unknown>> = {
+    list_members: {}, get_manifest: {member_id: string},
+    send_message: {id: string, recipient_id: string, text: string, conversation_id: string, kind: {type: "string", enum: ["request", "reply", "notification"]}, task_id: string},
+    request_delegation: {id: string, recipient_id: string, task_id: string, input: {type: "object"}},
+    get_task: {task_id: string}, read_conversation: {conversation_id: string}, reserve_step: {task_id: string, step_id: string},
+  };
+  return Object.entries(fields).map(([name, properties]) => ({name, inputSchema: {type: "object", properties, required: name === "send_message" ? ["id", "recipient_id", "text"] : Object.keys(properties), additionalProperties: false}}));
+}
+
+/** Validates and normalizes method arguments before a host dispatch. */
+export function federationToolArguments(method: string, value: unknown): Record<string, unknown> {
+  const definition = federationToolDefinitions().find(d => d.name === method);
+  ensure(definition !== undefined, "FEDERATION_METHOD", "Unknown MCP method");
+  ensure(value !== null && typeof value === "object" && !Array.isArray(value), "FEDERATION_ARGUMENTS", "Arguments must be an object");
+  const args = {...value as Record<string, unknown>};
+  ensure(Object.keys(args).every(k => k in definition.inputSchema.properties) && definition.inputSchema.required.every(k => k in args), "FEDERATION_ARGUMENTS", "Invalid MCP arguments");
+  for (const [key, field] of Object.entries(definition.inputSchema.properties)) {
+    if (!(key in args)) continue;
+    const schema = field as {type: string; enum?: string[]}; const item = args[key];
+    ensure(schema.type === "string" ? typeof item === "string" && item.length > 0 : item !== null && typeof item === "object" && !Array.isArray(item), "FEDERATION_ARGUMENTS", `Invalid MCP argument ${key}`);
+    if (schema.enum) ensure(schema.enum.includes(item as string), "FEDERATION_ARGUMENTS", `Invalid MCP argument ${key}`);
+  }
+  if (method === "send_message") {
+    args.kind ??= "request";
+    ensure(args.kind === "request" || typeof args.conversation_id === "string", "FEDERATION_ARGUMENTS", "Replies require a conversation");
+  }
+  return args;
+}
