@@ -1,0 +1,9 @@
+# PACT Federation v0.1 — draft building blocks
+
+Federation is an optional profile of Core 0.2 over A2A 1.0, identified by this document's URL. A coordinator is authoritative for a personal federation and distributes an authenticated, revisioned roster with an MCP endpoint. Roster membership permits chat with active members; it does not grant file, tool, or other users' conversation access. Peer credentials and MCP credentials have distinct audiences. External agents retain stable product/user identities; conversations are private and are not mirrored.
+
+The `federation-roster` and `federation-delegation` schemas describe preliminary wire resources. IDs are stable and member IDs unique. The delegation path must contain unique identities and at most four entries; the root budget allows at most eight delegations, sixteen steps and five minutes. Implementations must enforce the deadline and shared budget transactionally across the whole root, reject nested Swarm, cancel descendants and record late observations without reviving canceled tasks. Individual Core tasks have distinct root, parent and delegation identifiers.
+
+Every exchange requires a durable ledger entry committed before delivery, with an outbox, receipts and replay/idempotency checks. Delegation must return an immediate receipt and atomically persist its checkpoint, wait state and outbound work before continuation. Bootstrap and roster refresh require authentication and revision/ETag handling; membership changes must take effect for subsequent authorization checks.
+
+The planned MCP methods are `list_members`, `get_manifest`, `send_message`, `request_delegation`, `get_task`, and `read_conversation`. Method parameter and result contracts, complete transport, authorization, scheduling and conformance vectors are not yet specified by this draft. The provided SQLite ledger is a building block, not a complete Federation implementation.

@@ -15,6 +15,8 @@ final class Pact
 
     public const SWARM_URI = 'https://github.com/bramato/Pact/blob/main/specification/PACT-SWARM-v0.2.md';
 
+    public const FEDERATION_URI = 'https://github.com/bramato/Pact/blob/main/specification/PACT-FEDERATION-v0.1.md';
+
     public const SCHEMA_BASE = 'https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/';
 
     private CompliantValidator $validator;
@@ -44,6 +46,18 @@ final class Pact
         if (! $result->isValid()) {
             throw new PactError('SCHEMA_INVALID', 'Invalid '.$name);
         }
+    }
+
+    public function federationRoster(mixed $value): void
+    {
+        $this->shape('federation-roster', $value);
+        $ids = array_map(fn ($member) => $member->id, $value->members);
+        self::ensure(count($ids) === count(array_unique($ids)), 'FEDERATION_MEMBER_DUPLICATE', 'Member IDs must be unique');
+    }
+
+    public function federationDelegation(mixed $value): void
+    {
+        $this->shape('federation-delegation', $value);
     }
 
     private static function jsonSafety(mixed $value): void

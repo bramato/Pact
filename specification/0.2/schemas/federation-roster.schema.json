@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/federation-roster.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["federation_id", "coordinator_url", "revision", "mcp_endpoint", "members"],
+  "properties": {
+    "federation_id": {"type": "string", "minLength": 1},
+    "coordinator_url": {"type": "string", "format": "uri", "pattern": "^https://"},
+    "revision": {"type": "integer", "minimum": 1},
+    "mcp_endpoint": {"type": "string", "format": "uri", "pattern": "^https://"},
+    "members": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "kind", "active"], "properties": {"id": {"type": "string", "minLength": 1}, "kind": {"enum": ["user", "agent"]}, "active": {"type": "boolean"}}}}
+  }
+}

@@ -14,6 +14,8 @@ export const CORE_URI =
   "https://github.com/bramato/Pact/blob/main/specification/PACT-CORE-v0.2.md";
 export const SWARM_URI =
   "https://github.com/bramato/Pact/blob/main/specification/PACT-SWARM-v0.2.md";
+export const FEDERATION_URI =
+  "https://github.com/bramato/Pact/blob/main/specification/PACT-FEDERATION-v0.1.md";
 export const SCHEMA_BASE =
   "https://github.com/bramato/Pact/blob/main/specification/0.2/schemas/";
 export type Json =
@@ -319,6 +321,15 @@ export class Pact {
     Object.keys(schemas).forEach((name) =>
       this.ajv.getSchema(`${SCHEMA_BASE}${name}.schema.json`),
     );
+  }
+  federationRoster(value: unknown): void {
+    this.shape("federation-roster", value);
+    const members = (value as { members: { id: string }[] }).members;
+    ensure(new Set(members.map((member) => member.id)).size === members.length,
+      "FEDERATION_MEMBER_DUPLICATE", "Member IDs must be unique");
+  }
+  federationDelegation(value: unknown): void {
+    this.shape("federation-delegation", value);
   }
   shape(name: string, value: unknown): void {
     const validate = this.ajv.getSchema(`${SCHEMA_BASE}${name}.schema.json`);
