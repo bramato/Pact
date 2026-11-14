@@ -3,6 +3,23 @@
   "description": "Laravel HTTP routing adapter for PACT bindings",
   "type": "library",
   "license": "MIT",
-  "require": { "php": "^8.2", "pact-protocol/core": "^0.2", "illuminate/routing": "^12.0", "illuminate/http": "^12.0" },
-  "autoload": { "psr-4": { "PactLaravel\\": "src/" } }
+  "require": {
+    "php": "^8.2",
+    "pact-protocol/core": "^0.2",
+    "illuminate/routing": "^12.0 || ^13.0",
+    "illuminate/http": "^12.0 || ^13.0",
+    "illuminate/support": "^12.0 || ^13.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "PactLaravel\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "PactLaravel\\PactServiceProvider"
+      ]
+    }
+  }
 }
