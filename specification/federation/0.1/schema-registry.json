@@ -1,0 +1,4 @@
+{
+  "https://github.com/bramato/Pact/blob/main/specification/federation/0.1/contracts/agent-chat-input.schema.json": "contracts/agent-chat-input.schema.json",
+  "https://github.com/bramato/Pact/blob/main/specification/federation/0.1/contracts/agent-chat-output.schema.json": "contracts/agent-chat-output.schema.json"
+}
