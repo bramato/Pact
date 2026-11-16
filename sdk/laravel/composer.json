@@ -13,7 +13,7 @@
     "illuminate/console": "^12.41.1 || ^13.0",
     "illuminate/database": "^12.41.1 || ^13.0",
     "illuminate/encryption": "^12.41.1 || ^13.0",
-    "laravel/passport": "^13.10",
+    "laravel/passport": "^13.7.6",
     "laravel/mcp": "^1.1",
     "firebase/php-jwt": "^6.11 || ^7.0"
   },
