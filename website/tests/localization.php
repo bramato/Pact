@@ -81,7 +81,7 @@ foreach ([['/', 'it', $italian, 'it_IT'], ['/en', 'en', $english, 'en_US'], ['/'
     expect($xpath->query('//div[@class="language-switch"]/a[@aria-current="page" and @lang="'.$locale.'"]')->length === 1, 'The selector must identify the active language.');
     expect($xpath->query('//div[@class="language-switch"]/a[@lang="en" and @href="http://pact.test/en"]')->length === 1, 'The English selector destination is wrong.');
     expect($xpath->query('//div[@class="language-switch"]/a[@lang="it" and @href="http://pact.test"]')->length === 1, 'The Italian selector destination is wrong.');
-    expect($xpath->query('//details')->length === 4, 'The FAQ must remain available without JavaScript.');
+    expect($xpath->query('//div[@class="faq-list"]/details')->length === 4, 'The FAQ must remain available without JavaScript.');
 
     $payload = json_decode($xpath->evaluate('string(//script[@id="demo-data"])'), true, flags: JSON_THROW_ON_ERROR);
     expect(count($payload['steps']) === 5, 'All five demo steps must be available.');

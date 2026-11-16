@@ -19,6 +19,7 @@ return [
     'nav' => [
         'protocol' => 'Il protocollo',
         'practice' => 'In pratica',
+        'handoff' => 'Handoff',
     ],
     'edition' => 'Proposta indipendente · Bozza 0.2.0',
     'hero' => [
@@ -258,8 +259,99 @@ return [
             'Fasi, contatori, sequenze e identità degli eventi raccontano il percorso. <strong>La consegna valida ne dimostra l’esito.</strong>',
         ],
     ],
+    'handoff' => [
+        'label' => '07 / Integra PACT',
+        'kicker' => 'DUE RUOLI, DUE HANDOFF',
+        'heading' => 'Portalo nel tuo progetto.<br><em>Parti dal ruolo giusto.</em>',
+        'intro' => 'Copia l’handoff nella chat dell’assistente che lavora sul tuo progetto Laravel. Troverà obiettivo, istruzioni di integrazione e verifiche da completare.',
+        'preview' => 'Leggi l’handoff completo',
+        'copied' => 'Handoff copiato. Incollalo nella chat del progetto.',
+        'copy_error' => 'Copia automatica non disponibile. Il testo è selezionato: copialo manualmente.',
+        'note' => 'Il master coordina la federazione personale; il client espone l’agente dell’applicazione. Collegali con il consenso dell’utente.',
+        'guide' => 'Guida all’installazione Laravel',
+        'roles' => [
+            'master' => [
+                'title' => 'Il progetto che coordina.',
+                'description' => 'Per l’applicazione da cui ogni utente collega i propri agenti, invia incarichi e segue i risultati.',
+                'copy' => 'Copia handoff master',
+                'text' => <<<'HANDOFF'
+Integra PACT in questo progetto Laravel con ruolo MASTER.
+
+Obiettivo: ogni utente autenticato deve poter collegare agenti di altre applicazioni alla propria federazione personale, inviare incarichi e consultarne risultati e domande.
+
+Fonti da leggere prima di modificare il progetto:
+- https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md
+- https://github.com/bramato/Pact/blob/main/specification/PACT-LARAVEL-BINDING-v0.1.md
+- https://github.com/bramato/Pact/blob/main/docs/releases.md
+
+1. Esamina le istruzioni del progetto, PHP/Laravel, database, autenticazione e agente AI esistente. Il pacchetto supporta Laravel 12.41.1+ e 13 con il relativo PHP compatibile. Riusa login, guard e provider dell’applicazione. In locale usa Herd con il nome della cartella seguito da .test, il suo schema HTTP/HTTPS e APP_URL coerente.
+
+2. Installa pact-protocol/laravel:^0.2 con Composer; Core è una dipendenza automatica. Verifica la disponibilità della release. Se non è disponibile, usa un checkout di bramato/Pact: esegui lì npm ci --ignore-scripts e npm run build:sdk, poi configura nell’app due repository Composer path assolute verso sdk/php e sdk/laravel con options.versions rispettivamente pact-protocol/core e pact-protocol/laravel a 0.2.0, come in reference/composer.json. Non inventare tag o pacchetti pubblicati.
+
+3. Verifica database, APP_KEY e APP_URL, poi esegui:
+php artisan config:clear
+php artisan pact:install --role=master --no-interaction
+Per peer locali HTTP aggiungi all’installazione un --allow-local-host per ciascun host, incluso il master. In produzione usa HTTPS. Conserva APP_KEY, database e storage/app/pact tra i deploy; la reinstallazione mantiene identità e chiavi e non cambia ruolo.
+
+4. Predisponi php artisan pact:work come processo persistente; non richiede Redis. Usa pact:work --once per controlli puntuali. Esegui php artisan pact:doctor e risolvi le anomalie. Ricostruisci le cache di configurazione e route dopo l’installazione.
+
+5. Per collegare un’app client serve il suo URL e il client ID pubblico generato SUL CLIENT da:
+php artisan pact:oauth-client --master=URL_MASTER
+Poi SUL MASTER esegui, sostituendo i segnaposto con valori reali:
+php artisan pact:application:add --name=NOME_APP --url=URL_CLIENT --client-id=CLIENT_ID
+php artisan pact:connect NOME_APP --user=ID_UTENTE_MASTER
+L’utente apre l’URL, accede al client, autorizza l’agente e ritorna al master con lo stesso utente che ha iniziato il collegamento. Le email possono essere diverse. Attendi l’attivazione tramite worker prima di inviare lavoro. Se manca il client, completa la parte master e indica i dati necessari per il collegamento.
+
+6. Nell’interfaccia autenticata usa PactLaravel\Facades\Pact: connectUrl(), members(), sendMessage(), task(), answer() e cancel(). Mostra collegamento, membri, stato task, domande e risultati. Riusa chiavi di idempotenza per i tentativi dello stesso comando. Usa i contratti supportati da entrambi i peer e valida gli artefatti: una ricevuta o HTTP 200 non significano completamento. Per gli strumenti dell’agente usa il binding MCP documentato e le credenziali previste, senza inventare endpoint.
+
+7. Mantieni ogni operazione nella federazione dell’utente corrente. La federazione non concede accesso generale a conversazioni o strumenti. Prova il collegamento OAuth reale quando il client è disponibile, un incarico completo, isolamento tra utenti, ripetizione idempotente, domande/risposte, cancellazione e disconnessione con pact:disconnect CONNECTION_ID --user=ID_UTENTE_MASTER.
+
+Consegna modifiche funzionanti, verifiche eseguite, configurazione del worker e istruzioni operative. Distingui ciò che è verificato da ciò che attende un client o il consenso dell’utente. Non mostrare token o chiavi nel resoconto.
+HANDOFF,
+            ],
+            'client' => [
+                'title' => 'Il progetto che contribuisce.',
+                'description' => 'Per l’applicazione che mette il proprio agente e le sue capacità a disposizione degli utenti collegati.',
+                'copy' => 'Copia handoff client',
+                'text' => <<<'HANDOFF'
+Integra PACT in questo progetto Laravel con ruolo CLIENT.
+
+Obiettivo: esporre un agente per ciascun utente dell’applicazione, collegabile a un master PACT con consenso OAuth, ed eseguire incarichi con le capacità AI e i permessi già presenti nel progetto.
+
+Fonti da leggere prima di modificare il progetto:
+- https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md
+- https://github.com/bramato/Pact/blob/main/specification/PACT-LARAVEL-BINDING-v0.1.md
+- https://github.com/bramato/Pact/blob/main/docs/releases.md
+
+1. Esamina le istruzioni del progetto, PHP/Laravel, database, autenticazione, agente AI e strumenti disponibili. Il pacchetto supporta Laravel 12.41.1+ e 13 con il relativo PHP compatibile. Riusa login, guard, provider e chiavi Passport esistenti. In locale usa Herd con il nome della cartella seguito da .test, il suo schema HTTP/HTTPS e APP_URL coerente.
+
+2. Installa pact-protocol/laravel:^0.2 con Composer; Core è una dipendenza automatica. Verifica la disponibilità della release. Se non è disponibile, usa un checkout di bramato/Pact: esegui lì npm ci --ignore-scripts e npm run build:sdk, poi configura nell’app due repository Composer path assolute verso sdk/php e sdk/laravel con options.versions rispettivamente pact-protocol/core e pact-protocol/laravel a 0.2.0, come in reference/composer.json. Non inventare tag o pacchetti pubblicati.
+
+3. Verifica database, APP_KEY e APP_URL, poi esegui:
+php artisan config:clear
+php artisan pact:install --role=client --no-interaction
+Per peer locali HTTP aggiungi all’installazione un --allow-local-host per ciascun host, inclusi client e master. In produzione usa HTTPS. L’installazione gestisce le migrazioni PACT e quelle Passport mancanti. Conserva APP_KEY, database, chiavi Passport e storage/app/pact tra i deploy; non sostituire credenziali esistenti.
+
+4. Predisponi php artisan pact:work come processo persistente; non richiede Redis. Usa pact:work --once per controlli puntuali. Esegui php artisan pact:doctor e risolvi le anomalie. Ricostruisci le cache di configurazione e route dopo l’installazione.
+
+5. Quando conosci l’URL reale del master, registra SUL CLIENT:
+php artisan pact:oauth-client --master=URL_MASTER
+Consegna al master URL del client e client ID pubblico restituito. SUL MASTER serviranno:
+php artisan pact:application:add --name=NOME_APP --url=URL_CLIENT --client-id=CLIENT_ID
+php artisan pact:connect NOME_APP --user=ID_UTENTE_MASTER
+L’utente accede a questo client, approva l’accesso e ritorna al master con l’utente che ha iniziato il collegamento; le email non devono coincidere. Puoi personalizzare il consenso con php artisan vendor:publish --tag=pact-views. Se manca il master, completa il client e indica i dati necessari per il collegamento.
+
+6. Verifica prima la connettività con il contratto diagnostico predefinito, che non usa AI. Poi implementa PactLaravel\Contracts\AgentHandler con handle(AgentContext $context): AgentResult e collega l’agente reale dell’applicazione. Configura handler, contract_path e contract_registry in config/pact.php, con schemi locali e digest dei byte esatti; riusa il contratto agent-chat incluso quando adatto. Restituisci output conforme con AgentResult::completed(); usa question(), waiting() o error() per gli altri esiti. Rendi idempotenti gli effetti esterni usando context->invocationId.
+
+7. Esegui ogni incarico con i permessi di context->userId. ConversationReader nega le letture per impostazione predefinita: abilita solo quelle autorizzate ai partecipanti reali. La federazione non concede accesso generale a dati o strumenti. Prova OAuth reale quando il master è disponibile, attivazione, un incarico con output validato, isolamento tra utenti, retry idempotenti, domande/ripresa e revoca con pact:disconnect CONNECTION_ID --user=ID_UTENTE_CLIENT.
+
+Consegna modifiche funzionanti, verifiche eseguite, configurazione del worker, capacità esposte e dati pubblici da passare al master. Distingui il ping diagnostico dall’integrazione AI reale e segnala ciò che attende un master o il consenso dell’utente. Non mostrare token o chiavi nel resoconto.
+HANDOFF,
+            ],
+        ],
+    ],
     'resources' => [
-        'label' => '07 / Dalla lettura al codice',
+        'label' => '08 / Dalla lettura al codice',
         'kicker' => 'APRI IL PROGETTO',
         'heading' => 'Un protocollo aperto.<br><em>Da leggere, provare, discutere.</em>',
         'intro' => 'PACT è una proposta indipendente in bozza, senza endorsement ufficiale A2A. Specifiche, implementazioni ed esempi sono disponibili nella repository con licenza MIT.',

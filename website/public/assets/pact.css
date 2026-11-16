@@ -1015,6 +1015,77 @@ figcaption,
   line-height: 1.9;
   color: var(--muted);
 }
+.handoff-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 44px;
+}
+.handoff-entry {
+  min-width: 0;
+  padding-top: 24px;
+  border-top: 2px solid var(--ink);
+}
+.handoff-entry h3 {
+  margin-top: 15px;
+  font: 700 34px/1.15 var(--serif);
+  letter-spacing: -0.035em;
+}
+.handoff-entry > p {
+  margin-block: 17px 24px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.85;
+}
+.handoff-feedback {
+  display: block;
+  min-height: 42px;
+  padding-block: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.handoff-preview {
+  border-block: 1px solid var(--line);
+}
+.handoff-preview summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: 52px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+.handoff-preview summary::-webkit-details-marker {
+  display: none;
+}
+.handoff-preview[open] summary .icon {
+  transform: rotate(180deg);
+}
+.handoff-preview pre {
+  max-height: 440px;
+  margin: 0 0 20px;
+  padding: 18px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background-color: var(--paper-light);
+  font: 11px/1.8 var(--mono);
+}
+.handoff-preview pre:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.handoff-note {
+  margin-top: 30px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+}
+.handoff-note a {
+  color: var(--blue);
+}
 .resource-list {
   border-top: 2px solid var(--ink);
 }
@@ -1868,6 +1939,10 @@ main,
   .resource-heading {
     margin-bottom: 30px;
     gap: 24px;
+  }
+  .handoff-list {
+    grid-template-columns: 1fr;
+    gap: 32px;
   }
   .resource-heading h2 {
     font-size: 39px;

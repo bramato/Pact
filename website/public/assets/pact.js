@@ -1,4 +1,46 @@
 (() => {
+  document.querySelectorAll("[data-copy-target]").forEach((button) => {
+    const source = document.getElementById(button.dataset.copyTarget);
+    const feedback = document.getElementById(
+      button.getAttribute("aria-describedby"),
+    );
+    if (!source || !feedback) return;
+
+    button.addEventListener("click", async () => {
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(source.textContent);
+        } else {
+          // Herd's HTTP origins may not expose the Clipboard API.
+          const field = document.createElement("textarea");
+          field.value = source.textContent;
+          field.readOnly = true;
+          field.style.position = "fixed";
+          field.style.opacity = "0";
+          document.body.append(field);
+          try {
+            field.select();
+            if (!document.execCommand("copy")) throw new Error("Copy failed");
+          } finally {
+            field.remove();
+            button.focus({ preventScroll: true });
+          }
+        }
+        feedback.textContent = button.dataset.copySuccess;
+      } catch {
+        source.closest("details").open = true;
+        source.focus();
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(source);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        feedback.textContent = button.dataset.copyError;
+      }
+    });
+    button.hidden = false;
+  });
+
   const tabs = document.querySelector(".demo-tabs");
   if (!tabs) return;
 
