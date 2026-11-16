@@ -10,6 +10,7 @@
   --blue-dark: #064ca7;
   --cover-line: #ffffff50;
   --paper-texture: url("/assets/paper-fibres.webp");
+  --paper-texture-strength: 22%;
   --serif: Georgia, "Times New Roman", serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
@@ -24,6 +25,7 @@ html {
   scroll-padding-top: 28px;
 }
 body {
+  --paper-surface: var(--blue);
   position: relative;
   isolation: isolate;
   margin: 0;
@@ -40,10 +42,11 @@ body::after {
   z-index: 10;
   pointer-events: none;
   background: url("/assets/print-grain.svg?v=2") repeat;
-  opacity: 0.12;
+  opacity: 0.04;
   mix-blend-mode: screen;
 }
 main {
+  --paper-surface: var(--paper);
   background-color: var(--paper);
 }
 ::selection {
@@ -214,10 +217,12 @@ figcaption,
   text-decoration: none;
 }
 .button-dark {
+  --paper-surface: var(--ink);
   background-color: var(--ink);
   color: var(--paper);
 }
 .button-dark:hover {
+  --paper-surface: var(--blue);
   background-color: var(--blue);
   border-color: var(--blue);
   color: var(--paper);
@@ -330,6 +335,7 @@ figcaption,
   opacity: 1;
 }
 .hero {
+  --paper-surface: var(--blue);
   position: relative;
   background-color: var(--blue);
   color: var(--paper);
@@ -339,6 +345,7 @@ figcaption,
 .demo-section::before,
 .demo-section::after,
 .closing::before {
+  --paper-surface: var(--paper);
   content: "";
   position: absolute;
   inset: auto 0 -1px;
@@ -401,12 +408,14 @@ figcaption,
   line-height: 1.85;
 }
 .hero .button {
+  --paper-surface: var(--paper);
   margin-top: 29px;
   background-color: var(--paper);
   color: var(--ink);
   border-color: var(--paper);
 }
 .hero .button:hover {
+  --paper-surface: var(--ink);
   background-color: var(--ink);
   color: var(--paper);
   border-color: var(--ink);
@@ -539,6 +548,7 @@ figcaption,
   margin-top: 27px;
 }
 .contract-visual {
+  --paper-surface: var(--paper-light);
   position: relative;
   padding: 31px;
   background-color: var(--paper-light);
@@ -649,6 +659,7 @@ figcaption,
   padding: 36px 12px 24px;
 }
 .chapter-art::before {
+  --paper-surface: var(--blue);
   content: "";
   position: absolute;
   z-index: -1;
@@ -685,6 +696,7 @@ figcaption,
 
 /* The guided example is a second cobalt spread with a paper tab strip. */
 .demo-section {
+  --paper-surface: var(--blue);
   position: relative;
   padding-block: 76px 34px;
   background-color: var(--blue);
@@ -745,6 +757,7 @@ figcaption,
   background-color: var(--blue-dark);
 }
 .demo-tabs button[aria-pressed="true"] {
+  --paper-surface: var(--paper);
   background-color: var(--paper);
   color: var(--ink);
 }
@@ -793,6 +806,7 @@ figcaption,
   transition: width 0.2s;
 }
 .demo-code {
+  --paper-surface: var(--paper-light);
   min-width: 0;
   min-height: 270px;
   border: 1px solid #12292338;
@@ -870,6 +884,7 @@ figcaption,
   margin-top: 52px;
 }
 .swarm-node {
+  --paper-surface: var(--paper-light);
   min-height: 182px;
   padding: 29px 23px;
   border: 1px solid var(--ink);
@@ -897,6 +912,7 @@ figcaption,
   gap: 10px;
 }
 .swarm-children > div {
+  --paper-surface: var(--paper-light);
   display: grid;
   grid-template-columns: 25px 1fr;
   align-items: center;
@@ -937,6 +953,7 @@ figcaption,
   height: 15px;
 }
 .result {
+  --paper-surface: var(--blue);
   background-color: var(--blue);
   color: var(--paper);
   border-color: var(--blue);
@@ -1085,6 +1102,7 @@ figcaption,
   line-height: 1.9;
 }
 .closing {
+  --paper-surface: var(--blue);
   position: relative;
   padding-block: 77px 70px;
   background-color: var(--blue);
@@ -1107,12 +1125,14 @@ figcaption,
   color: var(--paper);
 }
 .closing .button {
+  --paper-surface: var(--paper);
   flex-shrink: 0;
   background-color: var(--paper);
   border-color: var(--paper);
   color: var(--ink);
 }
 .closing .button:hover {
+  --paper-surface: var(--ink);
   background-color: var(--ink);
   border-color: var(--ink);
   color: var(--paper);
@@ -1155,7 +1175,7 @@ figcaption,
   height: 13px;
 }
 
-/* Every opaque surface uses the same fibrous stock, tinted by its ink. */
+/* A matching-color wash softens the fibres without washing out the ink colors. */
 body,
 main,
 .hero,
@@ -1173,14 +1193,23 @@ main,
 .swarm-node,
 .swarm-children > div,
 .button {
-  background-image: var(--paper-texture);
+  --paper-coating: color-mix(
+    in srgb,
+    var(--paper-surface) calc(100% - var(--paper-texture-strength)),
+    transparent
+  );
+  background-image:
+    linear-gradient(var(--paper-coating), var(--paper-coating)),
+    var(--paper-texture);
   background-size: 640px 640px;
-  background-blend-mode: multiply;
+  background-blend-mode: normal, multiply;
 }
 .contract-tag {
+  --paper-surface: var(--paper-light);
   background-color: var(--paper-light);
 }
 .output-tag {
+  --paper-surface: var(--blue);
   background-color: var(--blue);
 }
 .contract-visual,
