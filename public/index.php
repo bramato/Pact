@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 // Herd serves the editorial app at pact.test; the reference demo keeps its routes.
 $editorialPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-if (($editorialPath === '/' || $editorialPath === '/up') && is_file(__DIR__.'/../website/vendor/autoload.php')) {
+$editorialLocales = require __DIR__.'/../website/config/localization.php';
+$editorialPaths = ['/', '/up', ...array_map(
+    static fn (string $locale): string => '/'.$locale,
+    array_keys($editorialLocales['locales']),
+)];
+if (in_array(rtrim((string) $editorialPath, '/') ?: '/', $editorialPaths, true) && is_file(__DIR__.'/../website/vendor/autoload.php')) {
     require __DIR__.'/../website/public/index.php';
     exit;
 }

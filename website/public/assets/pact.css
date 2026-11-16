@@ -306,6 +306,29 @@ figcaption,
   width: 16px;
   height: 16px;
 }
+.language-switch {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 15px;
+  border-left: 1px solid var(--cover-line);
+}
+.masthead .language-switch a {
+  justify-content: center;
+  min-width: 28px;
+  font: 10px/1 var(--mono);
+  opacity: 0.7;
+}
+.masthead .language-switch a[aria-current="page"] {
+  font-weight: 700;
+  opacity: 1;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+.masthead .language-switch a:hover {
+  opacity: 1;
+}
 .hero {
   position: relative;
   background-color: var(--blue);
@@ -1486,11 +1509,26 @@ main,
     width: calc(100% - 40px);
   }
   .masthead {
-    height: 104px;
+    height: auto;
+    min-height: 112px;
+    padding-block: 12px;
   }
   .masthead nav {
-    gap: 15px;
+    flex: 1;
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0 15px;
     font-size: 11px;
+  }
+  .language-switch {
+    flex-basis: 100%;
+    justify-content: flex-end;
+    padding-left: 0;
+    border-left: 0;
+  }
+  .masthead .language-switch a {
+    min-width: 44px;
   }
   .masthead nav > a:first-child {
     display: none;
