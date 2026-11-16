@@ -26,6 +26,8 @@
     "demo:swarm": "node examples/v0.2/demo.mjs --swarm",
     "check:all": "npm run check && npm run test:integration",
     "package:smoke": "node tools/package-smoke.mjs",
+    "release:build": "node tools/release.mjs build",
+    "release:publish": "node tools/publish-release.mjs",
     "demo:verify": "node tools/verify-demo.mjs"
   },
   "dependencies": {

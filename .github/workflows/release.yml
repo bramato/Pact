@@ -1,0 +1,31 @@
+name: Composer release artifacts
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build the tagged Composer packages
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${RELEASE_TAG#v}"
+          node tools/release.mjs build --version "$VERSION" --output "storage/releases/$VERSION" --ref HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: composer-${{ github.ref_name }}
+          path: |
+            storage/releases/*/*.zip
+            storage/releases/*/release-manifest.json
+          if-no-files-found: error
