@@ -13,7 +13,7 @@
     <meta property="og:url" content="{{ url('/') }}">
     <link rel="canonical" href="{{ url('/') }}">
     <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/pact.css?v=2">
+    <link rel="stylesheet" href="/assets/pact.css?v=3">
     <script defer src="/assets/pact.js?v=1"></script>
     <title>PACT — Mettersi d’accordo, prima di agire.</title>
 </head>

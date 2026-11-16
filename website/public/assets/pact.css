@@ -9,6 +9,7 @@
   --blue: #075bc7;
   --blue-dark: #064ca7;
   --cover-line: #ffffff50;
+  --paper-texture: url("/assets/paper-fibres.webp");
   --serif: Georgia, "Times New Roman", serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
@@ -18,32 +19,35 @@
   box-sizing: border-box;
 }
 html {
+  background-color: var(--blue);
   scroll-behavior: smooth;
   scroll-padding-top: 28px;
 }
 body {
+  position: relative;
+  isolation: isolate;
   margin: 0;
-  background: var(--blue);
+  background-color: var(--blue);
   color: var(--ink);
   font: 16px/1.65 var(--sans);
   -webkit-font-smoothing: antialiased;
 }
-/* One light, local print texture unifies the paper and the cobalt ink. */
+/* Ink wear moves with the paper, including across type and illustrations. */
 body::after {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 10;
   pointer-events: none;
-  background: url("/assets/print-grain.svg") repeat;
-  opacity: 0.13;
-  mix-blend-mode: multiply;
+  background: url("/assets/print-grain.svg?v=2") repeat;
+  opacity: 0.12;
+  mix-blend-mode: screen;
 }
 main {
-  background: var(--paper);
+  background-color: var(--paper);
 }
 ::selection {
-  background: var(--ink);
+  background-color: var(--ink);
   color: var(--paper);
 }
 a {
@@ -210,11 +214,11 @@ figcaption,
   text-decoration: none;
 }
 .button-dark {
-  background: var(--ink);
+  background-color: var(--ink);
   color: var(--paper);
 }
 .button-dark:hover {
-  background: var(--blue);
+  background-color: var(--blue);
   border-color: var(--blue);
   color: var(--paper);
 }
@@ -228,7 +232,7 @@ figcaption,
   left: 16px;
   z-index: 20;
   padding: 12px;
-  background: var(--paper);
+  background-color: var(--paper);
 }
 .skip-link:focus {
   top: 12px;
@@ -312,56 +316,28 @@ figcaption,
 }
 .hero {
   position: relative;
-  background: var(--blue);
+  background-color: var(--blue);
   color: var(--paper);
   padding-block: 25px 30px;
 }
-.hero::after {
+.hero::after,
+.demo-section::before,
+.demo-section::after,
+.closing::before {
   content: "";
   position: absolute;
   inset: auto 0 -1px;
-  height: 14px;
-  background: var(--paper);
-  clip-path: polygon(
-    0 42%,
-    2% 60%,
-    4% 28%,
-    6% 46%,
-    9% 22%,
-    12% 52%,
-    14% 37%,
-    17% 57%,
-    20% 20%,
-    23% 43%,
-    26% 30%,
-    29% 62%,
-    32% 31%,
-    35% 52%,
-    38% 24%,
-    41% 42%,
-    44% 19%,
-    47% 46%,
-    50% 27%,
-    53% 61%,
-    56% 38%,
-    59% 51%,
-    62% 23%,
-    65% 43%,
-    68% 30%,
-    71% 56%,
-    74% 22%,
-    77% 43%,
-    80% 26%,
-    83% 59%,
-    86% 34%,
-    89% 50%,
-    92% 25%,
-    95% 48%,
-    98% 30%,
-    100% 49%,
-    100% 100%,
-    0 100%
-  );
+  z-index: 1;
+  height: 16px;
+  background-color: var(--paper);
+  pointer-events: none;
+  mask: url("/assets/paper-edge.svg") 0 0 / 240px 16px repeat-x;
+}
+.demo-section::before,
+.closing::before {
+  top: -1px;
+  bottom: auto;
+  transform: rotate(180deg);
 }
 .hero-meta {
   display: flex;
@@ -379,7 +355,7 @@ figcaption,
   width: 6px;
   height: 6px;
   flex-shrink: 0;
-  background: var(--paper);
+  background-color: var(--paper);
 }
 .edition {
   font-size: 9px;
@@ -411,12 +387,12 @@ figcaption,
 }
 .hero .button {
   margin-top: 29px;
-  background: var(--paper);
+  background-color: var(--paper);
   color: var(--ink);
   border-color: var(--paper);
 }
 .hero .button:hover {
-  background: var(--ink);
+  background-color: var(--ink);
   color: var(--paper);
   border-color: var(--ink);
 }
@@ -550,10 +526,11 @@ figcaption,
 .contract-visual {
   position: relative;
   padding: 31px;
-  background: var(--paper-light);
+  background-color: var(--paper-light);
   border: 1px solid var(--ink);
   border-top: 7px solid var(--blue);
   transform: rotate(1.2deg);
+  box-shadow: 3px 5px 0 #12292314;
 }
 .visual-heading {
   display: flex;
@@ -582,7 +559,7 @@ figcaption,
   font: 9px/1.6 var(--mono);
 }
 .output-tag {
-  background: var(--blue);
+  background-color: var(--blue);
   color: var(--paper-light);
   border-color: var(--blue);
 }
@@ -661,7 +638,7 @@ figcaption,
   position: absolute;
   z-index: -1;
   inset: 10px 0 48px;
-  background: var(--blue);
+  background-color: var(--blue);
   clip-path: polygon(
     2% 4%,
     22% 1%,
@@ -695,7 +672,7 @@ figcaption,
 .demo-section {
   position: relative;
   padding-block: 76px 34px;
-  background: var(--blue);
+  background-color: var(--blue);
   color: var(--paper);
 }
 .demo-section .section-label {
@@ -750,10 +727,10 @@ figcaption,
   font: 10px var(--mono);
 }
 .demo-tabs button:hover {
-  background: var(--blue-dark);
+  background-color: var(--blue-dark);
 }
 .demo-tabs button[aria-pressed="true"] {
-  background: var(--paper);
+  background-color: var(--paper);
   color: var(--ink);
 }
 .demo-tabs button:focus-visible {
@@ -797,14 +774,17 @@ figcaption,
   display: block;
   width: 0;
   height: 100%;
-  background: var(--paper);
+  background-color: var(--paper);
   transition: width 0.2s;
 }
 .demo-code {
   min-width: 0;
   min-height: 270px;
-  border: 1px solid var(--paper);
-  background: var(--ink);
+  border: 1px solid #12292338;
+  background-color: var(--paper-light);
+  color: var(--ink);
+  transform: rotate(-0.6deg);
+  box-shadow: 3px 5px 0 #12292324;
 }
 .code-toolbar {
   display: flex;
@@ -812,8 +792,8 @@ figcaption,
   align-items: center;
   gap: 12px;
   padding: 7px 18px;
-  border-bottom: 1px solid #eee7d742;
-  color: var(--paper);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
   font-size: 8px;
 }
 .copy-button {
@@ -821,7 +801,7 @@ figcaption,
   padding: 6px 0 6px 10px;
   border: 0;
   background: transparent;
-  color: var(--paper);
+  color: var(--ink);
   font-size: 11px;
 }
 .copy-button:hover {
@@ -832,7 +812,7 @@ figcaption,
   margin: 0;
   padding: 24px;
   overflow-x: auto;
-  color: var(--paper);
+  color: var(--ink);
   font: 12px/1.9 var(--mono);
 }
 .demo-code code {
@@ -878,7 +858,8 @@ figcaption,
   min-height: 182px;
   padding: 29px 23px;
   border: 1px solid var(--ink);
-  background: var(--paper-light);
+  background-color: var(--paper-light);
+  box-shadow: 2px 3px 0 #12292314;
 }
 .swarm-node > .eyebrow {
   margin-bottom: 13px;
@@ -907,6 +888,8 @@ figcaption,
   gap: 2px 12px;
   padding: 14px 17px;
   border: 1px solid var(--ink);
+  background-color: var(--paper-light);
+  box-shadow: 2px 3px 0 #1229230d;
 }
 .swarm-children span {
   grid-row: span 2;
@@ -939,7 +922,7 @@ figcaption,
   height: 15px;
 }
 .result {
-  background: var(--blue);
+  background-color: var(--blue);
   color: var(--paper);
   border-color: var(--blue);
 }
@@ -1089,7 +1072,7 @@ figcaption,
 .closing {
   position: relative;
   padding-block: 77px 70px;
-  background: var(--blue);
+  background-color: var(--blue);
   color: var(--paper);
 }
 .closing-inner {
@@ -1110,12 +1093,12 @@ figcaption,
 }
 .closing .button {
   flex-shrink: 0;
-  background: var(--paper);
+  background-color: var(--paper);
   border-color: var(--paper);
   color: var(--ink);
 }
 .closing .button:hover {
-  background: var(--ink);
+  background-color: var(--ink);
   border-color: var(--ink);
   color: var(--paper);
 }
@@ -1154,6 +1137,43 @@ figcaption,
 .footer .icon {
   width: 13px;
   height: 13px;
+}
+
+/* Every opaque surface uses the same fibrous stock, tinted by its ink. */
+body,
+main,
+.hero,
+.demo-section,
+.closing,
+.hero::after,
+.demo-section::before,
+.demo-section::after,
+.closing::before,
+.chapter-art::before,
+.contract-visual,
+.contract-tag,
+.demo-code,
+.demo-tabs button[aria-pressed="true"],
+.swarm-node,
+.swarm-children > div,
+.button {
+  background-image: var(--paper-texture);
+  background-size: 640px 640px;
+  background-blend-mode: multiply;
+}
+.contract-tag {
+  background-color: var(--paper-light);
+}
+.output-tag {
+  background-color: var(--blue);
+}
+.contract-visual,
+.demo-code,
+.swarm-children > div {
+  background-position: 120px 80px;
+}
+.button {
+  box-shadow: 1px 2px 0 #12292326;
 }
 
 @media (min-width: 1500px) {
@@ -1914,8 +1934,18 @@ figcaption,
   }
 }
 @media (forced-colors: active) {
-  body::after {
+  body::after,
+  .hero::after,
+  .demo-section::before,
+  .demo-section::after,
+  .closing::before {
     display: none;
+  }
+  *,
+  *::before,
+  *::after {
+    background-image: none !important;
+    box-shadow: none !important;
   }
   .brand img {
     filter: none;

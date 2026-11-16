@@ -12,6 +12,12 @@
       stitchTiles="stitch"
     />
     <feColorMatrix type="saturate" values="0" />
+    <feComponentTransfer>
+      <feFuncR type="discrete" tableValues="0 0 0 1 1" />
+      <feFuncG type="discrete" tableValues="0 0 0 1 1" />
+      <feFuncB type="discrete" tableValues="0 0 0 1 1" />
+      <feFuncA type="table" tableValues="1 1" />
+    </feComponentTransfer>
   </filter>
   <path fill="#fff" filter="url(#grain)" d="M0 0h240v240H0z" />
 </svg>
