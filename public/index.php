@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+
+// Herd serves the editorial app at pact.test; the reference demo keeps its routes.
+$editorialPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+if (($editorialPath === '/' || $editorialPath === '/up') && is_file(__DIR__.'/../website/vendor/autoload.php')) {
+    require __DIR__.'/../website/public/index.php';
+    exit;
+}
+
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Http\Request;

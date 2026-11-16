@@ -1,0 +1,25 @@
+{
+  "id": "PACT-WEB-001",
+  "language": "it",
+  "status": "validated",
+  "artifacts": [
+    "website/resources/views/pact.blade.php",
+    "website/public/assets/pact.css",
+    "website/public/assets/pact.js",
+    "docs/website.md"
+  ],
+  "sources": ["S-001", "S-002", "S-003", "S-004", "S-005", "S-006", "S-007"],
+  "checks": [
+    "composer validate --strict",
+    "php artisan optimize",
+    "HTTP kernel: GET / and /up return 200, HEAD / returns 200, unknown URL returns 404, POST / returns 405, with database connections disabled and no cookies",
+    "Herd HTTP response: public max-age=300, s-maxage=3600, no Set-Cookie",
+    "Browser: all five steps, restart, FAQ and clipboard fallback verified; no console errors",
+    "Browser widths 320, 390, 430, 667 and 768 CSS pixels: no document overflow or missing images"
+  ],
+  "limits": [
+    "Interactive JSON is a labeled narrative example, not a complete wire payload or a live agent execution",
+    "Native iOS/Android screen readers were not tested",
+    "Cloud application creation was rejected because remote main has no website directory; deployment awaits Marco's push"
+  ]
+}
