@@ -1,0 +1,35 @@
+name: Laravel package
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - php: '8.2'
+            laravel: '12'
+          - php: '8.4'
+            laravel: '13'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, bcmath, curl, pdo_sqlite, openssl
+          tools: composer:v2
+          coverage: none
+      - run: npm ci --ignore-scripts
+      - run: npm run build:sdk
+      - run: composer update --working-dir=sdk/laravel --with='laravel/framework:^${{ matrix.laravel }}.0' --no-interaction --no-progress --prefer-dist
+      - run: php sdk/laravel/vendor/bin/phpunit --configuration sdk/laravel/phpunit.xml
+      - run: npm run test:laravel:http

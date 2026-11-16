@@ -19,6 +19,8 @@
     "check": "npm test && npm run conformance && node tools/check-repository.mjs && npm run docs:build",
     "pretest": "npm run build:sdk",
     "test:integration": "node --test --test-reporter=spec tests/integration/*.test.mjs",
+    "test:laravel": "php sdk/laravel/vendor/bin/phpunit --configuration sdk/laravel/phpunit.xml",
+    "test:laravel:http": "node tools/laravel-http-smoke.mjs",
     "docs:build": "node tools/build/docs.mjs",
     "demo": "node examples/v0.2/demo.mjs",
     "demo:swarm": "node examples/v0.2/demo.mjs --swarm",
