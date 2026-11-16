@@ -1,4 +1,17 @@
-# PACT Laravel adapter
+# PACT Laravel master and client
+
+Install one package, choose `master` or `client`, and link users' agents through OAuth. Masters coordinate personal federations; clients execute work using their application's agent. The package includes persistence, a worker, Passport authorization with PKCE, and Laravel MCP/A2A endpoints.
+
+```sh
+php artisan pact:install --role=master --no-interaction
+# In a different Laravel application:
+php artisan pact:install --role=client --no-interaction
+php artisan pact:work
+```
+
+The packages have not been published: use Composer path repositories or standalone archives. Read the [installation and operations guide](https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md) for registration, OAuth linking, agent interfaces, diagnostics and recovery. Requires Laravel 12.41.1+ or 13 and compatible PHP. The default agent is a deterministic connectivity check; application AI capabilities require a configured handler and pinned contract.
+
+## Existing HTTP bindings
 
 `pact-protocol/laravel` adapts a `Pact\HttpBinding` implementation to Laravel 12 and 13 routing. It keeps framework dependencies out of the PHP protocol core. The reference demo executes these routes using Illuminate's real Router, Request and JsonResponse components; it is not a full generated Laravel application.
 
