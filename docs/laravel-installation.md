@@ -6,7 +6,7 @@ The same `pact-protocol/laravel` package runs as a **master**, owning users' per
 
 Packages have not been published. Add Composer path repositories pointing at this checkout's absolute `sdk/php` and `sdk/laravel` directories, assigning local version `0.2.0`, as shown in `reference/composer.json`. Then require `pact-protocol/laravel:^0.2`. Standalone Composer archives are also supported. Package-name installation without a configured repository requires a future owner-authorized release.
 
-Before archiving, run `npm ci --ignore-scripts` and `npm run build:sdk` in the PACT repository to bundle Core schemas. The consuming Laravel application does not need Node.js. Use Laravel 12.41.1+ or 13 with the compatible PHP version and OpenSSL, JSON, mbstring, BCMath, cURL and the database extension.
+Before using Composer path repositories from a fresh checkout or building archives, run `npm ci --ignore-scripts` and `npm run build:sdk` in the PACT repository to bundle Core schemas and Federation result contracts. The consuming Laravel application does not need Node.js. Use Laravel 12.41.1+ or 13 with the compatible PHP version and OpenSSL, JSON, mbstring, BCMath, cURL and the database extension.
 
 Configure the Laravel application's database, `APP_KEY`, existing authentication and `APP_URL`, then choose its role:
 
