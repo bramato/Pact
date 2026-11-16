@@ -1,14 +1,21 @@
 {
   "name": "pact-protocol/laravel",
-  "description": "Laravel HTTP routing adapter for PACT bindings",
+  "description": "Laravel master and client runtime for PACT personal federations",
   "type": "library",
   "license": "MIT",
   "require": {
     "php": "^8.2",
     "pact-protocol/core": "^0.2",
-    "illuminate/routing": "^12.0 || ^13.0",
-    "illuminate/http": "^12.0 || ^13.0",
-    "illuminate/support": "^12.0 || ^13.0"
+    "illuminate/routing": "^12.41.1 || ^13.0",
+    "illuminate/http": "^12.41.1 || ^13.0",
+    "illuminate/support": "^12.41.1 || ^13.0",
+    "illuminate/auth": "^12.41.1 || ^13.0",
+    "illuminate/console": "^12.41.1 || ^13.0",
+    "illuminate/database": "^12.41.1 || ^13.0",
+    "illuminate/encryption": "^12.41.1 || ^13.0",
+    "laravel/passport": "^13.10",
+    "laravel/mcp": "^1.1",
+    "firebase/php-jwt": "^6.11 || ^7.0"
   },
   "autoload": {
     "psr-4": {
@@ -21,5 +28,39 @@
         "PactLaravel\\PactServiceProvider"
       ]
     }
+  },
+  "require-dev": {
+    "orchestra/testbench": "^10.8 || ^11.3",
+    "phpunit/phpunit": "^11.5.50"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PactLaravel\\Tests\\": "tests/"
+    }
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../php",
+      "options": {
+        "symlink": true,
+        "versions": {
+          "pact-protocol/core": "0.2.0"
+        }
+      }
+    }
+  ],
+  "config": {
+    "allow-plugins": false,
+    "sort-packages": true
+  },
+  "archive": {
+    "exclude": [
+      "/vendor",
+      "/tests",
+      "/composer.lock",
+      "/phpunit.xml",
+      "/.phpunit.cache"
+    ]
   }
 }

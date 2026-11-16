@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/specification/federation/0.1/contracts/agent-chat-output.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["text"],
+  "properties": {"text": {"type": "string", "minLength": 1}, "sources": {"type": "array", "items": {"type": "object"}}}
+}

@@ -31,3 +31,7 @@ for (const language of ["typescript", "php"]) {
 }
 
 cpSync(resolve(root, "LICENSE.md"), resolve(root, "sdk/laravel/LICENSE.md"));
+cpSync(
+  resolve(root, "specification/federation/0.1/mcp-results.schema.json"),
+  resolve(root, "sdk/laravel/resources/contracts/mcp-results.json"),
+);

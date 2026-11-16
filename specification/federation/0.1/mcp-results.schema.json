@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/specification/federation/0.1/mcp-results.schema.json",
+  "$defs": {
+    "list_members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": ["user", "agent"]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "specialization": {
+            "type": "string",
+            "minLength": 1
+          },
+          "agent_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "origin": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["id", "kind", "active"],
+        "additionalProperties": false
+      }
+    },
+    "get_manifest": {
+      "type": "object",
+      "description": "The owning application manifest; user members may have an empty manifest."
+    },
+    "send_message": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "delegation_id": {
+          "type": ["string", "null"]
+        },
+        "accepted": {
+          "const": true
+        }
+      },
+      "required": ["task_id", "delegation_id", "accepted"],
+      "additionalProperties": false
+    },
+    "request_delegation": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "delegation_id": {
+          "type": ["string", "null"]
+        },
+        "accepted": {
+          "const": true
+        }
+      },
+      "required": ["task_id", "delegation_id", "accepted"],
+      "additionalProperties": false
+    },
+    "get_task": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "enum": [
+                "TASK_STATE_UNSPECIFIED",
+                "TASK_STATE_SUBMITTED",
+                "TASK_STATE_WORKING",
+                "TASK_STATE_INPUT_REQUIRED",
+                "TASK_STATE_AUTH_REQUIRED",
+                "TASK_STATE_COMPLETED",
+                "TASK_STATE_FAILED",
+                "TASK_STATE_CANCELED",
+                "TASK_STATE_REJECTED"
+              ]
+            },
+            "timestamp": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["state"],
+          "additionalProperties": true
+        }
+      },
+      "required": ["id", "status"],
+      "additionalProperties": true
+    },
+    "reserve_step": {
+      "type": "object",
+      "properties": {
+        "reserved": {
+          "const": true
+        },
+        "steps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        }
+      },
+      "required": ["reserved", "steps"],
+      "additionalProperties": false
+    },
+    "read_conversation": {
+      "description": "Application-defined JSON returned only after resource-specific authorization. The application documents its content schema."
+    }
+  }
+}
