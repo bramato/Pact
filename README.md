@@ -16,7 +16,7 @@
 
 PACT describes how independently built agents can agree on task inputs and outputs, ask typed questions, report work, and coordinate a dependency graph of contributors. It uses A2A discovery, messages, tasks, artifacts, and extension negotiation. The native A2A task status remains authoritative.
 
-This repository contains normative Core and optional Swarm profiles, independent TypeScript and PHP SDKs, a Laravel routing adapter, a durable three-contributor HTTP demo, and portable/live conformance tests. PACT is an independent proposal without official A2A endorsement. Project-controlled identifiers replace the archived `example.org` placeholders; publishing them remains the owner's release step.
+This repository contains normative Core and optional Swarm profiles, independent TypeScript and PHP SDKs, a Laravel master/client package with OAuth linking, a durable three-contributor HTTP demo, and portable/live conformance tests. PACT is an independent proposal without official A2A endorsement. Project-controlled identifiers replace the archived `example.org` placeholders; publishing them remains the owner's release step.
 
 ## Try the draft
 
@@ -40,6 +40,8 @@ php -S 127.0.0.1:8080 -t public reference/router.php
 In another terminal, run `npm run demo`. The caller receives two typed questions, answers them, and independently validates the PHP/Laravel artifact. For the three-contributor demo, run `php reference/bin/worker.php --watch` in another terminal, then `npm run demo:swarm`.
 
 [Quickstart](docs/quickstart.md) explains private configuration, custom URLs and worker operation. The default endpoint is **http://127.0.0.1:8080**; any PHP-compatible server can use `public/` as its document root. `npm run docs:build` builds navigable documentation at `/docs/` on that server. No model API key is needed.
+
+For Laravel applications, read the [master/client installation guide](docs/laravel-installation.md).
 
 Start with [Core v0.2](specification/PACT-CORE-v0.2.md), [optional Swarm](specification/PACT-SWARM-v0.2.md), and the [SDK guides](sdk/typescript/README.md). The supplied [v0.1 proposal](specification/PACT-SPEC-v0.1.md) remains an archived source record.
 

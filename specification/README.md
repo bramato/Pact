@@ -2,6 +2,8 @@
 
 Start new implementations with [Core v0.2](PACT-CORE-v0.2.md) and separately negotiated [Swarm v0.2](PACT-SWARM-v0.2.md). [Versioned schemas](0.2/schemas/) and [portable vectors](../conformance/v0.2/README.md) accompany the normative draft. The manifest records the exact project-controlled identifiers.
 
+The optional [Federation draft](PACT-FEDERATION-v0.1.md) describes personal agent networks. The [Laravel binding](PACT-LARAVEL-BINDING-v0.1.md) supplies its master/client HTTP conventions and [MCP result contracts](federation/0.1/mcp-results.schema.json).
+
 The original proposal and its progress schema remain byte-for-byte source records. v0.1 wire conventions and examples are retained for historical review and run in their own legacy suite; do not combine their placeholder identity or digest convention with v0.2 peers.
 
 ## Archived draft materials

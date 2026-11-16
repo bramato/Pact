@@ -4,6 +4,11 @@ coverage/
 vendor/
 sdk/typescript/dist/
 sdk/*/resources/
+!sdk/laravel/resources/
+!sdk/laravel/resources/**
+sdk/laravel/resources/contracts/mcp-results.json
+sdk/laravel/.phpunit.cache/
+sdk/laravel/composer.lock
 storage/
 site/
 *.tgz

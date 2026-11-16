@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bramato/Pact/blob/main/specification/federation/0.1/contracts/agent-chat-input.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["message", "coordinator"],
+  "properties": {
+    "message": {"type": "string", "minLength": 1, "maxLength": 10000},
+    "coordinator": {
+      "type": "object", "additionalProperties": false,
+      "required": ["endpoint", "federation_id", "member_id"],
+      "properties": {"endpoint": {"type": "string", "format": "uri"}, "federation_id": {"type": "string", "minLength": 1}, "member_id": {"type": "string", "minLength": 1}}
+    },
+    "parent_task_id": {"type": "string", "minLength": 1}
+  }
+}

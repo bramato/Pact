@@ -1,0 +1,12 @@
+{
+  "contract_id": "pact.agent.chat.v1",
+  "version": "0.1.0",
+  "input": {
+    "schema_uri": "https://github.com/bramato/Pact/blob/main/specification/federation/0.1/contracts/agent-chat-input.schema.json",
+    "sha256": "d26b99b06e8755626a9d7da5eca2b321a6b8c1ed4c9792a5a9f643d01021a711"
+  },
+  "output": {
+    "schema_uri": "https://github.com/bramato/Pact/blob/main/specification/federation/0.1/contracts/agent-chat-output.schema.json",
+    "sha256": "c89e2cbcaa5fa98e7e3544a67556ab17817d4b5e037653d33f6dc0635b88ccec"
+  }
+}

@@ -10,7 +10,7 @@ composer install --working-dir=sdk/php --no-interaction
 php conformance/v0.2/runner.php
 ```
 
-The package has not been published to Packagist. Use a local Composer path repository or the verified Composer archive until the owner releases it. Build resources before archiving; `resources/schemas.json` and `LICENSE.md` are included in the standalone archive. The [reference Composer project](https://github.com/bramato/Pact/blob/main/reference/composer.json) shows local installation.
+Install with `composer require pact-protocol/core:^0.2`. Standalone releases include `resources/schemas.json` and the MIT license. For checkout development, use a Composer path repository as shown in the [reference Composer project](https://github.com/bramato/Pact/blob/main/reference/composer.json), and build resources before testing or archiving.
 
 ```php
 use Pact\Pact;

@@ -82,6 +82,23 @@ try {
         existsSync(resolve(directory, "resources/schemas.json")),
         "Bundled schemas",
       );
+    if (name === "laravel") {
+      for (const file of [
+        "resources/contracts/contract.json",
+        "resources/contracts/registry.json",
+        "resources/contracts/agent-chat/contract.json",
+        "resources/contracts/mcp-results.json",
+        "resources/views/consent.blade.php",
+        "database/migrations/2026_11_16_000001_create_pact_runtime.php",
+        "src/Console/InstallCommand.php",
+        "src/Runtime/Worker.php",
+      ]) {
+        assert.ok(
+          existsSync(resolve(directory, file)),
+          `Laravel archive missing ${file}`,
+        );
+      }
+    }
   }
   const app = resolve(work, "php-app");
   mkdirSync(app);
