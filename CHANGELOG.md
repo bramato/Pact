@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0 — 2026-11-16
+
+First public Composer distribution of the PHP SDK and Laravel master/client package.
+
+- Install `pact-protocol/laravel` with its `pact-protocol/core` dependency from Packagist.
+- Choose a master or client role with `pact:install`; connect per-user agents through Passport authorization codes and PKCE.
+- Run durable database-backed delivery, typed questions, validated artifacts and bounded Federation delegation over A2A and Laravel MCP.
+- Preserve role, product identity, signing keys and pending work across repeated installation and compatible updates.
+- Ship standalone packages with generated schemas, MIT license, source provenance and checksums; no Node.js build is required in consuming applications.
+
+The protocol remains an independent draft at Core/Swarm `0.2.0`. Package versions and contract/schema versions are distinct. This release does not assert official A2A endorsement or universal production certification.
+
 ## 0.2.0 — draft, 2026-10-09
 
 - Document portable server startup and configurable reference URLs without prerequisites tied to one developer's environment.

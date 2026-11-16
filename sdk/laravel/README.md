@@ -9,7 +9,7 @@ php artisan pact:install --role=client --no-interaction
 php artisan pact:work
 ```
 
-The packages have not been published: use Composer path repositories or standalone archives. Read the [installation and operations guide](https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md) for registration, OAuth linking, agent interfaces, diagnostics and recovery. Requires Laravel 12.41.1+ or 13 and compatible PHP. The default agent is a deterministic connectivity check; application AI capabilities require a configured handler and pinned contract.
+Install with `composer require pact-protocol/laravel:^0.2`; Composer resolves the Core dependency. Read the [installation and operations guide](https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md) for registration, OAuth linking, agent interfaces, diagnostics and recovery. Requires Laravel 12.41.1+ or 13 and compatible PHP. The default agent is a deterministic connectivity check; application AI capabilities require a configured handler and pinned contract.
 
 ## Existing HTTP bindings
 

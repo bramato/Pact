@@ -2,9 +2,15 @@
 
 The same `pact-protocol/laravel` package runs as a **master**, owning users' personal federations, or as a **client**, exposing an agent for each application user. The application supplies its login and its own AI implementation. The database worker does not require Redis.
 
-## Install locally
+## Install a versioned release
 
-Packages have not been published. Add Composer path repositories pointing at this checkout's absolute `sdk/php` and `sdk/laravel` directories, assigning local version `0.2.0`, as shown in `reference/composer.json`. Then require `pact-protocol/laravel:^0.2`. Standalone Composer archives are also supported. Package-name installation without a configured repository requires a future owner-authorized release.
+```sh
+composer require pact-protocol/laravel:^0.2
+```
+
+Composer installs the Core dependency automatically. Public version tags and upgrade instructions are described in the [release guide](releases.md).
+
+For development from a checkout, add Composer path repositories pointing at its absolute `sdk/php` and `sdk/laravel` directories, assigning local version `0.2.0`, as shown in `reference/composer.json`. Standalone Composer release archives are also supported.
 
 Before using Composer path repositories from a fresh checkout or building archives, run `npm ci --ignore-scripts` and `npm run build:sdk` in the PACT repository to bundle Core schemas and Federation result contracts. The consuming Laravel application does not need Node.js. Use Laravel 12.41.1+ or 13 with the compatible PHP version and OpenSSL, JSON, mbstring, BCMath, cURL and the database extension.
 
