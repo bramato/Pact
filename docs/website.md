@@ -69,7 +69,9 @@ Official references checked on 16 November 2026: [Cloud compute and scale to zer
 ## Editing and verification
 
 - Page: `website/resources/views/pact.blade.php`.
-- Appearance and responsive layout: `website/public/assets/pact.css`.
+- Appearance and responsive layout: `website/public/assets/pact.css`. The editorial design uses cobalt blue, warm ivory paper, dark ink, serif headlines and a light local print grain.
+- Halftone paper-cut illustrations: `website/public/assets/overview-editorial.webp` and `website/public/assets/concept-editorial.webp`. Both retain alpha transparency and are exported as WebP for the page; the earlier illustrations remain available separately.
+- Illustration direction, built-in image-generation tool and complete prompts: `website/art-direction.json`.
 - Illustrative sequence and copy interaction: `website/public/assets/pact.js`.
 - Editorial sources and claim boundaries: `marketing/testi/pagina-editoriale/fonti.md`.
 

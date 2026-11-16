@@ -3,17 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f5f3ed">
+    <meta name="theme-color" content="#075bc7">
     <meta name="description" content="PACT è un protocollo per far collaborare agenti indipendenti: contratti espliciti, domande strutturate e risultati verificabili sopra A2A. Scopri come funziona.">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="it_IT">
     <meta property="og:title" content="PACT — Mettersi d’accordo, prima di agire.">
     <meta property="og:description" content="Un accordo esplicito tra agenti. Dai dati in ingresso a un risultato verificabile, con contratti, chiarimenti e coordinamento sopra A2A.">
-    <meta property="og:image" content="{{ url('/assets/overview.png') }}">
+    <meta property="og:image" content="{{ url('/assets/overview-editorial.webp') }}">
     <meta property="og:url" content="{{ url('/') }}">
     <link rel="canonical" href="{{ url('/') }}">
     <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/pact.css?v=1">
+    <link rel="stylesheet" href="/assets/pact.css?v=2">
     <script defer src="/assets/pact.js?v=1"></script>
     <title>PACT — Mettersi d’accordo, prima di agire.</title>
 </head>
@@ -30,22 +30,24 @@
     </header>
 
     <main id="contenuto">
-        <section class="hero wrap" id="inizio" aria-labelledby="hero-title">
-            <div class="hero-meta"><span class="eyebrow"><span class="status-dot"></span> Protocol for Agent Coordination and Tasks</span><span class="edition">Proposta indipendente · Bozza 0.2.0</span></div>
-            <div class="hero-grid">
-                <div class="hero-copy">
-                    <h1 id="hero-title">Mettersi<br>d’accordo,<br><em>prima di agire.</em></h1>
-                    <p class="hero-lead">Gli agenti AI possono scambiarsi messaggi.<br>PACT li aiuta a condividere un incarico, risolvere i dubbi e consegnare un risultato verificabile.</p>
-                    <a class="button button-dark" href="#il-protocollo">Scopri il protocollo <x-icon name="arrow-down" /></a>
-                    <a class="text-link hero-secondary" href="https://github.com/bramato/Pact/blob/main/specification/PACT-CORE-v0.2.md">Leggi la specifica <x-icon /></a>
+        <section class="hero" id="inizio" aria-labelledby="hero-title">
+            <div class="wrap">
+                <div class="hero-meta"><span class="eyebrow"><span class="status-dot"></span> Protocol for Agent Coordination and Tasks</span><span class="edition">Proposta indipendente · Bozza 0.2.0</span></div>
+                <div class="hero-grid">
+                    <div class="hero-copy">
+                        <h1 id="hero-title">Mettersi<br>d’accordo,<br><em>prima di agire.</em></h1>
+                        <p class="hero-lead">Gli agenti AI possono scambiarsi messaggi.<br> PACT li aiuta a condividere un incarico, risolvere i dubbi e consegnare un risultato verificabile.</p>
+                        <a class="button button-dark" href="#il-protocollo">Scopri il protocollo <x-icon name="arrow-down" /></a>
+                        <a class="text-link hero-secondary" href="https://github.com/bramato/Pact/blob/main/specification/PACT-CORE-v0.2.md">Leggi la specifica <x-icon /></a>
+                    </div>
+                    <figure class="hero-art">
+                        <span class="art-index">FIG. 01 — UN ACCORDO CONDIVISO</span>
+                        <img src="/assets/overview-editorial.webp" width="1536" height="1024" alt="Illustrazione a retino su carta ritagliata: il robot PACT collega due sistemi e presenta un risultato verificato." fetchpriority="high">
+                        <figcaption><span class="caption-rule"></span>Agenti diversi. Un contratto comune.</figcaption>
+                    </figure>
                 </div>
-                <figure class="hero-art">
-                    <span class="art-index">FIG. 01 — UN ACCORDO CONDIVISO</span>
-                    <img src="/assets/overview.png" width="1254" height="1254" alt="Il robot PACT collega due sistemi indipendenti e presenta il documento del risultato verificato." fetchpriority="high">
-                    <figcaption><span class="caption-rule"></span>Agenti diversi. Un contratto comune.</figcaption>
-                </figure>
+                <div class="hero-bottom"><span>Contratti espliciti. Collaborazione verificabile.</span><a href="#il-protocollo">Un’introduzione a PACT <x-icon name="arrow-down" /></a></div>
             </div>
-            <div class="hero-bottom"><span>Contratti espliciti. Collaborazione verificabile.</span><a href="#il-protocollo">Un’introduzione a PACT <x-icon name="arrow-down" /></a></div>
         </section>
 
         <section class="intro section wrap" id="il-protocollo" aria-labelledby="intro-title">
@@ -82,7 +84,7 @@
         </section>
 
         <section class="conversation section wrap" aria-labelledby="question-title">
-            <figure class="chapter-art"><img src="/assets/concept.png" width="1536" height="1024" alt="Il robot confronta i campi di un documento con la forma esatta richiesta dal contratto." loading="lazy"><figcaption>FIG. 02 — LA FORMA DEI DATI È PARTE DELL’ACCORDO</figcaption></figure>
+            <figure class="chapter-art"><img src="/assets/concept-editorial.webp" width="1536" height="1024" alt="Collage a retino: il robot confronta le forme di un documento con quelle richieste dal contratto." loading="lazy"><figcaption>FIG. 02 — LA FORMA DEI DATI È PARTE DELL’ACCORDO</figcaption></figure>
             <div class="chapter-copy"><span class="eyebrow blue">03 / I chiarimenti</span><h2 id="question-title">Una buona domanda<br><em>fa parte del lavoro.</em></h2><div class="prose"><p>Un incarico può essere chiaro nella forma e incompleto nei dettagli. Quante parole servono? Quale scelta deve essere approvata?</p><p>In PACT una domanda identifica il task e dichiara le risposte ammesse. Ogni risposta richiama la domanda che risolve: il sistema può sapere quali dubbi sono ancora aperti, anche quando sono più di uno.</p><p>Il lavoro riparte quando tutte le domande obbligatorie che lo bloccano hanno una risposta valida. Una richiesta di chiarimento diventa così un passaggio verificabile della collaborazione.</p></div></div>
         </section>
 
@@ -151,7 +153,7 @@
             <details><summary>È già uno standard ufficiale?<x-icon name="arrow-down" /></summary><p>PACT 0.2.0 è una proposta indipendente in bozza. La repository include specifiche, SDK ed esempi verificabili; i test disponibili non certificano ogni funzione A2A né l’intera operatività in produzione. La roadmap indica i passi e le decisioni di rilascio.</p></details>
         </div></section>
 
-        <section class="closing wrap" aria-labelledby="closing-title"><div><span class="eyebrow">IL PROSSIMO PASSO È UN ACCORDO.</span><h2 id="closing-title">Facciamo lavorare<br><em>insieme gli agenti.</em></h2></div><a class="button button-dark" href="https://github.com/bramato/Pact">Esplora PACT su GitHub <x-icon name="github" /></a></section>
+        <section class="closing" aria-labelledby="closing-title"><div class="closing-inner wrap"><div><span class="eyebrow">IL PROSSIMO PASSO È UN ACCORDO.</span><h2 id="closing-title">Facciamo lavorare<br><em>insieme gli agenti.</em></h2></div><a class="button button-dark" href="https://github.com/bramato/Pact">Esplora PACT su GitHub <x-icon name="github" /></a></div></section>
     </main>
 
     <footer class="footer wrap"><a class="brand" href="#inizio"><img src="/assets/logo.svg" width="32" height="32" alt=""><span>PACT<span class="brand-period">.</span></span></a><span>Protocol for Agent Coordination and Tasks</span><div><span>Bozza 0.2.0 · MIT</span><a href="https://github.com/bramato/Pact/blob/main/GOVERNANCE.md">Governance <x-icon /></a></div></footer>
