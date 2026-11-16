@@ -62,6 +62,28 @@ final class ManagerTest extends TestCase
         $this->manager->task($first['task_id']);
     }
 
+    public function test_owner_answers_agent_chat_question_using_the_bundled_answer_schema(): void
+    {
+        $id = $this->manager->sendMessage('agent', 'hello', 'chat-question')['task_id'];
+        $task = Task::query()->findOrFail($id);
+        $contract = json_decode(file_get_contents(__DIR__.'/../resources/contracts/agent-chat/contract.json'), true);
+        $answerFile = __DIR__.'/../resources/contracts/answer.json';
+        $answerSchema = json_decode(file_get_contents($answerFile), true);
+        $question = ['question_id' => 'q-chat', 'task_id' => 'remote-chat-task', 'prompt' => 'How many?',
+            'answer_schema' => ['schema_uri' => $answerSchema['$id'], 'sha256' => hash_file('sha256', $answerFile)],
+            'required' => true, 'expires_at' => null, 'status' => 'open'];
+        $observation = ['id' => 'remote-chat-task', 'contextId' => 'chat-context', 'status' => ['state' => 'TASK_STATE_INPUT_REQUIRED', 'timestamp' => now()->toISOString()],
+            'metadata' => [Pact::CORE_URI => ['version' => Pact::VERSION, 'contract' => $contract, 'questions' => [$question]]]];
+        $checkpoint = $task->checkpoint;
+        $checkpoint['contract'] = $contract;
+        $checkpoint['remote_task_id'] = 'remote-chat-task';
+        $checkpoint['last_observation'] = $observation;
+        $task->update(['state' => 'TASK_STATE_INPUT_REQUIRED', 'checkpoint' => $checkpoint, 'value' => $observation]);
+        $result = $this->manager->answer($id, [['response_to' => 'q-chat', 'task_id' => 'remote-chat-task', 'value' => ['count' => 2]]], 'chat-answer');
+        self::assertTrue($result['accepted']);
+        self::assertSame('TASK_STATE_WORKING', $task->fresh()->state);
+    }
+
     public function test_owner_answers_remote_question_and_replays_without_duplicate_work(): void
     {
         $id = $this->manager->sendMessage('agent', 'hello', 'initial')['task_id'];
