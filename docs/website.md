@@ -71,6 +71,7 @@ Official references checked on 16 November 2026: [Cloud compute and scale to zer
 - Page: `website/resources/views/pact.blade.php`.
 - Appearance and responsive layout: `website/public/assets/pact.css`. The entire page uses physical paper surfaces, including cobalt sections, the header/footer, buttons, diagrams and the cream typewritten example. `paper-fibres.webp` supplies the shared fibrous stock; `print-grain.svg` adds dry ink wear that scrolls with the page. `paper-edge.svg` masks the torn transitions between sheets. The visual layers are disabled in forced-colors mode.
 - Halftone paper-cut illustrations: `website/public/assets/overview-editorial.webp` and `website/public/assets/concept-editorial.webp`. Both retain alpha transparency and are exported as WebP for the page; the earlier illustrations remain available separately.
+- Brand: `website/public/assets/pact-logo-sticker.png` is the master of the monochrome paper sticker selected for the project: a horizontal circle/triangle/square emblem and a large PACT wordmark below, all on one continuous ivory cutout. `pact-logo-sticker.webp` is its web export for the masthead and footer; `pact-symbol.svg` is the compact favicon. The full name is **Protocol for Agent Coordination and Tasks**.
 - Illustration direction, built-in image-generation tool and complete prompts: `website/art-direction.json`.
 - Illustrative sequence and copy interaction: `website/public/assets/pact.js`.
 - Editorial sources and claim boundaries: `marketing/testi/pagina-editoriale/fonti.md`.

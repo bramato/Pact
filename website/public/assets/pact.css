@@ -254,7 +254,7 @@ figcaption,
 
 /* The opening reads as a printed cover: one ink, one paper, a cutout. */
 .masthead {
-  height: 100px;
+  height: 128px;
   display: flex;
   align-items: center;
   gap: 38px;
@@ -264,28 +264,20 @@ figcaption,
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   text-decoration: none;
   flex-shrink: 0;
 }
 .brand img {
-  filter: brightness(0) invert(1);
-  opacity: 0.92;
-}
-.brand > span {
-  font-size: 34px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -1.8px;
-}
-.brand-period {
-  color: inherit;
+  width: 108px;
+  height: 96px;
+  object-fit: contain;
 }
 .brand:hover {
   color: var(--paper);
 }
 .masthead-note {
-  font: 10px var(--mono);
+  font: 11px/1.7 var(--mono);
   letter-spacing: 0.025em;
 }
 .masthead nav {
@@ -1110,8 +1102,9 @@ figcaption,
   padding-block: 27px 33px;
   color: var(--paper);
 }
-.footer .brand > span {
-  font-size: 24px;
+.footer .brand img {
+  width: 86px;
+  height: 76px;
 }
 .footer > span {
   font: 9px/1.7 var(--mono);
@@ -1253,7 +1246,7 @@ main,
     width: calc(100% - 48px);
   }
   .masthead {
-    height: 85px;
+    height: 112px;
     gap: 20px;
   }
   .masthead nav {
@@ -1263,12 +1256,9 @@ main,
   .nav-source {
     padding-left: 20px;
   }
-  .brand > span {
-    font-size: 29px;
-  }
   .brand img {
-    width: 37px;
-    height: 37px;
+    width: 96px;
+    height: 84px;
   }
   .hero-meta {
     align-items: start;
@@ -1496,7 +1486,7 @@ main,
     width: calc(100% - 40px);
   }
   .masthead {
-    height: 78px;
+    height: 104px;
   }
   .masthead nav {
     gap: 15px;
@@ -1509,12 +1499,9 @@ main,
     padding-left: 15px;
     gap: 7px;
   }
-  .brand > span {
-    font-size: 28px;
-  }
   .brand img {
-    width: 34px;
-    height: 34px;
+    width: 88px;
+    height: 78px;
   }
   .hero {
     padding-top: 20px;
@@ -1877,11 +1864,8 @@ main,
     padding-block: 25px 30px;
   }
   .footer .brand img {
-    width: 29px;
-    height: 29px;
-  }
-  .footer .brand > span {
-    font-size: 24px;
+    width: 76px;
+    height: 66px;
   }
   .footer > span {
     max-width: 190px;
@@ -1946,9 +1930,6 @@ main,
   *::after {
     background-image: none !important;
     box-shadow: none !important;
-  }
-  .brand img {
-    filter: none;
   }
   .demo-tabs button[aria-pressed="true"] {
     outline: 2px solid Highlight;

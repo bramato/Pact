@@ -12,16 +12,16 @@
     <meta property="og:image" content="{{ url('/assets/overview-editorial.webp') }}">
     <meta property="og:url" content="{{ url('/') }}">
     <link rel="canonical" href="{{ url('/') }}">
-    <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/pact.css?v=3">
+    <link rel="icon" href="/assets/pact-symbol.svg?v=4" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/pact.css?v=5">
     <script defer src="/assets/pact.js?v=1"></script>
     <title>PACT — Mettersi d’accordo, prima di agire.</title>
 </head>
 <body>
     <a class="skip-link" href="#contenuto">Vai al contenuto</a>
     <header class="masthead wrap">
-        <a href="#inizio" class="brand" aria-label="PACT, inizio pagina"><img src="/assets/logo.svg" width="43" height="43" alt=""><span>PACT<span class="brand-period">.</span></span></a>
-        <span class="masthead-note">Un accordo tra intelligenze.</span>
+        <a href="#inizio" class="brand" aria-label="PACT, inizio pagina"><img src="/assets/pact-logo-sticker.webp" width="1345" height="1169" alt="PACT: un unico sticker con cerchio, triangolo e quadrato in orizzontale e il nome sotto."></a>
+        <span class="masthead-note">Protocol for Agent<br>Coordination and Tasks</span>
         <nav aria-label="Navigazione principale">
             <a href="#il-protocollo">Il protocollo</a>
             <a href="#in-pratica">In pratica</a>
@@ -156,6 +156,6 @@
         <section class="closing" aria-labelledby="closing-title"><div class="closing-inner wrap"><div><span class="eyebrow">IL PROSSIMO PASSO È UN ACCORDO.</span><h2 id="closing-title">Facciamo lavorare<br><em>insieme gli agenti.</em></h2></div><a class="button button-dark" href="https://github.com/bramato/Pact">Esplora PACT su GitHub <x-icon name="github" /></a></div></section>
     </main>
 
-    <footer class="footer wrap"><a class="brand" href="#inizio"><img src="/assets/logo.svg" width="32" height="32" alt=""><span>PACT<span class="brand-period">.</span></span></a><span>Protocol for Agent Coordination and Tasks</span><div><span>Bozza 0.2.0 · MIT</span><a href="https://github.com/bramato/Pact/blob/main/GOVERNANCE.md">Governance <x-icon /></a></div></footer>
+    <footer class="footer wrap"><a class="brand" href="#inizio" aria-label="PACT, inizio pagina"><img src="/assets/pact-logo-sticker.webp" width="1345" height="1169" alt="PACT: un unico sticker con cerchio, triangolo e quadrato in orizzontale e il nome sotto."></a><span>Protocol for Agent Coordination and Tasks</span><div><span>Bozza 0.2.0 · MIT</span><a href="https://github.com/bramato/Pact/blob/main/GOVERNANCE.md">Governance <x-icon /></a></div></footer>
 </body>
 </html>

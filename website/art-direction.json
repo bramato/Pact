@@ -1,7 +1,25 @@
 {
   "style": "Entire website printed on tactile fibrous paper: cobalt ink, warm ivory stock, visible pulp and fibres, dry ink wear, torn sheet edges, layered paper inserts and halftone cutouts.",
   "tool": "Built-in image_gen",
+  "brand": {
+    "name": "PACT",
+    "expansion": "Protocol for Agent Coordination and Tasks",
+    "initials": {
+      "P": "Protocol",
+      "A": "Agent",
+      "C": "Coordination",
+      "T": "Tasks"
+    },
+    "mark": "A single continuous ivory paper sticker: monochrome circle, upright triangle and square in a horizontal row, with a large bold PACT wordmark below.",
+    "compact_symbol": "pact-symbol.svg",
+    "master": "pact-logo-sticker.png"
+  },
   "assets": [
+    {
+      "file": "pact-logo-sticker.webp",
+      "source_file": "pact-logo-sticker.png",
+      "prompt": "Use case: precise-object-edit.\nAsset type: final PACT editorial paper sticker logo, one single die-cut paper piece, transparent background.\nEdit target: the attached PACT logo.\nPrimary request: change the symbol plaque from VERTICAL to HORIZONTAL, and unite the symbol plaque and the PACT lettering into ONE continuous paper sticker.\nLayout: top row contains exactly three symbols horizontally, ordered left-to-right CIRCLE, upright TRIANGLE, upright SQUARE. All three are evenly spaced, equal optical size, with their centers aligned on the same horizontal centerline. Enclose the row in one wide low rounded-rectangle ink outline. Directly beneath it, the exact large uppercase word \"PACT\" is centered, bold and very legible.\nCRITICAL single-piece sticker: the ivory paper behind the top symbol row and behind the PACT word must be physically ONE connected continuous block. No transparent gap, no seam, no overlapping pieces, no floating separate wordmark. A single compact outer torn-paper contour encloses the entire composition. The connecting ivory area between symbol row and PACT is completely opaque and uninterrupted.\nComposition: compact near-square logo badge, slightly wider than tall, overall aspect approximately 1.15:1. Tight balanced spacing, symbol row and wordmark similar widths. Perfectly upright front view, not rotated. Whole logo visible with small 4% outside margins, no large empty canvas.\nPreserve: the existing beautiful bold slab-serif PACT letterforms, warm ivory #eee7d7 fibrous paper, deep green-black #122923 worn ink, screenprint halftone dots, restrained dry print texture and handmade torn edge. The symbols remain upright despite the plaque becoming horizontal. Retain exactly these four letters once.\nBackground: real alpha transparency OUTSIDE the one paper sticker only; the interior paper remains completely opaque.\nAvoid: vertical stacking of the three shapes, tilted triangle, multiple stickers, white gap between elements, extra words, period after PACT, robot, hands, realistic 3D, bevel, cast shadow, glow, colored rectangular backdrop, watermark."
+    },
     {
       "file": "paper-fibres.webp",
       "usage": "Shared physical paper stock for every page surface, multiplied with ivory, cobalt and ink backgrounds at a 640px tile size.",
