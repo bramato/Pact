@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/readme/logo.svg" width="88" alt="PACT: two contract frames share an agreed connection">
+  <img src="website/public/assets/pact-logo-sticker.png" width="160" alt="PACT: a circle, triangle and square above the wordmark on one paper sticker">
 </p>
 
 <p align="center">
