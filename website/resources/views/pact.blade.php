@@ -153,7 +153,7 @@
                     </article>
                 @endforeach
             </div>
-            <p class="handoff-note">{{ $copy['handoff']['note'] }} <a href="https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md">{{ $copy['handoff']['guide'] }}</a>.</p>
+            <p class="handoff-note">{{ $copy['handoff']['note'] }} <a href="https://github.com/bramato/Pact/blob/d120ac0/docs/laravel-installation.md">{{ $copy['handoff']['guide'] }}</a>.</p>
         </section>
 
         <section class="resources section wrap" id="risorse" aria-labelledby="resources-title">

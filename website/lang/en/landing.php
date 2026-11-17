@@ -279,19 +279,23 @@ Integrate PACT into this Laravel project with the MASTER role.
 
 Goal: each authenticated user can connect agents from other applications to their own teams, send work and review results and questions.
 
+Source reference for this flow: bramato/Pact, commit d120ac0 (or a descendant containing this functionality).
+
 Read these sources before changing the project:
-- https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md
-- https://github.com/bramato/Pact/blob/main/specification/PACT-LARAVEL-BINDING-v0.1.md
-- https://github.com/bramato/Pact/blob/main/docs/releases.md
+- https://github.com/bramato/Pact/blob/d120ac0/docs/laravel-installation.md
+- https://github.com/bramato/Pact/blob/d120ac0/specification/PACT-LARAVEL-BINDING-v0.1.md
+- https://github.com/bramato/Pact/blob/d120ac0/docs/releases.md
 
 1. Inspect project instructions, PHP/Laravel, database, authentication and the existing AI agent. The package supports Laravel 12.41.1+ and 13 with their compatible PHP versions. Reuse the application’s login, guard and provider. Locally use Herd with the project folder name followed by .test, its existing HTTP/HTTPS scheme and a matching APP_URL.
 
-2. Install pact-protocol/laravel:^0.2 using Composer; Core is an automatic dependency. Verify release availability. If unavailable, use a bramato/Pact checkout: run npm ci --ignore-scripts and npm run build:sdk there, then add two absolute Composer path repositories to the app for sdk/php and sdk/laravel, with options.versions assigning pact-protocol/core and pact-protocol/laravel respectively to 0.2.0, as in reference/composer.json. Do not invent published tags or packages.
+2. Verify that the available pact-protocol/laravel release includes PactManager::connectDomain() and the new domain-linking routes; satisfying ^0.2 alone does not establish this. If it does, install pact-protocol/laravel:^0.2 using Composer; Core is an automatic dependency. Otherwise use a bramato/Pact checkout at commit d120ac0, or a descendant containing the flow: run npm ci --ignore-scripts and npm run build:sdk there, then add two absolute Composer path repositories to the app for sdk/php and sdk/laravel, with options.versions assigning pact-protocol/core and pact-protocol/laravel respectively to 0.2.0, as in reference/composer.json. To update existing dependencies, run composer update pact-protocol/laravel pact-protocol/core --with-all-dependencies. Check the code actually loaded from vendor before continuing. Do not invent published tags or packages.
 
 3. Verify the database, APP_KEY and APP_URL, then run:
 php artisan config:clear
 php artisan pact:install --role=master --no-interaction
 For local HTTP peers, add one --allow-local-host per host to the installation command, including the master. Use HTTPS in production. Preserve APP_KEY, the database and storage/app/pact across deployments; reinstallation preserves identity and keys and cannot change the role.
+
+For an existing PACT installation, rerun pact:install --no-interaction after updating to apply the new migrations: existing identity, connections and keys are preserved. Update both servers. Compare any published, customised views with the package views to include the new pages, and verify pact.auth.middleware in configuration.
 
 4. Configure php artisan pact:work as a persistent process; Redis is not required. Use pact:work --once for individual checks. Run php artisan pact:doctor and resolve its findings. Rebuild configuration and route caches after installation.
 
@@ -301,7 +305,7 @@ The user signs into the client, consents, and returns to the master to select an
 
 6. In the authenticated interface, use PactLaravel\Facades\Pact: connectDomain(), teams(), createTeam(), members(), sendMessage(), task(), answer() and cancel(). Pass the selected team as the optional team argument; omission uses the personal team. Preserve the team ownership check. Show connections, members, task status, questions and results. Reuse idempotency keys when retrying the same command. Use contracts supported by both peers and validate artifacts: a receipt or HTTP 200 does not mean completion. For agent tools use the documented MCP binding and required credentials, without inventing endpoints.
 
-7. Scope every operation to the current user’s federation. Membership does not grant general access to conversations or tools. When a client is available, test real OAuth linking, a complete task, user isolation, idempotent retries, questions/answers, cancellation and disconnection with pact:disconnect CONNECTION_ID --user=MASTER_USER_ID.
+7. Scope every operation to the current user’s authorised team. Membership does not grant general access to conversations or tools. When a client is available, test the UI path with only a domain, remote consent, team selection or creation, and confirmed activation. Verify both a master-to-client task and an authenticated client call to the master roster. Also test rejection of another user’s team, denied consent, expired linking, duplicate team submission without duplicate work, a complete task, questions/answers, cancellation and disconnection with pact:disconnect CONNECTION_ID --user=MASTER_USER_ID.
 
 Deliver working changes, completed checks, worker configuration and operating instructions. Distinguish verified behavior from work awaiting a client or user consent. Do not include tokens or private keys in the report.
 HANDOFF,
@@ -315,19 +319,23 @@ Integrate PACT into this Laravel project with the CLIENT role.
 
 Goal: expose one agent per application user, connectable to a PACT master through OAuth consent, and execute work using the project’s existing AI capabilities and permissions.
 
+Source reference for this flow: bramato/Pact, commit d120ac0 (or a descendant containing this functionality).
+
 Read these sources before changing the project:
-- https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md
-- https://github.com/bramato/Pact/blob/main/specification/PACT-LARAVEL-BINDING-v0.1.md
-- https://github.com/bramato/Pact/blob/main/docs/releases.md
+- https://github.com/bramato/Pact/blob/d120ac0/docs/laravel-installation.md
+- https://github.com/bramato/Pact/blob/d120ac0/specification/PACT-LARAVEL-BINDING-v0.1.md
+- https://github.com/bramato/Pact/blob/d120ac0/docs/releases.md
 
 1. Inspect project instructions, PHP/Laravel, database, authentication, AI agent and available tools. The package supports Laravel 12.41.1+ and 13 with their compatible PHP versions. Reuse existing login, guard, provider and Passport keys. Locally use Herd with the project folder name followed by .test, its existing HTTP/HTTPS scheme and a matching APP_URL.
 
-2. Install pact-protocol/laravel:^0.2 using Composer; Core is an automatic dependency. Verify release availability. If unavailable, use a bramato/Pact checkout: run npm ci --ignore-scripts and npm run build:sdk there, then add two absolute Composer path repositories to the app for sdk/php and sdk/laravel, with options.versions assigning pact-protocol/core and pact-protocol/laravel respectively to 0.2.0, as in reference/composer.json. Do not invent published tags or packages.
+2. Verify that the available pact-protocol/laravel release includes PactManager::connectDomain() and the new domain-linking routes; satisfying ^0.2 alone does not establish this. If it does, install pact-protocol/laravel:^0.2 using Composer; Core is an automatic dependency. Otherwise use a bramato/Pact checkout at commit d120ac0, or a descendant containing the flow: run npm ci --ignore-scripts and npm run build:sdk there, then add two absolute Composer path repositories to the app for sdk/php and sdk/laravel, with options.versions assigning pact-protocol/core and pact-protocol/laravel respectively to 0.2.0, as in reference/composer.json. To update existing dependencies, run composer update pact-protocol/laravel pact-protocol/core --with-all-dependencies. Check the code actually loaded from vendor before continuing. Do not invent published tags or packages.
 
 3. Verify the database, APP_KEY and APP_URL, then run:
 php artisan config:clear
 php artisan pact:install --role=client --no-interaction
 For local HTTP peers, add one --allow-local-host per host to the installation command, including both client and master. Use HTTPS in production. Installation handles PACT migrations and missing Passport migrations. Preserve APP_KEY, the database, Passport keys and storage/app/pact across deployments; do not replace existing credentials.
+
+For an existing PACT installation, rerun pact:install --no-interaction after updating to apply the new migrations: existing identity, connections and keys are preserved. Update both servers. Compare any published, customised views with the package views to include the new pages, and verify pact.auth.middleware in configuration.
 
 4. Configure php artisan pact:work as a persistent process; Redis is not required. Use pact:work --once for individual checks. Run php artisan pact:doctor and resolve its findings. Rebuild configuration and route caches after installation.
 
@@ -335,7 +343,7 @@ For local HTTP peers, add one --allow-local-host per host to the installation co
 
 6. First verify connectivity with the default diagnostic contract, which does not use AI. Then implement PactLaravel\Contracts\AgentHandler with handle(AgentContext $context): AgentResult and connect the application’s real agent. Configure handler, contract_path and contract_registry in config/pact.php, using local schemas pinned by exact-byte digests; reuse the included agent-chat contract where appropriate. Return conforming output with AgentResult::completed(); use question(), waiting() or error() for other outcomes. Make external effects idempotent using context->invocationId.
 
-7. Execute every task with context->userId’s permissions. ConversationReader denies reads by default: enable only reads authorized for actual participants. Membership does not grant general access to data or tools. When a master is available, test real OAuth linking, activation, a task with validated output, user isolation, idempotent retries, questions/resume and revocation with pact:disconnect CONNECTION_ID --user=CLIENT_USER_ID.
+7. Execute every task with context->userId’s permissions, including the authorised tenant. ConversationReader denies reads by default: enable only reads authorised for actual participants. Membership does not grant general access to data or tools. Verify public discovery, repeated registration returning the same client ID and a callback bound to the master. When a master is available, test the domain-only flow, consent, activation and authenticated calls in both directions. For multitenant apps, verify that changing tenant before approval requires fresh consent. Test a task with validated output, user isolation, idempotent retries, questions/resume and revocation with pact:disconnect CONNECTION_ID --user=CLIENT_USER_ID.
 
 Deliver working changes, completed checks, worker configuration, exposed capabilities and the domain to pass to the master. Distinguish diagnostic connectivity from real AI integration and identify work awaiting a master or user consent. Do not include tokens or private keys in the report.
 HANDOFF,

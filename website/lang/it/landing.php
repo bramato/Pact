@@ -279,19 +279,23 @@ Integra PACT in questo progetto Laravel con ruolo MASTER.
 
 Obiettivo: ogni utente autenticato deve poter collegare agenti di altre applicazioni alle proprie squadre, inviare incarichi e consultarne risultati e domande.
 
+Riferimento sorgente per questo flusso: bramato/Pact, commit d120ac0 (o un suo discendente che include la funzionalità).
+
 Fonti da leggere prima di modificare il progetto:
-- https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md
-- https://github.com/bramato/Pact/blob/main/specification/PACT-LARAVEL-BINDING-v0.1.md
-- https://github.com/bramato/Pact/blob/main/docs/releases.md
+- https://github.com/bramato/Pact/blob/d120ac0/docs/laravel-installation.md
+- https://github.com/bramato/Pact/blob/d120ac0/specification/PACT-LARAVEL-BINDING-v0.1.md
+- https://github.com/bramato/Pact/blob/d120ac0/docs/releases.md
 
 1. Esamina le istruzioni del progetto, PHP/Laravel, database, autenticazione e agente AI esistente. Il pacchetto supporta Laravel 12.41.1+ e 13 con il relativo PHP compatibile. Riusa login, guard e provider dell’applicazione. In locale usa Herd con il nome della cartella seguito da .test, il suo schema HTTP/HTTPS e APP_URL coerente.
 
-2. Installa pact-protocol/laravel:^0.2 con Composer; Core è una dipendenza automatica. Verifica la disponibilità della release. Se non è disponibile, usa un checkout di bramato/Pact: esegui lì npm ci --ignore-scripts e npm run build:sdk, poi configura nell’app due repository Composer path assolute verso sdk/php e sdk/laravel con options.versions rispettivamente pact-protocol/core e pact-protocol/laravel a 0.2.0, come in reference/composer.json. Non inventare tag o pacchetti pubblicati.
+2. Verifica che la release disponibile di pact-protocol/laravel includa PactManager::connectDomain() e le nuove route di collegamento dal dominio; la sola compatibilità con ^0.2 non lo garantisce. Se le include, installa pact-protocol/laravel:^0.2 con Composer; Core è una dipendenza automatica. Altrimenti usa un checkout di bramato/Pact al commit d120ac0, o un suo discendente che include il flusso: esegui lì npm ci --ignore-scripts e npm run build:sdk, poi configura nell’app due repository Composer path assolute verso sdk/php e sdk/laravel con options.versions rispettivamente pact-protocol/core e pact-protocol/laravel a 0.2.0, come in reference/composer.json. Per aggiornare una dipendenza già installata esegui composer update pact-protocol/laravel pact-protocol/core --with-all-dependencies. Verifica il codice effettivamente caricato da vendor prima di proseguire. Non inventare tag o pacchetti pubblicati.
 
 3. Verifica database, APP_KEY e APP_URL, poi esegui:
 php artisan config:clear
 php artisan pact:install --role=master --no-interaction
 Per peer locali HTTP aggiungi all’installazione un --allow-local-host per ciascun host, incluso il master. In produzione usa HTTPS. Conserva APP_KEY, database e storage/app/pact tra i deploy; la reinstallazione mantiene identità e chiavi e non cambia ruolo.
+
+Se PACT era già installato, riesegui pact:install --no-interaction dopo l’aggiornamento per applicare le nuove migrazioni: identità, connessioni e chiavi esistenti vengono conservate. Aggiorna entrambi i server. Confronta le eventuali viste pubblicate e personalizzate con quelle del pacchetto per includere le nuove pagine e verifica pact.auth.middleware nella configurazione.
 
 4. Predisponi php artisan pact:work come processo persistente; non richiede Redis. Usa pact:work --once per controlli puntuali. Esegui php artisan pact:doctor e risolvi le anomalie. Ricostruisci le cache di configurazione e route dopo l’installazione.
 
@@ -301,7 +305,7 @@ L’utente accede al client, autorizza l’agente e ritorna al master, dove sceg
 
 6. Nell’interfaccia autenticata usa PactLaravel\Facades\Pact: connectDomain(), teams(), createTeam(), members(), sendMessage(), task(), answer() e cancel(). Passa la squadra scelta come argomento opzionale delle operazioni; senza argomento si usa quella personale. Mantieni il controllo di proprietà della squadra. Mostra collegamento, membri, stato task, domande e risultati. Riusa chiavi di idempotenza per i tentativi dello stesso comando. Usa i contratti supportati da entrambi i peer e valida gli artefatti: una ricevuta o HTTP 200 non significano completamento. Per gli strumenti dell’agente usa il binding MCP documentato e le credenziali previste, senza inventare endpoint.
 
-7. Mantieni ogni operazione nella federazione dell’utente corrente. La federazione non concede accesso generale a conversazioni o strumenti. Prova il collegamento OAuth reale quando il client è disponibile, un incarico completo, isolamento tra utenti, ripetizione idempotente, domande/risposte, cancellazione e disconnessione con pact:disconnect CONNECTION_ID --user=ID_UTENTE_MASTER.
+7. Mantieni ogni operazione nella squadra autorizzata dell’utente corrente. La federazione non concede accesso generale a conversazioni o strumenti. Quando il client è disponibile, collauda dalla UI il percorso con il solo dominio, consenso remoto, scelta o creazione della squadra e conferma dell’attivazione. Verifica sia un incarico dal master al client sia una chiamata autenticata del client al roster del master. Prova anche accesso negato a squadre altrui, consenso annullato, collegamento scaduto, invio ripetuto della scelta senza duplicati, un incarico completo, domande/risposte, cancellazione e disconnessione con pact:disconnect CONNECTION_ID --user=ID_UTENTE_MASTER.
 
 Consegna modifiche funzionanti, verifiche eseguite, configurazione del worker e istruzioni operative. Distingui ciò che è verificato da ciò che attende un client o il consenso dell’utente. Non mostrare token o chiavi nel resoconto.
 HANDOFF,
@@ -315,19 +319,23 @@ Integra PACT in questo progetto Laravel con ruolo CLIENT.
 
 Obiettivo: esporre un agente per ciascun utente dell’applicazione, collegabile a un master PACT con consenso OAuth, ed eseguire incarichi con le capacità AI e i permessi già presenti nel progetto.
 
+Riferimento sorgente per questo flusso: bramato/Pact, commit d120ac0 (o un suo discendente che include la funzionalità).
+
 Fonti da leggere prima di modificare il progetto:
-- https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md
-- https://github.com/bramato/Pact/blob/main/specification/PACT-LARAVEL-BINDING-v0.1.md
-- https://github.com/bramato/Pact/blob/main/docs/releases.md
+- https://github.com/bramato/Pact/blob/d120ac0/docs/laravel-installation.md
+- https://github.com/bramato/Pact/blob/d120ac0/specification/PACT-LARAVEL-BINDING-v0.1.md
+- https://github.com/bramato/Pact/blob/d120ac0/docs/releases.md
 
 1. Esamina le istruzioni del progetto, PHP/Laravel, database, autenticazione, agente AI e strumenti disponibili. Il pacchetto supporta Laravel 12.41.1+ e 13 con il relativo PHP compatibile. Riusa login, guard, provider e chiavi Passport esistenti. In locale usa Herd con il nome della cartella seguito da .test, il suo schema HTTP/HTTPS e APP_URL coerente.
 
-2. Installa pact-protocol/laravel:^0.2 con Composer; Core è una dipendenza automatica. Verifica la disponibilità della release. Se non è disponibile, usa un checkout di bramato/Pact: esegui lì npm ci --ignore-scripts e npm run build:sdk, poi configura nell’app due repository Composer path assolute verso sdk/php e sdk/laravel con options.versions rispettivamente pact-protocol/core e pact-protocol/laravel a 0.2.0, come in reference/composer.json. Non inventare tag o pacchetti pubblicati.
+2. Verifica che la release disponibile di pact-protocol/laravel includa PactManager::connectDomain() e le nuove route di collegamento dal dominio; la sola compatibilità con ^0.2 non lo garantisce. Se le include, installa pact-protocol/laravel:^0.2 con Composer; Core è una dipendenza automatica. Altrimenti usa un checkout di bramato/Pact al commit d120ac0, o un suo discendente che include il flusso: esegui lì npm ci --ignore-scripts e npm run build:sdk, poi configura nell’app due repository Composer path assolute verso sdk/php e sdk/laravel con options.versions rispettivamente pact-protocol/core e pact-protocol/laravel a 0.2.0, come in reference/composer.json. Per aggiornare una dipendenza già installata esegui composer update pact-protocol/laravel pact-protocol/core --with-all-dependencies. Verifica il codice effettivamente caricato da vendor prima di proseguire. Non inventare tag o pacchetti pubblicati.
 
 3. Verifica database, APP_KEY e APP_URL, poi esegui:
 php artisan config:clear
 php artisan pact:install --role=client --no-interaction
 Per peer locali HTTP aggiungi all’installazione un --allow-local-host per ciascun host, inclusi client e master. In produzione usa HTTPS. L’installazione gestisce le migrazioni PACT e quelle Passport mancanti. Conserva APP_KEY, database, chiavi Passport e storage/app/pact tra i deploy; non sostituire credenziali esistenti.
+
+Se PACT era già installato, riesegui pact:install --no-interaction dopo l’aggiornamento per applicare le nuove migrazioni: identità, connessioni e chiavi esistenti vengono conservate. Aggiorna entrambi i server. Confronta le eventuali viste pubblicate e personalizzate con quelle del pacchetto per includere le nuove pagine e verifica pact.auth.middleware nella configurazione.
 
 4. Predisponi php artisan pact:work come processo persistente; non richiede Redis. Usa pact:work --once per controlli puntuali. Esegui php artisan pact:doctor e risolvi le anomalie. Ricostruisci le cache di configurazione e route dopo l’installazione.
 
@@ -335,7 +343,7 @@ Per peer locali HTTP aggiungi all’installazione un --allow-local-host per cias
 
 6. Verifica prima la connettività con il contratto diagnostico predefinito, che non usa AI. Poi implementa PactLaravel\Contracts\AgentHandler con handle(AgentContext $context): AgentResult e collega l’agente reale dell’applicazione. Configura handler, contract_path e contract_registry in config/pact.php, con schemi locali e digest dei byte esatti; riusa il contratto agent-chat incluso quando adatto. Restituisci output conforme con AgentResult::completed(); usa question(), waiting() o error() per gli altri esiti. Rendi idempotenti gli effetti esterni usando context->invocationId.
 
-7. Esegui ogni incarico con i permessi di context->userId. ConversationReader nega le letture per impostazione predefinita: abilita solo quelle autorizzate ai partecipanti reali. La federazione non concede accesso generale a dati o strumenti. Prova OAuth reale quando il master è disponibile, attivazione, un incarico con output validato, isolamento tra utenti, retry idempotenti, domande/ripresa e revoca con pact:disconnect CONNECTION_ID --user=ID_UTENTE_CLIENT.
+7. Esegui ogni incarico con i permessi di context->userId, incluso il tenant autorizzato. ConversationReader nega le letture per impostazione predefinita: abilita solo quelle autorizzate ai partecipanti reali. La federazione non concede accesso generale a dati o strumenti. Verifica discovery pubblica, registrazione ripetuta con lo stesso client ID e callback vincolato al master. Quando il master è disponibile, prova il flusso dal solo dominio, consenso, attivazione e chiamate autenticate in entrambe le direzioni. Per il multitenant verifica che cambiare tenant prima dell’approvazione richieda un nuovo consenso. Collauda un incarico con output validato, isolamento tra utenti, retry idempotenti, domande/ripresa e revoca con pact:disconnect CONNECTION_ID --user=ID_UTENTE_CLIENT.
 
 Consegna modifiche funzionanti, verifiche eseguite, configurazione del worker, capacità esposte e dominio da passare al master. Distingui il ping diagnostico dall’integrazione AI reale e segnala ciò che attende un master o il consenso dell’utente. Non mostrare token o chiavi nel resoconto.
 HANDOFF,

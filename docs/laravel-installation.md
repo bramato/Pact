@@ -36,6 +36,8 @@ Include every local peer in `pact.local_hosts`. Public origins require HTTPS. In
 
 ## Connect an agent from its domain
 
+This flow is included in source commit `d120ac0` and descendants containing that implementation. Verify that the installed Laravel package exposes `PactManager::connectDomain()` and the domain-linking routes before using it; satisfying the `^0.2` constraint alone does not prove the feature is included. Until a distribution containing it is published, use the source-checkout installation described above at that commit.
+
 On the **master**, open `/pact/agents` and click **Collega agente**. Enter only the client domain (for example `documents.example.com`); an explicit origin such as `https://documents.example.com` is also accepted. A bare domain uses HTTPS. For local Herd peers, enter their existing full HTTP/HTTPS origin and allow every local host on both installations. Paths, embedded passwords, queries and fragments are rejected.
 
 The master discovers `/.well-known/pact` on that origin and automatically registers its public OAuth client with the agent server. No command or copied client ID is needed on the client. Both installations must support this discovery/registration flow and use the same `pact.prefix` (default `/pact`). A missing or incompatible discovery document produces an error; there is no silent fallback to an unverified endpoint. Published endpoints must remain on the selected origin at the expected paths. Public peer DNS results are checked and pinned to public IP addresses; local development is explicitly allowlisted. Redirects are not followed during server-to-server requests.
