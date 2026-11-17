@@ -267,7 +267,7 @@ return [
         'preview' => 'Leggi l’handoff completo',
         'copied' => 'Handoff copiato. Incollalo nella chat del progetto.',
         'copy_error' => 'Copia automatica non disponibile. Il testo è selezionato: copialo manualmente.',
-        'note' => 'Il master coordina la federazione personale; il client espone l’agente dell’applicazione. Collegali con il consenso dell’utente.',
+        'note' => 'Il master coordina le squadre personali; il client espone l’agente dell’applicazione. Collegali con il consenso dell’utente.',
         'guide' => 'Guida all’installazione Laravel',
         'roles' => [
             'master' => [
@@ -277,7 +277,7 @@ return [
                 'text' => <<<'HANDOFF'
 Integra PACT in questo progetto Laravel con ruolo MASTER.
 
-Obiettivo: ogni utente autenticato deve poter collegare agenti di altre applicazioni alla propria federazione personale, inviare incarichi e consultarne risultati e domande.
+Obiettivo: ogni utente autenticato deve poter collegare agenti di altre applicazioni alle proprie squadre, inviare incarichi e consultarne risultati e domande.
 
 Fonti da leggere prima di modificare il progetto:
 - https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md
@@ -295,14 +295,11 @@ Per peer locali HTTP aggiungi all’installazione un --allow-local-host per cias
 
 4. Predisponi php artisan pact:work come processo persistente; non richiede Redis. Usa pact:work --once per controlli puntuali. Esegui php artisan pact:doctor e risolvi le anomalie. Ricostruisci le cache di configurazione e route dopo l’installazione.
 
-5. Per collegare un’app client serve il suo URL e il client ID pubblico generato SUL CLIENT da:
-php artisan pact:oauth-client --master=URL_MASTER
-Poi SUL MASTER esegui, sostituendo i segnaposto con valori reali:
-php artisan pact:application:add --name=NOME_APP --url=URL_CLIENT --client-id=CLIENT_ID
-php artisan pact:connect NOME_APP --user=ID_UTENTE_MASTER
-L’utente apre l’URL, accede al client, autorizza l’agente e ritorna al master con lo stesso utente che ha iniziato il collegamento. Le email possono essere diverse. Attendi l’attivazione tramite worker prima di inviare lavoro. Se manca il client, completa la parte master e indica i dati necessari per il collegamento.
+5. Il collegamento parte dal MASTER: aggiungi in navigazione route('pact.agents') o route('pact.connect'). Il pacchetto offre il pulsante «Collega agente»: l’utente inserisce solo il dominio del client, il master legge /.well-known/pact e registra automaticamente il proprio client OAuth. Non chiedere registrazioni manuali né client ID. Per CLI usa:
+php artisan pact:connect DOMINIO_CLIENT --domain --user=ID_UTENTE_MASTER
+L’utente accede al client, autorizza l’agente e ritorna al master, dove sceglie una propria squadra o ne crea una. Le email possono essere diverse. Solo dopo la scelta il worker consegna al client le credenziali di ritorno e conferma entrambe le direzioni. Mostra attesa, errore o collegamento confermato. Un agente di un account remoto appartiene a una squadra per master; per spostarlo conferma prima la disconnessione. Entrambi i peer devono supportare discovery/registrazione e usare lo stesso prefisso PACT. Se manca il client, completa il master e indica il dominio necessario per il collaudo.
 
-6. Nell’interfaccia autenticata usa PactLaravel\Facades\Pact: connectUrl(), members(), sendMessage(), task(), answer() e cancel(). Mostra collegamento, membri, stato task, domande e risultati. Riusa chiavi di idempotenza per i tentativi dello stesso comando. Usa i contratti supportati da entrambi i peer e valida gli artefatti: una ricevuta o HTTP 200 non significano completamento. Per gli strumenti dell’agente usa il binding MCP documentato e le credenziali previste, senza inventare endpoint.
+6. Nell’interfaccia autenticata usa PactLaravel\Facades\Pact: connectDomain(), teams(), createTeam(), members(), sendMessage(), task(), answer() e cancel(). Passa la squadra scelta come argomento opzionale delle operazioni; senza argomento si usa quella personale. Mantieni il controllo di proprietà della squadra. Mostra collegamento, membri, stato task, domande e risultati. Riusa chiavi di idempotenza per i tentativi dello stesso comando. Usa i contratti supportati da entrambi i peer e valida gli artefatti: una ricevuta o HTTP 200 non significano completamento. Per gli strumenti dell’agente usa il binding MCP documentato e le credenziali previste, senza inventare endpoint.
 
 7. Mantieni ogni operazione nella federazione dell’utente corrente. La federazione non concede accesso generale a conversazioni o strumenti. Prova il collegamento OAuth reale quando il client è disponibile, un incarico completo, isolamento tra utenti, ripetizione idempotente, domande/risposte, cancellazione e disconnessione con pact:disconnect CONNECTION_ID --user=ID_UTENTE_MASTER.
 
@@ -334,18 +331,13 @@ Per peer locali HTTP aggiungi all’installazione un --allow-local-host per cias
 
 4. Predisponi php artisan pact:work come processo persistente; non richiede Redis. Usa pact:work --once per controlli puntuali. Esegui php artisan pact:doctor e risolvi le anomalie. Ricostruisci le cache di configurazione e route dopo l’installazione.
 
-5. Quando conosci l’URL reale del master, registra SUL CLIENT:
-php artisan pact:oauth-client --master=URL_MASTER
-Consegna al master URL del client e client ID pubblico restituito. SUL MASTER serviranno:
-php artisan pact:application:add --name=NOME_APP --url=URL_CLIENT --client-id=CLIENT_ID
-php artisan pact:connect NOME_APP --user=ID_UTENTE_MASTER
-L’utente accede a questo client, approva l’accesso e ritorna al master con l’utente che ha iniziato il collegamento; le email non devono coincidere. Puoi personalizzare il consenso con php artisan vendor:publish --tag=pact-views. Se manca il master, completa il client e indica i dati necessari per il collegamento.
+5. Il client pubblica /.well-known/pact e la registrazione OAuth pubblica automaticamente. Non occorre conoscere prima il master o eseguire pact:oauth-client. Consegna solo il dominio di questa applicazione: dal MASTER l’utente preme «Collega agente», inserisce il dominio, accede qui, approva e ritorna al master per scegliere la squadra. Il worker del master completa lo scambio delle credenziali nelle due direzioni. I peer devono usare lo stesso prefisso PACT. Se l’app è multitenant, gestisci qui la scelta di account/tenant con il flusso esistente e pact.auth.middleware; configura IdentityResolver con un soggetto locale stabile che includa il contesto autorizzato. La stessa identità viene ricontrollata all’approvazione. Le email non devono coincidere. Puoi personalizzare le pagine con php artisan vendor:publish --tag=pact-views. Se manca il master, completa il client e consegna il dominio per il collaudo.
 
 6. Verifica prima la connettività con il contratto diagnostico predefinito, che non usa AI. Poi implementa PactLaravel\Contracts\AgentHandler con handle(AgentContext $context): AgentResult e collega l’agente reale dell’applicazione. Configura handler, contract_path e contract_registry in config/pact.php, con schemi locali e digest dei byte esatti; riusa il contratto agent-chat incluso quando adatto. Restituisci output conforme con AgentResult::completed(); usa question(), waiting() o error() per gli altri esiti. Rendi idempotenti gli effetti esterni usando context->invocationId.
 
 7. Esegui ogni incarico con i permessi di context->userId. ConversationReader nega le letture per impostazione predefinita: abilita solo quelle autorizzate ai partecipanti reali. La federazione non concede accesso generale a dati o strumenti. Prova OAuth reale quando il master è disponibile, attivazione, un incarico con output validato, isolamento tra utenti, retry idempotenti, domande/ripresa e revoca con pact:disconnect CONNECTION_ID --user=ID_UTENTE_CLIENT.
 
-Consegna modifiche funzionanti, verifiche eseguite, configurazione del worker, capacità esposte e dati pubblici da passare al master. Distingui il ping diagnostico dall’integrazione AI reale e segnala ciò che attende un master o il consenso dell’utente. Non mostrare token o chiavi nel resoconto.
+Consegna modifiche funzionanti, verifiche eseguite, configurazione del worker, capacità esposte e dominio da passare al master. Distingui il ping diagnostico dall’integrazione AI reale e segnala ciò che attende un master o il consenso dell’utente. Non mostrare token o chiavi nel resoconto.
 HANDOFF,
             ],
         ],

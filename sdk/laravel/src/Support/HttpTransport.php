@@ -15,6 +15,20 @@ final class HttpTransport
         $base = explode('?', $url, 2)[0];
         UrlPolicy::assert($base);
         $request = Http::withHeaders($headers)->connectTimeout(3)->timeout(10)->withOptions(['allow_redirects' => false]);
+        $host = (string) parse_url($base, PHP_URL_HOST);
+        $development = in_array($host, config('pact.local_hosts', []), true)
+            && (str_ends_with($host, '.test') || in_array($host, ['localhost', '127.0.0.1', '[::1]'], true));
+        if (! $development) {
+            $addresses = app(PeerResolver::class)->addresses($host);
+            if ($addresses === [] || array_filter($addresses, fn ($address) => ! filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_GLOBAL_RANGE))) {
+                throw new \InvalidArgumentException('PACT peers must resolve exclusively to public IP addresses.');
+            }
+            $port = parse_url($base, PHP_URL_PORT) ?: (parse_url($base, PHP_URL_SCHEME) === 'https' ? 443 : 80);
+            $address = $addresses[0];
+            $pinned = str_contains($address, ':') ? '['.$address.']' : $address;
+            // Pin DNS while preserving the original hostname for TLS verification.
+            $request = $request->withOptions(['proxy' => '', 'curl' => [CURLOPT_RESOLVE => [$host.':'.$port.':'.$pinned]]]);
+        }
         $options = $body === null ? [] : (is_string($body) ? ['body' => $body] : ['json' => $body]);
         $response = $request->send(strtoupper($method), $url, $options);
         $responseHeaders = [];

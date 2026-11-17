@@ -140,34 +140,21 @@ try {
     check(ready, `${app.name} HTTP server did not start: ${last}`);
   }
   const [master, ...clients] = apps;
+  let teamId;
   for (const client of clients) {
-    const registration = run(
-      client,
-      "artisan",
-      "pact:oauth-client",
-      `--master=${master.url}`,
+    const page = await expect(master, "/pact/connect", 200);
+    const startCsrf = page.body.match(/name="_token" value="([^"]+)"/)?.[1];
+    check(startCsrf, "master connect CSRF token missing");
+    const start = await expect(master, "/pact/connect", 302, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ _token: startCsrf, domain: client.url }),
+    });
+    const authorize = start.response.headers.get("location");
+    check(
+      authorize?.startsWith(client.url + "/pact/oauth/authorize?"),
+      "authorization URL missing",
     );
-    const clientId = registration.match(/OAuth client ID:\s*(\S+)/)?.[1];
-    check(clientId, "OAuth client ID missing");
-    const application = run(
-      master,
-      "artisan",
-      "pact:application:add",
-      `--url=${client.url}`,
-      `--client-id=${clientId}`,
-      `--name=${client.name}`,
-    );
-    const applicationId = application.match(/\(([^)]+)\)/)?.[1];
-    check(applicationId, "application ID missing");
-    const connect = run(
-      master,
-      "artisan",
-      "pact:connect",
-      applicationId,
-      "--user=1",
-    );
-    const authorize = connect.match(/https?:\/\/\S+/)?.[0];
-    check(authorize, "authorization URL missing");
     const consent = await expect(client, authorize, 200);
     const field = (name) =>
       consent.body.match(new RegExp(`name="${name}" value="([^"]+)"`))?.[1];
@@ -184,11 +171,41 @@ try {
       callback?.startsWith(master.url + "/pact/oauth/callback"),
       "unexpected callback",
     );
-    await expect(master, callback, 202);
+    const returned = await expect(master, callback, 302);
+    const choiceUrl = returned.response.headers.get("location");
+    check(choiceUrl?.includes("/team"), "team selection missing");
+    const choice = await expect(master, choiceUrl, 200);
+    const choiceCsrf = choice.body.match(/name="_token" value="([^"]+)"/)?.[1];
+    check(choiceCsrf, "team choice CSRF token missing");
+    const form = teamId ? { team_id: teamId } : { new_team: "HTTP squadra" };
+    const finish = await expect(master, choiceUrl, 302, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ _token: choiceCsrf, ...form }),
+    });
+    const teamPage = finish.response.headers.get("location");
+    teamId = new URL(teamPage).searchParams.get("team");
+    check(teamId, "selected team missing");
+    const pending = await expect(master, teamPage, 200);
+    check(
+      pending.body.includes("In attesa della conferma"),
+      "activation must remain pending until worker confirmation",
+    );
     run(master, "artisan", "pact:work", "--once");
+    const reverse = JSON.parse(
+      (await expect(client, "/fixture/reverse-roster", 200)).body,
+    );
+    check(
+      reverse.federation_id === teamId,
+      "reverse credential is not bound to selected team",
+    );
+    check(
+      reverse.members.some((m) => m.kind === "agent" && m.active),
+      "client cannot read master roster with reverse credential",
+    );
   }
   const roster = JSON.parse(
-    (await expect(master, "/fixture/members", 200)).body,
+    (await expect(master, `/fixture/members?team=${teamId}`, 200)).body,
   );
   check(roster.length === 3, `expected 3 members: ${JSON.stringify(roster)}`);
   const member = roster.find((m) => m.kind === "agent" && m.active);
@@ -197,7 +214,7 @@ try {
     (
       await expect(
         master,
-        `/fixture/send/${encodeURIComponent(member.id)}`,
+        `/fixture/send/${encodeURIComponent(member.id)}?team=${teamId}`,
         200,
       )
     ).body,
@@ -208,7 +225,8 @@ try {
   await delay(2500);
   run(master, "artisan", "pact:work", "--once");
   const task = JSON.parse(
-    (await expect(master, `/fixture/task/${sent.task_id}`, 200)).body,
+    (await expect(master, `/fixture/task/${sent.task_id}?team=${teamId}`, 200))
+      .body,
   );
   check(
     task.status?.state === "TASK_STATE_COMPLETED",
@@ -219,7 +237,7 @@ try {
     `missing diagnostic output: ${JSON.stringify(task)}`,
   );
   console.log(
-    "PASS: three installed Laravel apps, real OAuth PKCE, activation, roster and completed diagnostic message",
+    "PASS: domain-only UI, automatic registration, real OAuth PKCE, team choice, bidirectional credentials and completed diagnostic message",
   );
 } catch (error) {
   for (const app of apps) {

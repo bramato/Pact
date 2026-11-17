@@ -28,9 +28,16 @@ $app = Application::configure(basePath: getenv('FIXTURE_BASE'))
 
                 return 'logged in';
             })->name('login');
-            Route::get('/fixture/members', fn () => response()->json(app(PactManager::class)->members()))->middleware('auth');
-            Route::get('/fixture/send/{member}', fn ($member) => response()->json(app(PactManager::class)->sendMessage($member, 'hello from HTTP smoke', 'smoke-message')))->middleware('auth');
-            Route::get('/fixture/task/{id}', fn ($id) => response()->json(app(PactManager::class)->task($id)))->middleware('auth');
+            Route::get('/fixture/reverse-roster', function () {
+                abort_unless(config('pact.role') === 'client', 404);
+                $connection = \PactLaravel\Models\Connection::query()->where('user_id', (string) auth()->id())->where('status', 'active')->firstOrFail();
+                $result = app(\PactLaravel\Support\HttpTransport::class)->request('GET', $connection->remote_url.'/pact/roster', ['Authorization' => 'Bearer '.$connection->credentials['roster']]);
+
+                return response()->json($result['body'], $result['status']);
+            })->middleware('auth');
+            Route::get('/fixture/members', fn (\Illuminate\Http\Request $request) => response()->json(app(PactManager::class)->members($request->query('team'))))->middleware('auth');
+            Route::get('/fixture/send/{member}', fn (\Illuminate\Http\Request $request, $member) => response()->json(app(PactManager::class)->sendMessage($member, 'hello from HTTP smoke', 'smoke-message', $request->query('team'))))->middleware('auth');
+            Route::get('/fixture/task/{id}', fn (\Illuminate\Http\Request $request, $id) => response()->json(app(PactManager::class)->task($id, $request->query('team'))))->middleware('auth');
         });
     })->create();
 

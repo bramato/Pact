@@ -8,6 +8,24 @@ use InvalidArgumentException;
 
 final class UrlPolicy
 {
+    /** Accept a domain or origin, never an arbitrary URL path. */
+    public static function origin(string $domain): string
+    {
+        $url = trim($domain);
+        if (! str_contains($url, '://')) {
+            $url = 'https://'.$url;
+        }
+        $url = self::assert($url);
+        $parts = parse_url($url);
+        if (($parts['path'] ?? '') !== '') {
+            throw new InvalidArgumentException('Inserisci solo il dominio del server, senza percorsi.');
+        }
+        $scheme = strtolower($parts['scheme']);
+        $port = $parts['port'] ?? null;
+
+        return $scheme.'://'.strtolower($parts['host']).($port && $port !== ($scheme === 'https' ? 443 : 80) ? ':'.$port : '');
+    }
+
     public static function assert(string $url): string
     {
         $parts = parse_url($url);

@@ -43,14 +43,41 @@ final class Store
     public function federationFor(string $userId): Federation
     {
         return $this->atomic(function () use ($userId) {
-            $existing = Federation::query()->where('user_id', $userId)->lockForUpdate()->first();
-            $federation = $existing ?? Federation::query()->create(['id' => (string) Str::uuid(), 'user_id' => $userId, 'revision' => 1, 'state' => []]);
+            $existing = Federation::query()->where('default_user_id', $userId)->lockForUpdate()->first();
+            $federation = $existing ?? Federation::query()->createOrFirst(['default_user_id' => $userId], ['id' => (string) Str::uuid(), 'user_id' => $userId, 'name' => 'Squadra personale', 'revision' => 1, 'state' => []]);
             $owner = Member::query()->firstOrCreate(['federation_id' => $federation->id, 'member_id' => $this->ownerId($userId)], ['user_id' => $userId, 'connection_id' => null, 'active' => true, 'manifest' => []]);
             if ($existing && $owner->wasRecentlyCreated) {
                 $federation->increment('revision');
             }
 
             return $federation;
+        });
+    }
+
+    public function teamFor(string $userId, string $teamId): Federation
+    {
+        return Federation::query()->whereKey($teamId)->where('user_id', $userId)->firstOrFail();
+    }
+
+    public function teamsFor(string $userId): array
+    {
+        $this->federationFor($userId);
+
+        return Federation::query()->where('user_id', $userId)->orderByRaw('CASE WHEN default_user_id IS NULL THEN 1 ELSE 0 END')->orderBy('name')->get()->map(fn ($team) => ['id' => $team->id, 'name' => $team->name])->all();
+    }
+
+    public function createTeam(string $userId, string $name): Federation
+    {
+        $name = trim($name);
+        if ($userId === '' || $name === '' || mb_strlen($name) > 100) {
+            throw new \InvalidArgumentException('Il nome della squadra deve contenere da 1 a 100 caratteri.');
+        }
+
+        return $this->atomic(function () use ($userId, $name): Federation {
+            $team = Federation::query()->create(['user_id' => $userId, 'name' => $name, 'revision' => 1, 'state' => []]);
+            Member::query()->create(['federation_id' => $team->id, 'member_id' => $this->ownerId($userId), 'user_id' => $userId, 'active' => true, 'manifest' => []]);
+
+            return $team;
         });
     }
 

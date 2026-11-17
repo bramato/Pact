@@ -7,7 +7,7 @@ return [
     'url' => null, // Defaults to app.url during provider registration.
     'prefix' => 'pact',
     'database_connection' => null,
-    'auth' => ['guard' => 'web', 'provider' => 'users'],
+    'auth' => ['guard' => 'web', 'provider' => 'users', 'middleware' => []], // Client tenant/account selection before consent.
     'handler' => null,
     'contract_path' => null,
     'contract_registry' => null,

@@ -20,7 +20,7 @@ final class PactManager
 {
     public function __construct(private IdentityResolver $identities, private ConnectionService $connections, private Store $store, private Coordinator $coordinator, private Pact $pact) {}
 
-    private function identity(): array
+    private function identity(?string $teamId = null): array
     {
         if (config('pact.role') !== 'master') {
             throw new \DomainException('This operation requires a PACT master.');
@@ -34,7 +34,29 @@ final class PactManager
             throw new AuthenticationException;
         }
 
-        return [$id, $this->store->federationFor($id)->id, $this->store->ownerId($id)];
+        return [$id, ($teamId === null ? $this->store->federationFor($id) : $this->store->teamFor($id, $teamId))->id, $this->store->ownerId($id)];
+    }
+
+    public function connectDomain(string $domain): string
+    {
+        [$user] = $this->identity();
+
+        return $this->connections->connectDomain($domain, $user);
+    }
+
+    public function teams(): array
+    {
+        [$user] = $this->identity();
+
+        return $this->store->teamsFor($user);
+    }
+
+    public function createTeam(string $name): array
+    {
+        [$user] = $this->identity();
+        $team = $this->store->createTeam($user, $name);
+
+        return ['id' => $team->id, 'name' => $team->name];
     }
 
     public function connectUrl(string $application): string
@@ -44,16 +66,16 @@ final class PactManager
         return $this->connections->connectUrl($application, $user);
     }
 
-    public function members(): array
+    public function members(?string $teamId = null): array
     {
-        [, $federation] = $this->identity();
+        [, $federation] = $this->identity($teamId);
 
         return $this->store->roster($federation)->members;
     }
 
-    public function sendMessage(string $recipientId, string $text, ?string $idempotencyKey = null): array
+    public function sendMessage(string $recipientId, string $text, ?string $idempotencyKey = null, ?string $teamId = null): array
     {
-        [$user, $federation, $owner] = $this->identity();
+        [$user, $federation, $owner] = $this->identity($teamId);
         $context = new Connection(['user_id' => $user, 'federation_id' => $federation, 'member_id' => $owner]);
 
         return $this->coordinator->dispatch($context, $owner, 'send_message', ['id' => $idempotencyKey ?? (string) Str::uuid(), 'recipient_id' => $recipientId, 'text' => $text]);
@@ -64,16 +86,16 @@ final class PactManager
         return Task::query()->where('user_id', $user)->where('federation_id', $federation)->where('caller_id', $owner)->whereKey($id)->lockForUpdate()->firstOrFail();
     }
 
-    public function task(string $taskId): array
+    public function task(string $taskId, ?string $teamId = null): array
     {
-        [$user, $federation, $owner] = $this->identity();
+        [$user, $federation, $owner] = $this->identity($teamId);
 
         return $this->store->atomic(fn () => $this->ownedTask($user, $federation, $owner, $taskId)->value);
     }
 
-    public function answer(string $taskId, array $answers, ?string $idempotencyKey = null): array
+    public function answer(string $taskId, array $answers, ?string $idempotencyKey = null, ?string $teamId = null): array
     {
-        [$user, $federation, $owner] = $this->identity();
+        [$user, $federation, $owner] = $this->identity($teamId);
         $key = $idempotencyKey ?? (string) Str::uuid();
         if ($key === '' || strlen($key) > 191) {
             throw new \InvalidArgumentException('Invalid idempotency key.');
@@ -120,9 +142,9 @@ final class PactManager
         });
     }
 
-    public function cancel(string $taskId): void
+    public function cancel(string $taskId, ?string $teamId = null): void
     {
-        [$user, $federation, $owner] = $this->identity();
+        [$user, $federation, $owner] = $this->identity($teamId);
         $this->store->atomic(function () use ($user, $federation, $owner, $taskId): void {
             $root = $this->ownedTask($user, $federation, $owner, $taskId);
             Pact::ensure($root->root_id === $root->id, 'TASK_NOT_CANCELABLE', 'Only root tasks can be canceled');

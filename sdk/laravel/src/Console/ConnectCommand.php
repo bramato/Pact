@@ -10,7 +10,7 @@ use PactLaravel\OAuth\ConnectionService;
 
 final class ConnectCommand extends Command
 {
-    protected $signature = 'pact:connect {application} {--user=}';
+    protected $signature = 'pact:connect {application : Registered application name/ID or agent server domain} {--user=} {--domain : Discover and register the agent server automatically}';
 
     protected $description = 'Print the browser URL for a user-authorized OAuth connection';
 
@@ -21,7 +21,9 @@ final class ConnectCommand extends Command
             if (! $user || ! $identities->find((string) $user)) {
                 throw new \InvalidArgumentException('--user must identify an existing user.');
             }
-            $this->line($connections->connectUrl($this->argument('application'), (string) $user));
+            $this->line($this->option('domain')
+                ? $connections->connectDomain($this->argument('application'), (string) $user)
+                : $connections->connectUrl($this->argument('application'), (string) $user));
             $this->info('Open this URL while signed in to the master as that user.');
 
             return self::SUCCESS;

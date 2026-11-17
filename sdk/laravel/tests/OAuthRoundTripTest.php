@@ -44,6 +44,45 @@ final class OAuthRoundTripTest extends TestCase
         $this->actingAs(new GenericUser(['id' => 'remote-user']));
     }
 
+    public function test_domain_discovery_and_dynamic_registration_are_public_idempotent_and_callback_bound(): void
+    {
+        $this->getJson('/.well-known/pact')->assertOk()->assertJsonPath('role', 'client')->assertJsonPath('registration_endpoint', 'https://client.example/pact/oauth/register');
+        $body = ['client_uri' => 'https://master.example', 'redirect_uris' => ['https://master.example/pact/oauth/callback'], 'grant_types' => ['authorization_code', 'refresh_token'], 'response_types' => ['code'], 'token_endpoint_auth_method' => 'none'];
+        $first = $this->postJson('/pact/oauth/register', $body);
+        $first->assertCreated()->assertJsonPath('token_endpoint_auth_method', 'none')->assertJsonMissingPath('client_secret');
+        $this->postJson('/pact/oauth/register', $body)->assertCreated()->assertJsonPath('client_id', $first->json('client_id'));
+        self::assertSame(1, \PactLaravel\Models\OAuthClient::query()->count());
+        $body['redirect_uris'] = ['https://attacker.example/callback'];
+        $this->postJson('/pact/oauth/register', $body)->assertStatus(422);
+        $body['client_uri'] = 'https://master.example/arbitrary-path';
+        $this->postJson('/pact/oauth/register', $body)->assertStatus(400);
+        self::assertSame(1, \PactLaravel\Models\OAuthClient::query()->count());
+    }
+
+    public function test_tenant_identity_is_bound_to_consent_and_cannot_change_before_approval(): void
+    {
+        $identities = new class implements \PactLaravel\Contracts\IdentityResolver {
+            public string $tenant = 'workspace-a';
+            public function current(): ?\Illuminate\Contracts\Auth\Authenticatable { return new GenericUser(['id' => 'remote-user']); }
+            public function find(string $id): ?\Illuminate\Contracts\Auth\Authenticatable { return $this->current(); }
+            public function id(\Illuminate\Contracts\Auth\Authenticatable $user): string { return $this->tenant.':'.$user->getAuthIdentifier(); }
+        };
+        $this->app->instance(\PactLaravel\Contracts\IdentityResolver::class, $identities);
+        $client = app(ConnectionService::class)->registerMaster('https://master.example');
+        $verifier = str_repeat('v', 64);
+        $query = ['client_id' => $client->oauth_client_id, 'response_type' => 'code', 'redirect_uri' => $client->callback_url, 'state' => 'tenant-state', 'code_challenge' => rtrim(strtr(base64_encode(hash('sha256', $verifier, true)), '+/', '-_'), '='), 'code_challenge_method' => 'S256'];
+        $this->get('/pact/oauth/authorize?'.http_build_query($query))->assertOk();
+        $identities->tenant = 'workspace-b';
+        $this->post('/pact/oauth/authorize', ['auth_token' => session('authToken')])->assertForbidden();
+        $this->get('/pact/oauth/authorize?'.http_build_query($query))->assertOk();
+        $approval = $this->post('/pact/oauth/authorize', ['auth_token' => session('authToken')]);
+        $approval->assertRedirect();
+        parse_str(parse_url($approval->headers->get('Location'), PHP_URL_QUERY), $result);
+        $token = $this->post('/pact/oauth/token', ['grant_type' => 'authorization_code', 'client_id' => $client->oauth_client_id, 'redirect_uri' => $client->callback_url, 'code' => $result['code'], 'code_verifier' => $verifier], ['Accept' => 'application/json']);
+        $token->assertOk();
+        $this->getJson('/pact/oauth/subject', ['Authorization' => 'Bearer '.$token->json('access_token')])->assertOk()->assertJsonPath('user_id', 'workspace-b:remote-user');
+    }
+
     public function test_public_client_requires_consent_and_pkce_for_code_exchange(): void
     {
         $client = app(ConnectionService::class)->registerMaster('https://master.example');

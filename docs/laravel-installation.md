@@ -1,6 +1,6 @@
 # Laravel master and client installation
 
-The same `pact-protocol/laravel` package runs as a **master**, owning users' personal federations, or as a **client**, exposing an agent for each application user. The application supplies its login and its own AI implementation. The database worker does not require Redis.
+The same `pact-protocol/laravel` package runs as a **master**, owning users' teams (federations), or as a **client**, exposing an agent for each application user. The application supplies its login and its own AI implementation. The database worker does not require Redis.
 
 ## Install a versioned release
 
@@ -34,27 +34,59 @@ php artisan pact:install --role=client --url=http://client.test \
 
 Include every local peer in `pact.local_hosts`. Public origins require HTTPS. Installation persists role, product identity and initial settings in `storage/app/pact/installation.json`; reinstalling preserves them and signing keys. Existing Passport keys and host authentication are reused. Preserve this storage directory and `APP_KEY` across deployments. Clear configuration caches before installation; rebuild configuration and route caches afterward.
 
-## Register and connect
+## Connect an agent from its domain
 
-On the client, register the master once:
+On the **master**, open `/pact/agents` and click **Collega agente**. Enter only the client domain (for example `documents.example.com`); an explicit origin such as `https://documents.example.com` is also accepted. A bare domain uses HTTPS. For local Herd peers, enter their existing full HTTP/HTTPS origin and allow every local host on both installations. Paths, embedded passwords, queries and fragments are rejected.
 
-```sh
-php artisan pact:oauth-client --master=https://master.example
+The master discovers `/.well-known/pact` on that origin and automatically registers its public OAuth client with the agent server. No command or copied client ID is needed on the client. Both installations must support this discovery/registration flow and use the same `pact.prefix` (default `/pact`). A missing or incompatible discovery document produces an error; there is no silent fallback to an unverified endpoint. Published endpoints must remain on the selected origin at the expected paths. Public peer DNS results are checked and pinned to public IP addresses; local development is explicitly allowlisted. Redirects are not followed during server-to-server requests.
+
+The browser opens the **client's** existing login and consent page. That application manages account and tenant selection. The master never receives the user's login password. The authorization-code exchange uses PKCE S256 and random, expiring, one-use state tied to the initiating master identity. Email addresses need not match.
+
+After consent, the browser returns to the master and displays **Dove mettiamo l’agente?**. Choose an owned team or create a named team. OAuth credentials remain encrypted in a temporary, ten-minute link request until this choice; no member is activated and no work can be sent before completion. Cancellation clears that temporary payload. Expired payloads are cleared by the worker and when a new domain link starts. Repeating the same team submission reuses its connection and activation receipt; changing a completed submission is rejected.
+
+The worker then completes the bidirectional handshake:
+
+| Direction | Credential issuer | Purpose |
+| --- | --- | --- |
+| Master → agent server | Agent server | OAuth access/refresh tokens for the authorized local account/tenant |
+| Agent → master | Master | Separate signed credentials for roster, MCP, renewal and disconnect, bound to team, member and connection generation |
+
+The master delivers the return credentials over the authenticated activation request. The client verifies the coordinator URL and published public key, validates each credential and acknowledges activation. Only then does the master mark the member active. The UI distinguishes pending, failed and confirmed activation; refresh the agents page to see the worker's result. Keep `php artisan pact:work` running. Private signing keys are never exchanged.
+
+Every user retains their original personal team and can create more teams. One remote account's agent can belong to **one team per master**; reconnecting to that team preserves identity and increments the authorization generation. To move it, disconnect it first, let the worker confirm remote revocation, then reconnect and select its new team. Other remote accounts or tenants can expose separate agents. Disconnect is available from the agents page.
+
+For an existing authenticated application page:
+
+```php
+use PactLaravel\Facades\Pact;
+
+// Redirect the browser to the returned URL; callback and team choice are supplied.
+return redirect()->away(Pact::connectDomain('documents.example.com'));
 ```
 
-On the master, register the returned public client ID and start a user's connection:
+Link to `route('pact.agents')` or `route('pact.connect')` from the host navigation. Publish the included pages for visual customisation with `php artisan vendor:publish --tag=pact-views`.
+
+A CLI equivalent also discovers and registers automatically:
 
 ```sh
-php artisan pact:application:add --name=documents \
-  --url=https://documents.example --client-id=THE_CLIENT_ID
-php artisan pact:connect documents --user=THE_MASTER_USER_ID
+php artisan pact:connect documents.example.com --domain --user=THE_MASTER_USER_ID
 ```
 
-Open the returned URL. The user logs in to the client, approves agent access and returns to the master as the same master user who initiated the connection. Email addresses need not match; authorization explicitly links the two local identities. OAuth uses authorization codes, PKCE S256 and expiring one-use state. A worker completes activation; pending members cannot receive work. Reauthorization preserves agent identity and fences stale jobs with a new generation.
+Open the returned URL while signed into the master as that user, consent on the client and choose the team after returning.
 
-An existing authenticated page can use `PactLaravel\Facades\Pact::connectUrl('documents')`. Publish the minimal consent page using `php artisan vendor:publish --tag=pact-views`. No administrative dashboard or Passport trait on the host User model is required.
+### Teams and application APIs
 
-The same authenticated facade provides `members()`, `sendMessage($memberId, $text, $idempotencyKey)`, `task($taskId)`, `answer($taskId, $answers, $idempotencyKey)` and `cancel($taskId)` for the application's own interface. These methods scope every operation to the current user's federation and tasks. Replies are queued as correlated native A2A answers; cancellation also reconciles work whose remote acceptance acknowledgment is still pending.
+The authenticated facade provides `teams()`, `createTeam($name)`, `members($teamId)`, `sendMessage($memberId, $text, $idempotencyKey, $teamId)`, `task($taskId, $teamId)`, `answer($taskId, $answers, $idempotencyKey, $teamId)` and `cancel($taskId, $teamId)`. Omit the team argument to use the original personal team. Every explicit team ID is checked against the current identity, including task reads, answers and cancellation. These teams are owned by a single local identity; application-wide shared-team ACLs are outside this binding.
+
+### Client account and tenant integration
+
+The client controls tenant selection through its existing login/tenant flow. Add any required selection/authorization middleware to `pact.auth.middleware`; it runs on consent routes after the existing login middleware. Bind `PactLaravel\Contracts\IdentityResolver` when the authorized agent identity includes an account or tenant. `id()` must return a stable, unique local subject (maximum 191 bytes), such as an opaque tenant/user identifier, and `find()` must resolve that subject. Authorization, `/oauth/subject` and task execution preserve it. The selected identity is bound at consent and checked again at approval; switching account or tenant requires a fresh consent request. Do not resolve the tenant from a master-supplied value or infer identity from matching emails.
+
+### Upgrade existing installations
+
+Keep the database, `APP_KEY`, Passport keys and `storage/app/pact`. After updating the package on **both** installations, clear the configuration cache and rerun `php artisan pact:install --no-interaction`, then rebuild configuration/route caches. The additive migration preserves existing connections, federations and credentials, names the original federation “Squadra personale” and allows more teams. It does not modify released Core schemas. Re-publish customised config/views deliberately to include the new pages and middleware option.
+
+The previous manual registration commands (`pact:oauth-client`, `pact:application:add` and `pact:connect NAME --user=…`) and `Pact::connectUrl(NAME)` remain supported. That legacy path queues the member into the personal team without the new team-selection step. It is intended for existing integrations; new UI integrations should use `connectDomain()`.
 
 ## Run work
 

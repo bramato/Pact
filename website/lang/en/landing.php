@@ -267,7 +267,7 @@ return [
         'preview' => 'Read the full handoff',
         'copied' => 'Handoff copied. Paste it into your project chat.',
         'copy_error' => 'Automatic copying is unavailable. The text is selected: copy it manually.',
-        'note' => 'The master coordinates the personal federation; the client exposes the application’s agent. Connect them with the user’s consent.',
+        'note' => 'The master coordinates personal teams; the client exposes the application’s agent. Connect them with the user’s consent.',
         'guide' => 'Laravel installation guide',
         'roles' => [
             'master' => [
@@ -277,7 +277,7 @@ return [
                 'text' => <<<'HANDOFF'
 Integrate PACT into this Laravel project with the MASTER role.
 
-Goal: each authenticated user can connect agents from other applications to their personal federation, send work and review results and questions.
+Goal: each authenticated user can connect agents from other applications to their own teams, send work and review results and questions.
 
 Read these sources before changing the project:
 - https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md
@@ -295,14 +295,11 @@ For local HTTP peers, add one --allow-local-host per host to the installation co
 
 4. Configure php artisan pact:work as a persistent process; Redis is not required. Use pact:work --once for individual checks. Run php artisan pact:doctor and resolve its findings. Rebuild configuration and route caches after installation.
 
-5. Connecting a client application requires its URL and the public client ID generated ON THE CLIENT by:
-php artisan pact:oauth-client --master=MASTER_URL
-Then ON THE MASTER run, replacing placeholders with real values:
-php artisan pact:application:add --name=APP_NAME --url=CLIENT_URL --client-id=CLIENT_ID
-php artisan pact:connect APP_NAME --user=MASTER_USER_ID
-The user opens the URL, signs into the client, authorizes the agent and returns to the master as the same user who started the connection. Email addresses may differ. Wait for worker activation before sending work. If the client is unavailable, complete the master side and list the details needed to connect it.
+5. Linking starts ON THE MASTER: add route('pact.agents') or route('pact.connect') to navigation. The package provides a «Collega agente» button: the user enters only the client domain, the master reads /.well-known/pact and registers its public OAuth client automatically. Do not require manual registration or a copied client ID. The CLI equivalent is:
+php artisan pact:connect CLIENT_DOMAIN --domain --user=MASTER_USER_ID
+The user signs into the client, consents, and returns to the master to select an owned team or create one. Email addresses may differ. Only after selection does the worker deliver return credentials and confirm both directions. Show pending, failed or confirmed activation. A remote account agent belongs to one team per master; confirm disconnection before moving it. Both peers must support discovery/registration and use the same PACT prefix. If the client is unavailable, complete the master and list the domain needed for testing.
 
-6. In the authenticated interface, use PactLaravel\Facades\Pact: connectUrl(), members(), sendMessage(), task(), answer() and cancel(). Show connections, members, task status, questions and results. Reuse idempotency keys when retrying the same command. Use contracts supported by both peers and validate artifacts: a receipt or HTTP 200 does not mean completion. For agent tools use the documented MCP binding and required credentials, without inventing endpoints.
+6. In the authenticated interface, use PactLaravel\Facades\Pact: connectDomain(), teams(), createTeam(), members(), sendMessage(), task(), answer() and cancel(). Pass the selected team as the optional team argument; omission uses the personal team. Preserve the team ownership check. Show connections, members, task status, questions and results. Reuse idempotency keys when retrying the same command. Use contracts supported by both peers and validate artifacts: a receipt or HTTP 200 does not mean completion. For agent tools use the documented MCP binding and required credentials, without inventing endpoints.
 
 7. Scope every operation to the current user’s federation. Membership does not grant general access to conversations or tools. When a client is available, test real OAuth linking, a complete task, user isolation, idempotent retries, questions/answers, cancellation and disconnection with pact:disconnect CONNECTION_ID --user=MASTER_USER_ID.
 
@@ -334,18 +331,13 @@ For local HTTP peers, add one --allow-local-host per host to the installation co
 
 4. Configure php artisan pact:work as a persistent process; Redis is not required. Use pact:work --once for individual checks. Run php artisan pact:doctor and resolve its findings. Rebuild configuration and route caches after installation.
 
-5. Once the master’s actual URL is known, register ON THE CLIENT:
-php artisan pact:oauth-client --master=MASTER_URL
-Give the master this client’s URL and the returned public client ID. ON THE MASTER it will need:
-php artisan pact:application:add --name=APP_NAME --url=CLIENT_URL --client-id=CLIENT_ID
-php artisan pact:connect APP_NAME --user=MASTER_USER_ID
-The user signs into this client, grants access and returns to the master as the user who initiated the connection; email addresses need not match. Customize consent with php artisan vendor:publish --tag=pact-views if needed. If the master is unavailable, complete the client and list the details needed to connect it.
+5. The client automatically publishes /.well-known/pact and public OAuth registration. There is no need to know the master in advance or run pact:oauth-client. Give the user only this application's domain: ON THE MASTER they choose «Collega agente», enter the domain, sign in here, consent and return to select a team. The master worker completes the credentials in both directions. Peers must use the same PACT prefix. For a multitenant app, manage account/tenant selection here using the existing flow and pact.auth.middleware; configure IdentityResolver with a stable local subject including the authorized context. Approval rechecks that same identity. Email addresses need not match. Customise pages using php artisan vendor:publish --tag=pact-views. If the master is unavailable, complete the client and provide its domain for testing.
 
 6. First verify connectivity with the default diagnostic contract, which does not use AI. Then implement PactLaravel\Contracts\AgentHandler with handle(AgentContext $context): AgentResult and connect the application’s real agent. Configure handler, contract_path and contract_registry in config/pact.php, using local schemas pinned by exact-byte digests; reuse the included agent-chat contract where appropriate. Return conforming output with AgentResult::completed(); use question(), waiting() or error() for other outcomes. Make external effects idempotent using context->invocationId.
 
 7. Execute every task with context->userId’s permissions. ConversationReader denies reads by default: enable only reads authorized for actual participants. Membership does not grant general access to data or tools. When a master is available, test real OAuth linking, activation, a task with validated output, user isolation, idempotent retries, questions/resume and revocation with pact:disconnect CONNECTION_ID --user=CLIENT_USER_ID.
 
-Deliver working changes, completed checks, worker configuration, exposed capabilities and public details to pass to the master. Distinguish diagnostic connectivity from real AI integration and identify work awaiting a master or user consent. Do not include tokens or private keys in the report.
+Deliver working changes, completed checks, worker configuration, exposed capabilities and the domain to pass to the master. Distinguish diagnostic connectivity from real AI integration and identify work awaiting a master or user consent. Do not include tokens or private keys in the report.
 HANDOFF,
             ],
         ],

@@ -22,13 +22,22 @@ abstract class TestCase extends Orchestra
         $this->app['config']->set('app.key', 'base64:'.base64_encode(str_repeat('k', 32)));
         $this->app['config']->set('pact', require __DIR__.'/../config/pact.php');
         $this->app['config']->set('pact.url', 'https://master.example');
+        $this->app->bind(\PactLaravel\Contracts\IdentityResolver::class, \PactLaravel\Support\DefaultIdentityResolver::class);
+        $this->app->bind(\PactLaravel\Support\PeerResolver::class, fn () => new class extends \PactLaravel\Support\PeerResolver {
+            public function addresses(string $host): array
+            {
+                return ['93.184.216.34'];
+            }
+        });
         $this->app['config']->set('database.default', 'testing');
         $this->app['config']->set('database.connections.testing', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '', 'foreign_key_constraints' => true]);
     }
 
     protected function migratePact(): void
     {
-        (require __DIR__.'/../database/migrations/2026_11_16_000001_create_pact_runtime.php')->up();
+        foreach (glob(__DIR__.'/../database/migrations/*.php') as $path) {
+            (require $path)->up();
+        }
     }
 
     protected function tearDown(): void

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Start agent linking on the master with only a domain, automatic discovery/public OAuth registration, remote login/consent and a team selector after returning.
+- Add owned named teams while preserving existing personal federations, connections, legacy integration APIs and credentials.
+- Complete both credential directions with confirmed activation, encrypted temporary link state, tenant-aware identity binding, idempotent selection and revocation.
+- Pin public peer DNS addresses, reject private destinations and cross-origin discovery, and test the guided flow across three isolated Laravel applications.
+
 ## 0.2.0 — 2026-11-16
 
 First public Composer distribution of the PHP SDK and Laravel master/client package.

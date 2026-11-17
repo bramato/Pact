@@ -23,6 +23,10 @@ final class PactServiceProvider extends ServiceProvider
         }
         if (method_exists($this->app, 'storagePath')) {
             foreach (Installation::load() as $key => $value) {
+                if ($key === 'auth') {
+                    // Persisted login settings must not hide the host's tenant middleware.
+                    $value = array_replace($this->app['config']->get('pact.auth', []), $value);
+                }
                 $this->app['config']->set('pact.'.$key, $value);
             }
             $this->app->bindIf(IdentityResolver::class, DefaultIdentityResolver::class);

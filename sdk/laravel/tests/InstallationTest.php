@@ -9,6 +9,15 @@ use RuntimeException;
 
 final class InstallationTest extends TestCase
 {
+    public function test_loading_installation_preserves_host_tenant_selection_middleware(): void
+    {
+        (new Installation)->install('client', ['url' => 'https://client.example']);
+        config(['pact.auth.middleware' => ['tenant.select']]);
+        (new \PactLaravel\PactServiceProvider($this->app))->register();
+        self::assertSame(['tenant.select'], config('pact.auth.middleware'));
+        self::assertSame('web', config('pact.auth.guard'));
+    }
+
     public function test_master_installation_is_persistent_and_repeatable(): void
     {
         $installer = new Installation;

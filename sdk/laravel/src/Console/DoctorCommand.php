@@ -36,7 +36,7 @@ final class DoctorCommand extends Command
         $check('signing keys', fn () => is_readable(storage_path('app/pact/private.pem')) && is_readable(storage_path('app/pact/public.pem')));
         $check('package migrations', function () {
             $schema = $this->laravel['db']->connection(config('pact.database_connection'))->getSchemaBuilder();
-            foreach (['pact_applications', 'pact_connections', 'pact_federations', 'pact_members', 'pact_tasks', 'pact_outbox', 'pact_receipts', 'pact_oauth_states', 'pact_oauth_clients', 'pact_event_receipts', 'pact_heartbeats'] as $table) {
+            foreach (['pact_applications', 'pact_connections', 'pact_federations', 'pact_members', 'pact_tasks', 'pact_outbox', 'pact_receipts', 'pact_oauth_states', 'pact_oauth_clients', 'pact_link_requests', 'pact_event_receipts', 'pact_heartbeats'] as $table) {
                 if (! $schema->hasTable($table)) {
                     return false;
                 }

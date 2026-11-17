@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace PactLaravel\OAuth;
 
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Str;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Passport;
 use PactLaravel\Models\Application;
 use PactLaravel\Models\Connection;
+use PactLaravel\Models\LinkRequest;
 use PactLaravel\Models\Member;
 use PactLaravel\Models\OAuthClient;
 use PactLaravel\Models\OAuthState;
@@ -25,18 +27,22 @@ final class ConnectionService
         if (config('pact.role') !== 'client') {
             throw new \DomainException('Master registration requires client role.');
         }
-        $url = rtrim(UrlPolicy::assert($url), '/');
+        $url = UrlPolicy::origin($url);
         $callback = $url.'/'.trim((string) config('pact.prefix', 'pact'), '/').'/oauth/callback';
 
-        return $this->store->atomic(function () use ($url, $callback): OAuthClient {
-            $existing = OAuthClient::query()->where('master_url', $url)->first();
-            if ($existing) {
-                return $existing;
-            }
-            $client = $this->clients->createAuthorizationCodeGrantClient('PACT '.$url, [$callback], false);
+        try {
+            return $this->store->atomic(function () use ($url, $callback): OAuthClient {
+                $existing = OAuthClient::query()->where('master_url', $url)->first();
+                if ($existing) {
+                    return $existing;
+                }
+                $client = $this->clients->createAuthorizationCodeGrantClient('PACT '.$url, [$callback], false);
 
-            return OAuthClient::query()->create(['id' => (string) Str::uuid(), 'oauth_client_id' => (string) $client->getKey(), 'master_url' => $url, 'callback_url' => $callback]);
-        });
+                return OAuthClient::query()->create(['id' => (string) Str::uuid(), 'oauth_client_id' => (string) $client->getKey(), 'master_url' => $url, 'origin_hash' => hash('sha256', $url), 'callback_url' => $callback]);
+            });
+        } catch (UniqueConstraintViolationException $e) {
+            return OAuthClient::query()->where('origin_hash', hash('sha256', $url))->first() ?? throw $e;
+        }
     }
 
     public function addApplication(string $url, string $clientId, ?string $name = null): Application
@@ -57,7 +63,29 @@ final class ConnectionService
         return $application;
     }
 
-    public function connectUrl(Application|string $application, string $userId): string
+    public function connectDomain(string $domain, string $userId): string
+    {
+        if (config('pact.role') !== 'master' || $userId === '') {
+            throw new \DomainException('An authenticated PACT master user is required.');
+        }
+        $peer = (new Discovery($this->http))->fetch($domain, 'client');
+        $master = Discovery::document();
+        $response = $this->http->request('POST', $peer['registration_endpoint'], ['Accept' => 'application/json'], [
+            'client_uri' => $master['issuer'], 'redirect_uris' => [$master['redirect_uri']],
+            'grant_types' => ['authorization_code', 'refresh_token'], 'response_types' => ['code'], 'token_endpoint_auth_method' => 'none',
+        ]);
+        $data = $response['body'];
+        if (! in_array($response['status'], [200, 201], true) || ! is_array($data) || ! is_string($data['client_id'] ?? null) || $data['client_id'] === '' || strlen($data['client_id']) > 191
+            || ($data['redirect_uris'] ?? null) !== [$master['redirect_uri']] || ($data['client_uri'] ?? null) !== $master['issuer'] || ($data['token_endpoint_auth_method'] ?? null) !== 'none') {
+            throw new \DomainException('Registrazione automatica del master non riuscita.');
+        }
+        $application = $this->addApplication($peer['issuer'], $data['client_id']);
+        LinkRequest::query()->where('expires_at', '<=', now())->whereNotNull('payload')->update(['payload' => null]);
+
+        return $this->connectUrl($application, $userId, true);
+    }
+
+    public function connectUrl(Application|string $application, string $userId, bool $chooseTeam = false): string
     {
         if (config('pact.role') !== 'master') {
             throw new \DomainException('Connect requires master role.');
@@ -71,10 +99,60 @@ final class ConnectionService
         $url = rtrim(UrlPolicy::assert((string) $application->url), '/');
         $state = self::base64(random_bytes(32));
         $verifier = self::base64(random_bytes(64));
-        OAuthState::query()->create(['id' => (string) Str::uuid(), 'user_id' => $userId, 'application_id' => $application->id, 'state_hash' => hash('sha256', $state), 'verifier' => $verifier, 'expires_at' => now()->addMinutes(10)]);
+        OAuthState::query()->create(['id' => (string) Str::uuid(), 'user_id' => $userId, 'application_id' => $application->id, 'state_hash' => hash('sha256', $state), 'verifier' => $verifier, 'expires_at' => now()->addMinutes(10), 'choose_team' => $chooseTeam]);
         $prefix = trim((string) config('pact.prefix', 'pact'), '/');
 
         return $url.'/'.$prefix.'/oauth/authorize?'.http_build_query(['response_type' => 'code', 'client_id' => $application->client_id, 'redirect_uri' => rtrim((string) config('pact.url'), '/').'/'.$prefix.'/oauth/callback', 'scope' => '', 'state' => $state, 'code_challenge' => self::base64(hash('sha256', $verifier, true)), 'code_challenge_method' => 'S256'], '', '&', PHP_QUERY_RFC3986);
+    }
+
+    public function finishLink(string $linkId, string $userId, ?string $teamId, ?string $newTeam = null): Connection
+    {
+        return $this->store->atomic(function () use ($linkId, $userId, $teamId, $newTeam): Connection {
+            $link = LinkRequest::query()->whereKey($linkId)->where('user_id', $userId)->lockForUpdate()->firstOrFail();
+            $selection = hash('sha256', json_encode([$teamId, $newTeam], JSON_THROW_ON_ERROR));
+            if ($link->connection_id) {
+                $connection = Connection::query()->whereKey($link->connection_id)->where('user_id', $userId)->firstOrFail();
+                abort_unless(hash_equals((string) $link->selection_hash, $selection), 409);
+
+                return $connection;
+            }
+            abort_unless($link->expires_at->isFuture() && is_array($link->payload), 410, 'Collegamento scaduto. Riparti dal dominio del server.');
+            $team = $newTeam !== null ? $this->store->createTeam($userId, $newTeam) : $this->store->teamFor($userId, (string) $teamId);
+            $payload = $link->payload;
+            $connection = $this->queueConnection(Application::query()->findOrFail($link->application_id), $userId, $payload['subject'], $payload['tokens'], $team->id);
+            $link->update(['connection_id' => $connection->id, 'selection_hash' => $selection, 'payload' => null]);
+
+            return $connection;
+        });
+    }
+
+    public function queueConnection(Application $application, string $userId, array $subject, array $tokens, string $teamId): Connection
+    {
+        return $this->store->atomic(function () use ($application, $userId, $subject, $tokens, $teamId): Connection {
+            $this->store->teamFor($userId, $teamId); // Recheck ownership at the write boundary.
+            // One remote account at this master belongs to one team. Serialise both initial and repeated links.
+            Application::query()->whereKey($application->id)->lockForUpdate()->firstOrFail();
+            $others = Connection::query()->where('user_id', $userId)->where('member_id', $subject['agent_id'])->where('remote_url', $application->url)->where('federation_id', '!=', $teamId)->whereIn('status', ['pending', 'active'])->exists();
+            abort_if($others, 409, 'Questo agente è già collegato a un’altra squadra. Scollegalo prima di spostarlo.');
+            $connection = Connection::query()->where('user_id', $userId)->where('federation_id', $teamId)->where('member_id', $subject['agent_id'])->lockForUpdate()->first();
+            abort_if($connection && $connection->remote_url !== $application->url, 409, 'L’identità dell’agente è già associata a un altro server.');
+            $generation = (int) ($connection?->metadata['generation'] ?? 0) + 1;
+            if ($connection && $connection->status === 'active') {
+                $this->store->bump($teamId);
+            }
+            $connection ??= new Connection(['id' => (string) Str::uuid(), 'user_id' => $userId, 'federation_id' => $teamId, 'member_id' => $subject['agent_id']]);
+            $connection->fill(['application_id' => $application->id, 'remote_url' => $application->url, 'remote_user_id' => $subject['user_id'], 'status' => 'pending',
+                'credentials' => ['access_token' => $tokens['access_token'], 'refresh_token' => $tokens['refresh_token'], 'expires_at' => $tokens['expires_at'] ?? time() + (int) ($tokens['expires_in'] ?? 3600)],
+                'metadata' => ['product_id' => $subject['product_id'], 'generation' => $generation]])->save();
+            $member = Member::query()->firstOrNew(['federation_id' => $teamId, 'member_id' => $subject['agent_id']]);
+            if (! $member->exists) {
+                $member->id = (string) Str::uuid();
+            }
+            $member->fill(['user_id' => $userId, 'connection_id' => $connection->id, 'active' => false, 'manifest' => $subject['manifest']])->save();
+            $this->store->enqueue('activate', null, ['connection_id' => $connection->id, 'generation' => $generation], (string) Str::uuid());
+
+            return $connection;
+        });
     }
 
     public function refresh(Connection $connection): Connection

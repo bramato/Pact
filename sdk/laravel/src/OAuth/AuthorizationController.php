@@ -7,10 +7,13 @@ namespace PactLaravel\OAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Laravel\Passport\Bridge\User;
+use Laravel\Passport\Http\Controllers\ApproveAuthorizationController;
 use Laravel\Passport\Http\Controllers\ConvertsPsrResponses;
 use Laravel\Passport\Http\Controllers\HandlesOAuthErrors;
 use League\OAuth2\Server\AuthorizationServer;
+use PactLaravel\Contracts\IdentityResolver;
 use PactLaravel\Models\OAuthClient;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class AuthorizationController
@@ -24,12 +27,25 @@ final class AuthorizationController
         abort_unless($request->query('response_type') === 'code' && $request->query('code_challenge_method') === 'S256'
             && is_string($request->query('code_challenge')) && preg_match('/^[A-Za-z0-9_-]{43}$/', $request->query('code_challenge')) === 1, 400);
         $auth = $this->withErrorHandling(fn () => $server->validateAuthorizationRequest($psr));
-        $user = auth()->guard((string) config('pact.auth.guard', 'web'))->user();
+        $identities = app(IdentityResolver::class);
+        $user = $identities->current();
         abort_unless($user !== null, 401);
-        $auth->setUser(new User((string) $user->getAuthIdentifier()));
+        $identity = $identities->id($user);
+        abort_unless($identity !== '' && strlen($identity) <= 191, 403);
+        $auth->setUser(new User($identity));
+        $request->session()->put('pact.oauth.identity', $identity);
         $request->session()->put('authToken', $token = Str::random());
         $request->session()->put('authRequest', serialize($auth));
 
         return response()->view('pact::consent', ['authToken' => $token, 'client' => OAuthClient::query()->where('oauth_client_id', $clientId)->firstOrFail()]);
+    }
+
+    public function approve(Request $request, ResponseInterface $response, ApproveAuthorizationController $passport): mixed
+    {
+        $identities = app(IdentityResolver::class);
+        $user = $identities->current();
+        abort_unless($user && $request->session()->pull('pact.oauth.identity') === $identities->id($user), 403);
+
+        return $passport->approve($request, $response);
     }
 }

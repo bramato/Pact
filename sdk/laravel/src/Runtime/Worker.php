@@ -10,6 +10,7 @@ use Pact\Pact;
 use Pact\PactError;
 use PactLaravel\Models\Connection;
 use PactLaravel\Models\Heartbeat;
+use PactLaravel\Models\LinkRequest;
 use PactLaravel\Models\Outbox;
 use PactLaravel\Models\Task;
 use PactLaravel\OAuth\ConnectionService;
@@ -23,6 +24,7 @@ final class Worker
 
     public function workOnce(): bool
     {
+        LinkRequest::query()->where('expires_at', '<=', now())->whereNotNull('payload')->update(['payload' => null]);
         static $turn = 0;
         if (++$turn % 10 === 0 && $this->renewDue()) {
             return true;
