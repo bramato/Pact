@@ -16,7 +16,7 @@
 
 PACT describes how independently built agents can agree on task inputs and outputs, ask typed questions, report work, and coordinate a dependency graph of contributors. It uses A2A discovery, messages, tasks, artifacts, and extension negotiation. The native A2A task status remains authoritative.
 
-This repository contains normative Core and optional Swarm profiles, independent TypeScript and PHP SDKs, a Laravel master/client package with OAuth linking, a durable three-contributor HTTP demo, and portable/live conformance tests. PACT is an independent proposal without official A2A endorsement. Project-controlled identifiers replace the archived `example.org` placeholders; publishing them remains the owner's release step.
+This repository contains normative Core and optional Swarm profiles, independent TypeScript and PHP SDKs, a Laravel master/client package with domain-only OAuth linking and team selection, a durable three-contributor HTTP demo, and portable/live conformance tests. PACT is an independent proposal without official A2A endorsement. Project-controlled identifiers replace the archived `example.org` placeholders; publishing them remains the owner's release step.
 
 ## Try the draft
 

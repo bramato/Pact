@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.1 — 2026-11-17
 
 - Start agent linking on the master with only a domain, automatic discovery/public OAuth registration, remote login/consent and a team selector after returning.
 - Add owned named teams while preserving existing personal federations, connections, legacy integration APIs and credentials.

@@ -10,7 +10,7 @@ The source of truth is `bramato/Pact`. Public distribution repositories contain 
 Consumers install releases normally:
 
 ```sh
-composer require pact-protocol/laravel:^0.2
+composer require pact-protocol/laravel:^0.2.1
 ```
 
 The Core dependency is resolved automatically. Neither a local path repository nor Node.js is needed in the consuming application.
@@ -60,8 +60,10 @@ The tag-triggered GitHub Actions workflow also builds release artifacts from the
 
 ## Upgrade a consuming Laravel application
 
+For the domain-only linking release, use the [0.2.1 upgrade handoff](upgrade-handoff-v0.2.1.md). Update both master and client installations before testing the new connection flow.
+
 ```sh
-composer update pact-protocol/laravel pact-protocol/core --with-all-dependencies
+composer require pact-protocol/laravel:^0.2.1 pact-protocol/core:^0.2.1 --with-all-dependencies
 php artisan config:clear
 php artisan pact:install --no-interaction
 php artisan config:cache

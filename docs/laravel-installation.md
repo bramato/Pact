@@ -5,7 +5,7 @@ The same `pact-protocol/laravel` package runs as a **master**, owning users' tea
 ## Install a versioned release
 
 ```sh
-composer require pact-protocol/laravel:^0.2
+composer require pact-protocol/laravel:^0.2.1
 ```
 
 Composer installs the Core dependency automatically. Public version tags and upgrade instructions are described in the [release guide](releases.md).
@@ -36,7 +36,7 @@ Include every local peer in `pact.local_hosts`. Public origins require HTTPS. In
 
 ## Connect an agent from its domain
 
-This flow is included in source commit `d120ac0` and descendants containing that implementation. Verify that the installed Laravel package exposes `PactManager::connectDomain()` and the domain-linking routes before using it; satisfying the `^0.2` constraint alone does not prove the feature is included. Until a distribution containing it is published, use the source-checkout installation described above at that commit.
+Domain-only linking requires `pact-protocol/laravel` 0.2.1 or newer. The versioned source is tag `v0.2.1`; the Core wire protocol remains 0.2.0. Use the [upgrade handoff](upgrade-handoff-v0.2.1.md) to update an existing master or client application and verify both credential directions.
 
 On the **master**, open `/pact/agents` and click **Collega agente**. Enter only the client domain (for example `documents.example.com`); an explicit origin such as `https://documents.example.com` is also accepted. A bare domain uses HTTPS. For local Herd peers, enter their existing full HTTP/HTTPS origin and allow every local host on both installations. Paths, embedded passwords, queries and fragments are rejected.
 

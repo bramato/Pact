@@ -279,16 +279,16 @@ Integra PACT in questo progetto Laravel con ruolo MASTER.
 
 Obiettivo: ogni utente autenticato deve poter collegare agenti di altre applicazioni alle proprie squadre, inviare incarichi e consultarne risultati e domande.
 
-Riferimento sorgente per questo flusso: bramato/Pact, commit d120ac0 (o un suo discendente che include la funzionalità).
+Versione minima per questo flusso: pact-protocol/laravel 0.2.1. Riferimento sorgente: bramato/Pact, tag v0.2.1; protocollo Core 0.2.0.
 
 Fonti da leggere prima di modificare il progetto:
-- https://github.com/bramato/Pact/blob/d120ac0/docs/laravel-installation.md
-- https://github.com/bramato/Pact/blob/d120ac0/specification/PACT-LARAVEL-BINDING-v0.1.md
-- https://github.com/bramato/Pact/blob/d120ac0/docs/releases.md
+- https://github.com/bramato/Pact/blob/v0.2.1/docs/laravel-installation.md
+- https://github.com/bramato/Pact/blob/v0.2.1/specification/PACT-LARAVEL-BINDING-v0.1.md
+- https://github.com/bramato/Pact/blob/v0.2.1/docs/releases.md
 
 1. Esamina le istruzioni del progetto, PHP/Laravel, database, autenticazione e agente AI esistente. Il pacchetto supporta Laravel 12.41.1+ e 13 con il relativo PHP compatibile. Riusa login, guard e provider dell’applicazione. In locale usa Herd con il nome della cartella seguito da .test, il suo schema HTTP/HTTPS e APP_URL coerente.
 
-2. Verifica che la release disponibile di pact-protocol/laravel includa PactManager::connectDomain() e le nuove route di collegamento dal dominio; la sola compatibilità con ^0.2 non lo garantisce. Se le include, installa pact-protocol/laravel:^0.2 con Composer; Core è una dipendenza automatica. Altrimenti usa un checkout di bramato/Pact al commit d120ac0, o un suo discendente che include il flusso: esegui lì npm ci --ignore-scripts e npm run build:sdk, poi configura nell’app due repository Composer path assolute verso sdk/php e sdk/laravel con options.versions rispettivamente pact-protocol/core e pact-protocol/laravel a 0.2.0, come in reference/composer.json. Per aggiornare una dipendenza già installata esegui composer update pact-protocol/laravel pact-protocol/core --with-all-dependencies. Verifica il codice effettivamente caricato da vendor prima di proseguire. Non inventare tag o pacchetti pubblicati.
+2. Installa o aggiorna la distribuzione versionata con composer require pact-protocol/laravel:^0.2.1 pact-protocol/core:^0.2.1 --with-all-dependencies. Controlla composer show pact-protocol/laravel e composer show pact-protocol/core, poi verifica che il codice effettivamente caricato da vendor esponga PactManager::connectDomain(). Se il progetto usa repository Composer path o VCS locali, confrontali con la distribuzione pubblicata e aggiorna i soli override PACT necessari alla risoluzione della versione; preserva gli altri repository. Per lavorare dal sorgente usa il checkout del tag v0.2.1, esegui lì npm ci --ignore-scripts e npm run build:sdk e assegna la versione locale 0.2.1 a entrambi i repository Composer path sdk/php e sdk/laravel. Conserva composer.json e composer.lock aggiornati nel progetto.
 
 3. Verifica database, APP_KEY e APP_URL, poi esegui:
 php artisan config:clear
@@ -319,16 +319,16 @@ Integra PACT in questo progetto Laravel con ruolo CLIENT.
 
 Obiettivo: esporre un agente per ciascun utente dell’applicazione, collegabile a un master PACT con consenso OAuth, ed eseguire incarichi con le capacità AI e i permessi già presenti nel progetto.
 
-Riferimento sorgente per questo flusso: bramato/Pact, commit d120ac0 (o un suo discendente che include la funzionalità).
+Versione minima per questo flusso: pact-protocol/laravel 0.2.1. Riferimento sorgente: bramato/Pact, tag v0.2.1; protocollo Core 0.2.0.
 
 Fonti da leggere prima di modificare il progetto:
-- https://github.com/bramato/Pact/blob/d120ac0/docs/laravel-installation.md
-- https://github.com/bramato/Pact/blob/d120ac0/specification/PACT-LARAVEL-BINDING-v0.1.md
-- https://github.com/bramato/Pact/blob/d120ac0/docs/releases.md
+- https://github.com/bramato/Pact/blob/v0.2.1/docs/laravel-installation.md
+- https://github.com/bramato/Pact/blob/v0.2.1/specification/PACT-LARAVEL-BINDING-v0.1.md
+- https://github.com/bramato/Pact/blob/v0.2.1/docs/releases.md
 
 1. Esamina le istruzioni del progetto, PHP/Laravel, database, autenticazione, agente AI e strumenti disponibili. Il pacchetto supporta Laravel 12.41.1+ e 13 con il relativo PHP compatibile. Riusa login, guard, provider e chiavi Passport esistenti. In locale usa Herd con il nome della cartella seguito da .test, il suo schema HTTP/HTTPS e APP_URL coerente.
 
-2. Verifica che la release disponibile di pact-protocol/laravel includa PactManager::connectDomain() e le nuove route di collegamento dal dominio; la sola compatibilità con ^0.2 non lo garantisce. Se le include, installa pact-protocol/laravel:^0.2 con Composer; Core è una dipendenza automatica. Altrimenti usa un checkout di bramato/Pact al commit d120ac0, o un suo discendente che include il flusso: esegui lì npm ci --ignore-scripts e npm run build:sdk, poi configura nell’app due repository Composer path assolute verso sdk/php e sdk/laravel con options.versions rispettivamente pact-protocol/core e pact-protocol/laravel a 0.2.0, come in reference/composer.json. Per aggiornare una dipendenza già installata esegui composer update pact-protocol/laravel pact-protocol/core --with-all-dependencies. Verifica il codice effettivamente caricato da vendor prima di proseguire. Non inventare tag o pacchetti pubblicati.
+2. Installa o aggiorna la distribuzione versionata con composer require pact-protocol/laravel:^0.2.1 pact-protocol/core:^0.2.1 --with-all-dependencies. Controlla composer show pact-protocol/laravel e composer show pact-protocol/core, poi verifica che il codice effettivamente caricato da vendor esponga PactManager::connectDomain(). Se il progetto usa repository Composer path o VCS locali, confrontali con la distribuzione pubblicata e aggiorna i soli override PACT necessari alla risoluzione della versione; preserva gli altri repository. Per lavorare dal sorgente usa il checkout del tag v0.2.1, esegui lì npm ci --ignore-scripts e npm run build:sdk e assegna la versione locale 0.2.1 a entrambi i repository Composer path sdk/php e sdk/laravel. Conserva composer.json e composer.lock aggiornati nel progetto.
 
 3. Verifica database, APP_KEY e APP_URL, poi esegui:
 php artisan config:clear
