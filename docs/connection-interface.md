@@ -70,6 +70,8 @@ Per una pagina personalizzata che usa la stessa cornice:
 
 I componenti principali sono `pact-grid`, `pact-panel`, `pact-button`, `pact-button-secondary`, `pact-text-link`, `pact-notice`, `pact-domain` e `pact-actions`. In una cornice propria si può includere `pact::partials.styles` e usare `pact-ui` sul contenitore principale, verificando il comportamento nella pagina ospite.
 
+Con una Content Security Policy restrittiva, passare alla vista `pactStyleNonce` con un nonce casuale generato per la risposta e autorizzarlo in `style-src 'nonce-…'`. Le texture incorporate richiedono `img-src data:`. Gli eventuali script di ritorno restano protetti dal nonce dell’applicazione; non aggiungere `unsafe-inline` o origini esterne per caricare il tema.
+
 ## Adattamento e accessibilità
 
 I moduli passano da due colonne a una sotto i 760 px. Le azioni diventano verticali sui telefoni più stretti; i controlli hanno un’altezza minima di 52 px e i link di azione un’area di almeno 48 px. I campi mantengono testo a 16 px, label persistenti, hint associati ed errori vicini al controllo con `aria-invalid` e `aria-describedby`.

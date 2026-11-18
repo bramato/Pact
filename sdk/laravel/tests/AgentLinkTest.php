@@ -78,6 +78,13 @@ final class AgentLinkTest extends TestCase
         self::assertSame(0, Connection::query()->count());
     }
 
+    public function test_connection_styles_support_a_host_content_security_policy_nonce(): void
+    {
+        $styles = view('pact::partials.styles', ['pactStyleNonce' => 'host-nonce'])->render();
+        self::assertStringContainsString('<style nonce="host-nonce">', $styles);
+        self::assertStringNotContainsString('nonce=', view('pact::partials.styles')->render());
+    }
+
     public function test_callback_waits_for_team_choice_and_encrypts_temporary_credentials(): void
     {
         $link = $this->beginAndReturn();

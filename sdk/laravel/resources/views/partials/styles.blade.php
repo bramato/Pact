@@ -1,4 +1,4 @@
-<style>
+<style @isset($pactStyleNonce)nonce="{{ $pactStyleNonce }}"@endisset>
     .pact-ui {
         color-scheme: light;
         --pact-paper: #eee7d7;
