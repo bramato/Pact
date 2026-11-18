@@ -66,7 +66,7 @@ use PactLaravel\Facades\Pact;
 return redirect()->away(Pact::connectDomain('documents.example.com'));
 ```
 
-Link to `route('pact.agents')` or `route('pact.connect')` from the host navigation. Publish the included pages for visual customisation with `php artisan vendor:publish --tag=pact-views`.
+Link to `route('pact.agents')` or `route('pact.connect')` from the host navigation. Publish the included pages for visual customisation with `php artisan vendor:publish --tag=pact-views`. The source theme shares the PACT landing's editorial tokens across master pages and client consent; see the [connection interface guidelines](connection-interface.md) for the shared partials, palette, responsive behavior and integration instructions. This visual revision follows the published 0.2.1 package; existing 0.2.1 applications can apply it to their published views.
 
 A CLI equivalent also discovers and registers automatically:
 

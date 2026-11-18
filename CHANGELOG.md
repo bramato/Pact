@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Share the PACT editorial connection theme across master initiation, client consent, team selection and agent status pages, with accessible controls and reusable integration guidelines.
+
 ## 0.2.1 — 2026-11-17
 
 - Start agent linking on the master with only a domain, automatic discovery/public OAuth registration, remote login/consent and a team selector after returning.

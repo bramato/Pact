@@ -297,6 +297,8 @@ For local HTTP peers, add one --allow-local-host per host to the installation co
 
 For an existing PACT installation, rerun pact:install --no-interaction after updating to apply the new migrations: existing identity, connections and keys are preserved. Update both servers. Compare any published, customised views with the package views to include the new pages, and verify pact.auth.middleware in configuration.
 
+Connection interface: use the PACT website style on both servers, with cobalt #075bc7, ivory paper #eee7d7 and #f5efdf, ink #122923, Georgia headings with italic emphasis, system body text, thin borders and rectangular buttons. Share tokens and primitives across master initiation, incoming client consent, return and team selection. Reuse the existing PACT symbol and SVG icons; controls are at least 52 px tall, fields use 16 px text, focus remains visible and errors are linked to fields. Consent shows the requesting domain and permissions in both directions. If the installed version does not include the theme, apply it to published views while preserving routes, @csrf and auth_token. The client layout must work with client-only routes.
+
 4. Configure php artisan pact:work as a persistent process; Redis is not required. Use pact:work --once for individual checks. Run php artisan pact:doctor and resolve its findings. Rebuild configuration and route caches after installation.
 
 5. Linking starts ON THE MASTER: add route('pact.agents') or route('pact.connect') to navigation. The package provides a «Collega agente» button: the user enters only the client domain, the master reads /.well-known/pact and registers its public OAuth client automatically. Do not require manual registration or a copied client ID. The CLI equivalent is:
@@ -336,6 +338,8 @@ php artisan pact:install --role=client --no-interaction
 For local HTTP peers, add one --allow-local-host per host to the installation command, including both client and master. Use HTTPS in production. Installation handles PACT migrations and missing Passport migrations. Preserve APP_KEY, the database, Passport keys and storage/app/pact across deployments; do not replace existing credentials.
 
 For an existing PACT installation, rerun pact:install --no-interaction after updating to apply the new migrations: existing identity, connections and keys are preserved. Update both servers. Compare any published, customised views with the package views to include the new pages, and verify pact.auth.middleware in configuration.
+
+Connection interface: use the PACT website style on both servers, with cobalt #075bc7, ivory paper #eee7d7 and #f5efdf, ink #122923, Georgia headings with italic emphasis, system body text, thin borders and rectangular buttons. Share tokens and primitives across master initiation, incoming client consent, return and team selection. Reuse the existing PACT symbol and SVG icons; controls are at least 52 px tall, fields use 16 px text, focus remains visible and errors are linked to fields. Consent shows the requesting domain and permissions in both directions. If the installed version does not include the theme, apply it to published views while preserving routes, @csrf and auth_token. The client layout must work with client-only routes.
 
 4. Configure php artisan pact:work as a persistent process; Redis is not required. Use pact:work --once for individual checks. Run php artisan pact:doctor and resolve its findings. Rebuild configuration and route caches after installation.
 

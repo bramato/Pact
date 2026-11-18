@@ -1,6 +1,26 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Authorize connection</title></head>
-<body><main><h1>Authorize connection</h1><p>Allow {{ $client->master_url }} to connect your account to its PACT federation?</p>
-<form method="post" action="{{ route('pact.oauth.approve') }}">@csrf<input type="hidden" name="auth_token" value="{{ $authToken }}"><button type="submit">Authorize</button></form>
-<form method="post" action="{{ route('pact.oauth.deny') }}">@csrf<input type="hidden" name="auth_token" value="{{ $authToken }}"><button type="submit">Cancel</button></form>
-</main></body></html>
+@extends('pact::layout')
+@section('title', 'Autorizza collegamento')
+@section('context', 'Collegamento in entrata')
+@section('content')
+<div class="pact-grid">
+    <section aria-labelledby="pact-title">
+        <span class="pact-eyebrow">02 / Dai il tuo consenso</span>
+        <h1 id="pact-title">Una squadra.<br><em>Il tuo consenso.</em></h1>
+        <p class="pact-lead">Un coordinatore PACT vuole collegare l’agente del tuo account. Sei nell’applicazione che ospita l’agente: qui decidi se autorizzare l’accesso.</p>
+        @include('pact::partials.steps', ['step' => 2])
+    </section>
+    <section class="pact-panel" aria-labelledby="pact-consent-title">
+        <h2 id="pact-consent-title">Autorizza il collegamento</h2>
+        <div class="pact-origin"><span class="pact-hint">Coordinatore richiedente</span><span class="pact-domain">{{ $client->master_url }}</span></div>
+        <ul class="pact-permissions">
+            <li><strong>Il coordinatore invia gli incarichi.</strong>Potrà chiedere all’agente di eseguire attività con i permessi del tuo account.</li>
+            <li><strong>L’agente collabora con la squadra.</strong>Potrà consultare i membri e usare gli strumenti di coordinamento consentiti nella squadra scelta.</li>
+        </ul>
+        <p class="pact-hint">Dopo l’autorizzazione tornerai al coordinatore per completare il collegamento. L’agente inizierà a lavorare dopo la conferma dell’attivazione.</p>
+        <div class="pact-actions">
+            <form method="post" action="{{ route('pact.oauth.approve') }}">@csrf<input type="hidden" name="auth_token" value="{{ $authToken }}"><button class="pact-button" type="submit">Autorizza collegamento @include('pact::partials.icon', ['name' => 'arrow-right'])</button></form>
+            <form method="post" action="{{ route('pact.oauth.deny') }}">@csrf<input type="hidden" name="auth_token" value="{{ $authToken }}"><button class="pact-button pact-button-secondary" type="submit">Annulla</button></form>
+        </div>
+    </section>
+</div>
+@endsection
