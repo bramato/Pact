@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.2.2 — 2026-11-18
 
 - Share the PACT editorial connection theme across master initiation, client consent, team selection and agent status pages, with accessible controls and reusable integration guidelines.
+- Allow host applications to protect inline connection styles with a per-response CSP nonce.
 
 ## 0.2.1 — 2026-11-17
 

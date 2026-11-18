@@ -279,16 +279,17 @@ Integrate PACT into this Laravel project with the MASTER role.
 
 Goal: each authenticated user can connect agents from other applications to their own teams, send work and review results and questions.
 
-Minimum version for this flow: pact-protocol/laravel 0.2.1. Source reference: bramato/Pact, tag v0.2.1; Core protocol 0.2.0.
+Minimum version for this flow: pact-protocol/laravel 0.2.2. Source reference: bramato/Pact, tag v0.2.2; Core protocol 0.2.0.
 
 Read these sources before changing the project:
-- https://github.com/bramato/Pact/blob/v0.2.1/docs/laravel-installation.md
-- https://github.com/bramato/Pact/blob/v0.2.1/specification/PACT-LARAVEL-BINDING-v0.1.md
-- https://github.com/bramato/Pact/blob/v0.2.1/docs/releases.md
+- https://github.com/bramato/Pact/blob/v0.2.2/docs/laravel-installation.md
+- https://github.com/bramato/Pact/blob/v0.2.2/specification/PACT-LARAVEL-BINDING-v0.1.md
+- https://github.com/bramato/Pact/blob/v0.2.2/docs/releases.md
+- https://github.com/bramato/Pact/blob/v0.2.2/docs/connection-interface.md
 
 1. Inspect project instructions, PHP/Laravel, database, authentication and the existing AI agent. The package supports Laravel 12.41.1+ and 13 with their compatible PHP versions. Reuse the application’s login, guard and provider. Locally use Herd with the project folder name followed by .test, its existing HTTP/HTTPS scheme and a matching APP_URL.
 
-2. Install or update the versioned distribution using composer require pact-protocol/laravel:^0.2.1 pact-protocol/core:^0.2.1 --with-all-dependencies. Check composer show pact-protocol/laravel and composer show pact-protocol/core, then verify that the code actually loaded from vendor exposes PactManager::connectDomain(). If the project uses local Composer path or VCS repositories, compare them with the published distribution and adjust only the PACT overrides needed to resolve the version; preserve other repositories. For source development, check out tag v0.2.1, run npm ci --ignore-scripts and npm run build:sdk there, and assign local version 0.2.1 to both sdk/php and sdk/laravel Composer path repositories. Keep the updated composer.json and composer.lock in the project.
+2. Install or update the versioned distribution using composer require pact-protocol/laravel:^0.2.2 pact-protocol/core:^0.2.2 --with-all-dependencies. Check composer show pact-protocol/laravel and composer show pact-protocol/core, then verify that the code actually loaded from vendor exposes PactManager::connectDomain(). If the project uses local Composer path or VCS repositories, compare them with the published distribution and adjust only the PACT overrides needed to resolve the version; preserve other repositories. For source development, check out tag v0.2.2, run npm ci --ignore-scripts and npm run build:sdk there, and assign local version 0.2.2 to both sdk/php and sdk/laravel Composer path repositories. Keep the updated composer.json and composer.lock in the project.
 
 3. Verify the database, APP_KEY and APP_URL, then run:
 php artisan config:clear
@@ -321,16 +322,17 @@ Integrate PACT into this Laravel project with the CLIENT role.
 
 Goal: expose one agent per application user, connectable to a PACT master through OAuth consent, and execute work using the project’s existing AI capabilities and permissions.
 
-Minimum version for this flow: pact-protocol/laravel 0.2.1. Source reference: bramato/Pact, tag v0.2.1; Core protocol 0.2.0.
+Minimum version for this flow: pact-protocol/laravel 0.2.2. Source reference: bramato/Pact, tag v0.2.2; Core protocol 0.2.0.
 
 Read these sources before changing the project:
-- https://github.com/bramato/Pact/blob/v0.2.1/docs/laravel-installation.md
-- https://github.com/bramato/Pact/blob/v0.2.1/specification/PACT-LARAVEL-BINDING-v0.1.md
-- https://github.com/bramato/Pact/blob/v0.2.1/docs/releases.md
+- https://github.com/bramato/Pact/blob/v0.2.2/docs/laravel-installation.md
+- https://github.com/bramato/Pact/blob/v0.2.2/specification/PACT-LARAVEL-BINDING-v0.1.md
+- https://github.com/bramato/Pact/blob/v0.2.2/docs/releases.md
+- https://github.com/bramato/Pact/blob/v0.2.2/docs/connection-interface.md
 
 1. Inspect project instructions, PHP/Laravel, database, authentication, AI agent and available tools. The package supports Laravel 12.41.1+ and 13 with their compatible PHP versions. Reuse existing login, guard, provider and Passport keys. Locally use Herd with the project folder name followed by .test, its existing HTTP/HTTPS scheme and a matching APP_URL.
 
-2. Install or update the versioned distribution using composer require pact-protocol/laravel:^0.2.1 pact-protocol/core:^0.2.1 --with-all-dependencies. Check composer show pact-protocol/laravel and composer show pact-protocol/core, then verify that the code actually loaded from vendor exposes PactManager::connectDomain(). If the project uses local Composer path or VCS repositories, compare them with the published distribution and adjust only the PACT overrides needed to resolve the version; preserve other repositories. For source development, check out tag v0.2.1, run npm ci --ignore-scripts and npm run build:sdk there, and assign local version 0.2.1 to both sdk/php and sdk/laravel Composer path repositories. Keep the updated composer.json and composer.lock in the project.
+2. Install or update the versioned distribution using composer require pact-protocol/laravel:^0.2.2 pact-protocol/core:^0.2.2 --with-all-dependencies. Check composer show pact-protocol/laravel and composer show pact-protocol/core, then verify that the code actually loaded from vendor exposes PactManager::connectDomain(). If the project uses local Composer path or VCS repositories, compare them with the published distribution and adjust only the PACT overrides needed to resolve the version; preserve other repositories. For source development, check out tag v0.2.2, run npm ci --ignore-scripts and npm run build:sdk there, and assign local version 0.2.2 to both sdk/php and sdk/laravel Composer path repositories. Keep the updated composer.json and composer.lock in the project.
 
 3. Verify the database, APP_KEY and APP_URL, then run:
 php artisan config:clear

@@ -10,7 +10,7 @@ The source of truth is `bramato/Pact`. Public distribution repositories contain 
 Consumers install releases normally:
 
 ```sh
-composer require pact-protocol/laravel:^0.2.1
+composer require pact-protocol/laravel:^0.2.2
 ```
 
 The Core dependency is resolved automatically. Neither a local path repository nor Node.js is needed in the consuming application.
@@ -19,7 +19,7 @@ The Core dependency is resolved automatically. Neither a local path repository n
 
 Composer versions come from immutable Git tags such as `v0.2.0`; do not add a `version` field to exported `composer.json`. Patch versions contain compatible fixes. Before 1.0, incompatible package API changes use a new minor version. Never reuse a released version or move its tag; publish the next version instead.
 
-The package version is independent of the wire protocol and contract versions. A Laravel `0.2.1` bug fix can still negotiate PACT Core `0.2.0`. Do not reformat released schema bytes: a schema change requires an appropriate new descriptor and digest.
+The package version is independent of the wire protocol and contract versions. A Laravel `0.2.2` bug fix can still negotiate PACT Core `0.2.0`. Do not reformat released schema bytes: a schema change requires an appropriate new descriptor and digest.
 
 ## Prepare a release
 
@@ -36,7 +36,7 @@ node --test tests/release.test.mjs tests/publish-release.test.mjs
 Build an explicit version from a committed ref:
 
 ```sh
-npm run release:build -- --version 0.2.1 --output storage/releases/0.2.1 --ref HEAD
+npm run release:build -- --version 0.2.2 --output storage/releases/0.2.2 --ref HEAD
 ```
 
 The builder reads Git objects, not the working tree. It exports only the two SDK packages, includes generated schemas/result contracts, strips development-only repositories and dependencies, and writes ZIP files, package checksums and a release manifest with the exact source commit. A repeated build must match an existing output directory byte for byte or fail.
@@ -48,8 +48,8 @@ Validate the exported Composer manifests and verify installation in a disposable
 The publication tool uses the authenticated GitHub CLI account. It first validates the release files locally; without `--publish` it performs no external writes:
 
 ```sh
-npm run release:publish -- --directory storage/releases/0.2.1
-npm run release:publish -- --directory storage/releases/0.2.1 --publish
+npm run release:publish -- --directory storage/releases/0.2.2
+npm run release:publish -- --directory storage/releases/0.2.2 --publish
 ```
 
 The tool publishes the generated package trees, creates version tags and attaches the ZIP/checksum/provenance files to GitHub releases. Existing conflicting tags or artifacts cause failure rather than replacement. Distribution repositories are generated outputs; edit the upstream SDK sources instead of editing them directly.
@@ -60,10 +60,10 @@ The tag-triggered GitHub Actions workflow also builds release artifacts from the
 
 ## Upgrade a consuming Laravel application
 
-For the domain-only linking release, use the [0.2.1 upgrade handoff](upgrade-handoff-v0.2.1.md). Update both master and client installations before testing the new connection flow.
+For domain-only linking and the shared connection theme, use the [0.2.2 upgrade handoff](upgrade-handoff-v0.2.2.md). Update both master and client installations before testing the new connection flow.
 
 ```sh
-composer require pact-protocol/laravel:^0.2.1 pact-protocol/core:^0.2.1 --with-all-dependencies
+composer require pact-protocol/laravel:^0.2.2 pact-protocol/core:^0.2.2 --with-all-dependencies
 php artisan config:clear
 php artisan pact:install --no-interaction
 php artisan config:cache

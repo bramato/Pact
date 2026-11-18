@@ -2,7 +2,7 @@
 
 Le schermate del master e il consenso sul client usano la stessa identità editoriale del sito PACT: carta avorio su fondo cobalto, inchiostro scuro, titoli serif con enfasi corsiva, bordi sottili e controlli rettangolari. Il tema è condiviso nel pacchetto Laravel e si carica localmente su ciascuna applicazione.
 
-Questa revisione grafica è nello stato sorgente successivo alla release 0.2.1; non modifica i tag già pubblicati. Nelle installazioni 0.2.1 può essere applicata alle viste pubblicate seguendo questa guida.
+Il tema condiviso è incluso in `pact-protocol/laravel` dalla versione 0.2.2. Aggiornare il pacchetto e confrontare le eventuali viste pubblicate con quelle nuove, senza sovrascrivere le personalizzazioni dell’applicazione.
 
 ## Sorgenti e risorse condivise
 

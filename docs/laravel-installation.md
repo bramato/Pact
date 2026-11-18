@@ -5,7 +5,7 @@ The same `pact-protocol/laravel` package runs as a **master**, owning users' tea
 ## Install a versioned release
 
 ```sh
-composer require pact-protocol/laravel:^0.2.1
+composer require pact-protocol/laravel:^0.2.2
 ```
 
 Composer installs the Core dependency automatically. Public version tags and upgrade instructions are described in the [release guide](releases.md).
@@ -36,7 +36,7 @@ Include every local peer in `pact.local_hosts`. Public origins require HTTPS. In
 
 ## Connect an agent from its domain
 
-Domain-only linking requires `pact-protocol/laravel` 0.2.1 or newer. The versioned source is tag `v0.2.1`; the Core wire protocol remains 0.2.0. Use the [upgrade handoff](upgrade-handoff-v0.2.1.md) to update an existing master or client application and verify both credential directions.
+Domain-only linking requires `pact-protocol/laravel` 0.2.1 or newer. The current versioned source is tag `v0.2.2`; the Core wire protocol remains 0.2.0. Use the [upgrade handoff](upgrade-handoff-v0.2.2.md) to update an existing master or client application and verify both credential directions.
 
 On the **master**, open `/pact/agents` and click **Collega agente**. Enter only the client domain (for example `documents.example.com`); an explicit origin such as `https://documents.example.com` is also accepted. A bare domain uses HTTPS. For local Herd peers, enter their existing full HTTP/HTTPS origin and allow every local host on both installations. Paths, embedded passwords, queries and fragments are rejected.
 
@@ -66,7 +66,7 @@ use PactLaravel\Facades\Pact;
 return redirect()->away(Pact::connectDomain('documents.example.com'));
 ```
 
-Link to `route('pact.agents')` or `route('pact.connect')` from the host navigation. Publish the included pages for visual customisation with `php artisan vendor:publish --tag=pact-views`. The source theme shares the PACT landing's editorial tokens across master pages and client consent; see the [connection interface guidelines](connection-interface.md) for the shared partials, palette, responsive behavior and integration instructions. This visual revision follows the published 0.2.1 package; existing 0.2.1 applications can apply it to their published views.
+Link to `route('pact.agents')` or `route('pact.connect')` from the host navigation. Publish the included pages for visual customisation with `php artisan vendor:publish --tag=pact-views`. The source theme shares the PACT landing's editorial tokens across master pages and client consent; see the [connection interface guidelines](connection-interface.md) for the shared partials, palette, responsive behavior and integration instructions. The shared theme is included from package version 0.2.2; existing view overrides must be reconciled with the updated layout and partials.
 
 A CLI equivalent also discovers and registers automatically:
 
