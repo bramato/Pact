@@ -7,6 +7,7 @@ import {
   existsSync,
   rmSync,
   readdirSync,
+  readFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
@@ -15,6 +16,7 @@ const root = resolve(import.meta.dirname, ".."),
   work = mkdtempSync(resolve(tmpdir(), "pact-packages-")),
   php = phpExecutable(),
   composer = composerExecutable();
+const { version } = JSON.parse(readFileSync(resolve(root, "release.json"), "utf8"));
 const run = (bin, args, cwd = root) => {
   const result = spawnSync(bin, args, {
     cwd,
@@ -120,8 +122,8 @@ try {
       name: "pact-protocol/package-smoke",
       license: "MIT",
       require: {
-        "pact-protocol/core": "0.2.0",
-        "pact-protocol/laravel": "0.2.0",
+        "pact-protocol/core": version,
+        "pact-protocol/laravel": version,
       },
       repositories: [
         {
@@ -129,7 +131,7 @@ try {
           url: phpcore,
           options: {
             symlink: false,
-            versions: { "pact-protocol/core": "0.2.0" },
+            versions: { "pact-protocol/core": version },
           },
         },
         {
@@ -137,7 +139,7 @@ try {
           url: laravel,
           options: {
             symlink: false,
-            versions: { "pact-protocol/laravel": "0.2.0" },
+            versions: { "pact-protocol/laravel": version },
           },
         },
       ],
