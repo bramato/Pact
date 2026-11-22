@@ -42,7 +42,31 @@ export interface Progress {
   percentage: number | null;
   updated_at: string;
 }
+export interface QuestionForm {
+  version: 1;
+  fields: {key: string; label: string; required: boolean; type: "string"|"number"|"boolean"|"object"|"string[]"|"number[]"; options?: {value: string; label: string}[]}[];
+}
+
+function formSchema(form: QuestionForm) {
+  const properties: Record<string, object> = Object.create(null);
+  const required: string[] = [];
+  for (const field of form.fields) {
+    ensure(!Object.hasOwn(properties, field.key), "QUESTION_FORM_INVALID", "Duplicate field key");
+    const list = field.type.endsWith("[]");
+    const type = list ? field.type.slice(0, -2) : field.type;
+    const values = field.options?.map(option => option.value);
+    ensure(!values || (type === "string" && new Set(values).size === values.length), "QUESTION_FORM_INVALID", "Invalid choices");
+    const item = {type, ...(values ? {enum: values} : {})};
+    properties[field.key] = list
+      ? {type: "array", items: item, ...(field.required ? {minItems: 1} : {})}
+      : {...item, ...(field.required && type === "string" ? {minLength: 1} : {})};
+    if (field.required) required.push(field.key);
+  }
+  return {type: "object", properties, required, additionalProperties: false};
+}
+
 export interface Question {
+  form?: QuestionForm;
   question_id: string;
   task_id: string;
   prompt: string;
@@ -352,6 +376,7 @@ export class Pact {
         false,
         structuredClone(validate.errors),
       );
+    if (name === "question" && (value as Question).form) formSchema((value as Question).form!);
   }
   progress(value: Progress, previousSequence?: number): Progress {
     this.shape("progress", value);
@@ -545,6 +570,10 @@ export class Pact {
         answer.value,
         context.registryPath,
       );
+      if (question.form) {
+        const check = validator().compile(formSchema(question.form));
+        ensure(check(answer.value), "QUESTION_ANSWER_INVALID", "Invalid form answer");
+      }
       question.status = "answered";
     }
     return result;

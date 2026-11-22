@@ -5,7 +5,7 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
-    "pact-protocol/core": "^0.2",
+    "pact-protocol/core": "^0.3",
     "illuminate/routing": "^12.41.1 || ^13.0",
     "illuminate/http": "^12.41.1 || ^13.0",
     "illuminate/support": "^12.41.1 || ^13.0",
@@ -45,7 +45,7 @@
       "options": {
         "symlink": true,
         "versions": {
-          "pact-protocol/core": "0.2.0"
+          "pact-protocol/core": "0.3.0"
         }
       }
     }

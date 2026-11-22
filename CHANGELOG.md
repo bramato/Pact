@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+Added [versioned question forms](docs/question-forms.md) with typed values, labeled choices and validation in both Core SDKs.
+
 ## 0.2.2 — 2026-11-18
 
 - Share the PACT editorial connection theme across master initiation, client consent, team selection and agent status pages, with accessible controls and reusable integration guidelines.

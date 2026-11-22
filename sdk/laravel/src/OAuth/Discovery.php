@@ -16,7 +16,7 @@ final class Discovery
     {
         $origin = UrlPolicy::origin((string) config('pact.url'));
         $base = $origin.'/'.trim((string) config('pact.prefix', 'pact'), '/');
-        $common = ['pact_version' => '0.1', 'issuer' => $origin, 'role' => config('pact.role'), 'pact_endpoint' => $base];
+        $common = ['pact_version' => '0.1', 'issuer' => $origin, 'role' => config('pact.role'), 'pact_endpoint' => $base, 'question_form_versions' => [1]];
 
         return $common + (config('pact.role') === 'master'
             ? ['redirect_uri' => $base.'/oauth/callback', 'public_key_endpoint' => $base.'/oauth/public-key']

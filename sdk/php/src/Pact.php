@@ -46,6 +46,9 @@ final class Pact
         if (! $result->isValid()) {
             throw new PactError('SCHEMA_INVALID', 'Invalid '.$name);
         }
+        if ($name === 'question' && isset($value->form)) {
+            QuestionForm::schema($value->form);
+        }
     }
 
     public function federationRoster(mixed $value, array $insecureLocalHosts = []): void
@@ -298,6 +301,9 @@ final class Pact
             self::ensure($question->status === 'open', 'QUESTION_CLOSED', 'Question is closed');
             self::ensure($question->expires_at === null || $now < (float) (new \DateTimeImmutable($question->expires_at))->format('U.u'), 'QUESTION_EXPIRED', 'Deadline passed');
             $this->contractData($question->answer_schema, $answer->value, $context->registryPath);
+            if (isset($question->form)) {
+                QuestionForm::validateAnswer($question->form, $answer->value);
+            }
             $question->status = 'answered';
         }
 

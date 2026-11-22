@@ -1,6 +1,6 @@
 {
   "name": "@pact-protocol/core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Typed PACT Core and Swarm validation and A2A client",
   "type": "module",
   "license": "MIT",
