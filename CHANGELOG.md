@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.1 — 2026-11-24
 
 - Configure the Laravel queue connection and queue name for PACT task execution. The PACT outbox keeps track of each execution and its retries.
 - Add a reusable reader and trait for structured execution briefs. Laravel client handlers can show readable task instructions while keeping the original PACT input for correlation and replay.

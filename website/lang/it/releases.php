@@ -1,6 +1,18 @@
 <?php
 
 return [
+    '0.3.1' => [
+        'changes' => [
+            'Usa PACT_QUEUE_CONNECTION e PACT_QUEUE per scegliere la coda Laravel che esegue gli incarichi.',
+            'Il client può comunicare la fase in corso, per esempio «Sto verificando le fonti». Il master può mostrarla mentre l’agente lavora.',
+            'Il servizio per gli incarichi strutturati e il trait ReadsPactCalls estraggono un brief leggibile dal payload.',
+            'La guida Laravel descrive il backup e il ripristino su S3 privato delle impostazioni e delle chiavi PACT nelle release con filesystem effimero.',
+        ],
+        'instructions' => [
+            'master' => 'Durante l’esecuzione leggi l’ultimo progress.stage da GetTask. Usa progress.sequence per ignorare gli aggiornamenti precedenti e gestisci una percentuale nulla. Quando mostri moduli v1, conserva i tipi JSON dei campi e valida la risposta rispetto al modulo e allo schema con digest.',
+            'client' => 'Usa AgentContext::readableMessage() per leggere i brief strutturati e TaskService::reportProgress() per comunicare le fasi effettive del lavoro. Se imposti PACT_QUEUE_CONNECTION e PACT_QUEUE, affianca a pact:work un worker Laravel per la connessione e la coda selezionate. Verifica che il collegamento esistente possa completare un incarico autorizzato e comunicare l’avanzamento. Invia moduli v1 solo se il master dichiara quella versione e sa mostrarla.',
+        ],
+    ],
     '0.3.0' => [
         'changes' => [
             'Le domande Core possono includere un modulo v1 con campi tipizzati, valori obbligatori e opzioni con etichette per selezioni singole o multiple.',

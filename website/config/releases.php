@@ -1,6 +1,14 @@
 <?php
 
 return [
+    '0.3.1' => [
+        'protocol' => '0.2.0',
+        'linking' => 'domain',
+        'documents' => [
+            'question_forms' => 'docs/question-forms.md',
+            'theme' => 'docs/connection-interface.md',
+        ],
+    ],
     '0.3.0' => [
         'protocol' => '0.2.0',
         'linking' => 'domain',

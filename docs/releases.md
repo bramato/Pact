@@ -10,7 +10,7 @@ The source of truth is `bramato/Pact`. Public distribution repositories contain 
 Consumers install releases normally:
 
 ```sh
-composer require pact-protocol/laravel:^0.3.0
+composer require pact-protocol/laravel:^0.3.1
 ```
 
 The Core dependency is resolved automatically. Neither a local path repository nor Node.js is needed in the consuming application.
@@ -62,16 +62,15 @@ The tag-triggered GitHub Actions workflow also builds release artifacts from the
 
 ## Upgrade a consuming Laravel application
 
-Select the target package version in the homepage Handoff section for copyable master and client instructions. Release 0.3.0 adds optional [question forms v1](question-forms.md). Update both peers and verify that the coordinator can render v1 before sending forms. For earlier upgrades, see the [0.2.2 upgrade handoff](upgrade-handoff-v0.2.2.md).
+Select the target package version in the homepage Handoff section for copyable master and client instructions. Release 0.3.1 adds optional [Laravel queue configuration for task execution](laravel-installation.md#choose-the-laravel-queue-for-task-execution) and readable task progress. For [question forms v1](question-forms.md), verify that both peers support the form and that the coordinator can render it. For earlier upgrades, see the [0.2.2 upgrade handoff](upgrade-handoff-v0.2.2.md).
 
-Before running the commands below, [restore and verify the existing installation files](laravel-installation.md#redeploy-an-existing-installation) on each release and keep the original `APP_KEY` and database.
+Before running the commands below, [restore and verify the existing installation files](laravel-installation.md#redeploy-an-existing-installation) on each release and keep the original `APP_KEY` and database. An existing 0.3.0 installation can upgrade with its current schema. Merge `queue.connection` and `queue.name` into any customized published PACT config before rebuilding the cache.
 
 ```sh
-composer require pact-protocol/laravel:0.3.0 pact-protocol/core:0.3.0 --with-all-dependencies
+composer require pact-protocol/laravel:0.3.1 pact-protocol/core:0.3.1 --with-all-dependencies
 php artisan config:clear
-php artisan pact:install --no-interaction
 php artisan config:cache
 php artisan route:cache
 ```
 
-After starting the new web and worker processes, run `php artisan pact:doctor` and verify continuity with an existing connection. Review the changelog before accepting a new minor version.
+After starting the new web and worker processes, run `php artisan pact:doctor` and verify continuity with an existing connection.

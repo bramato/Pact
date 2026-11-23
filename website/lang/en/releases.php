@@ -1,6 +1,18 @@
 <?php
 
 return [
+    '0.3.1' => [
+        'changes' => [
+            'Use PACT_QUEUE_CONNECTION and PACT_QUEUE to route task execution to a Laravel queue.',
+            'Clients can report the current task phase, such as “Checking sources”. The master can display it while work is in progress.',
+            'The structured call service and ReadsPactCalls trait extract a readable brief from the task payload.',
+            'The Laravel installation guide covers private S3 backup and restore for PACT settings and signing keys on ephemeral releases.',
+        ],
+        'instructions' => [
+            'master' => 'While a task is working, read the latest progress.stage from GetTask. Use progress.sequence to ignore older updates and support a null percentage. When rendering v1 question forms, preserve JSON field types and validate the answer against the form and the pinned schema.',
+            'client' => 'Use AgentContext::readableMessage() to read structured briefs and TaskService::reportProgress() to report real work phases. If you set PACT_QUEUE_CONNECTION and PACT_QUEUE, supervise a Laravel worker for the selected connection and queue alongside pact:work. Verify that the existing connection can run an authorized task and report progress before completion. Emit v1 question forms only when the master advertises that version and can render it.',
+        ],
+    ],
     '0.3.0' => [
         'changes' => [
             'Core questions can carry a v1 form with typed fields, required values and labeled single or multiple choices.',
