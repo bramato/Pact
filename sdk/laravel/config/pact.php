@@ -13,6 +13,10 @@ return [
     'contract_registry' => null,
     'conversation_reader' => null,
     'local_hosts' => [],
+    'queue' => [
+        'connection' => env('PACT_QUEUE_CONNECTION'),
+        'name' => env('PACT_QUEUE'),
+    ],
     'worker' => ['max_attempts' => 5, 'lease_seconds' => 60, 'poll_ms' => 250],
     'prefixes' => [''],
     'events' => 'events',

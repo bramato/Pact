@@ -124,6 +124,21 @@ The default execution lease is sixty seconds. Set `pact.worker.lease_seconds` ab
 
 Federation tools are `list_members`, `get_manifest`, `send_message`, `request_delegation`, `get_task`, `read_conversation` and `reserve_step`. The [Laravel Federation binding](../specification/PACT-LARAVEL-BINDING-v0.1.md) defines HTTP resources and versioned tool results. Writes return durable receipts, and retries reuse persisted command bytes. The consumer validates actual output artifacts; an HTTP success or a percentage does not establish completion. Version one permits one outstanding delegation per parent. Root budget/cycle rules apply; nested Swarm is not enabled.
 
+### Choose the Laravel queue for task execution
+
+Set the destination in `config/pact.php` with `queue.connection` and `queue.name`, or use the environment variables read by the package default:
+
+```dotenv
+PACT_QUEUE_CONNECTION=redis
+PACT_QUEUE=pact
+```
+
+Use an asynchronous connection defined in `config/queue.php`. Setting only the queue name uses Laravel's default queue connection. Setting only the connection uses that driver's default queue. With both settings empty, `pact:work` runs the handler directly. `pact.database_connection` selects the database for PACT records.
+
+Keep `php artisan pact:work` running for delivery, polling and dispatch to the Laravel queue. Supervise a Laravel worker for the configured destination as well, for example `php artisan queue:work redis --queue=pact --timeout=45`. If the PACT handler starts application-specific jobs, those jobs use the application's own queue settings. Rebuild the Laravel config cache and restart the workers after changing these settings.
+
+PACT starts the execution lease when the Laravel worker picks up the job. The outbox can resend an unclaimed job if publication fails or a worker is unavailable. Only the worker that claims the current outbox reservation may execute it. Set the Laravel worker timeout below the PACT execution lease and the queue driver's retry or visibility timeout above the worker timeout.
+
 ### Connect the client application's agent
 
 The default diagnostic contract works without an AI provider. To perform real tasks, the client supplies its own server-side agent. Reuse the application's agent or build a small one for a specific task. Choose a model and provider SDK supported by the application, keep the credentials in server configuration or a secret manager, and define the agent's instructions and tool input schemas. A first tool can look up a document visible to the local user. Resolve the account and authorized tenant on the server and enforce those permissions on every tool call.
@@ -164,7 +179,7 @@ php artisan pact:disconnect CONNECTION_ID --user=LOCAL_USER_ID
 php artisan pact:doctor
 ```
 
-Disconnect immediately prevents new local work and queues remote revocation. Exact replay recovers a lost revocation response. Delivery attempts and credentials have bounded lifetimes: extended outages may leave an audited, unconfirmed failure requiring operational recovery. Doctor reports schema, keys, routes, credentials, failed deliveries and worker heartbeat without printing tokens. Do not delete the database to recover a delivery.
+Disconnect immediately prevents new local work and queues remote revocation. Exact replay recovers a lost revocation response. Delivery attempts and credentials have bounded lifetimes: extended outages may leave an audited, unconfirmed failure requiring operational recovery. Doctor reports schema, keys, routes, credentials, failed deliveries, execution queue configuration and worker heartbeat without printing tokens. Do not delete the database to recover a delivery.
 
 ## Verify the package
 

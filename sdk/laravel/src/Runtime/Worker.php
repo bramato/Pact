@@ -20,6 +20,10 @@ use Throwable;
 
 final class Worker
 {
+    private const QUEUE_RESERVATION_PREFIX = 'queue:';
+
+    private const QUEUE_REDISPATCH_SECONDS = 60;
+
     public function __construct(private readonly Store $store) {}
 
     public function workOnce(): bool
@@ -29,25 +33,78 @@ final class Worker
         if (++$turn % 10 === 0 && $this->renewDue()) {
             return true;
         }
-        $owner = (string) Str::uuid();
+        $queue = ExecutionQueue::fromConfig();
         Heartbeat::query()->updateOrCreate(['id' => 'worker'], ['updated_at' => now()]);
-        $job = $this->store->atomic(function () use ($owner) {
+        $job = $this->store->atomic(function () use ($queue) {
             $job = Outbox::query()->where('state', 'pending')->where('available_at', '<=', now())->where(function ($q) {
                 $q->whereNull('lease_until')->orWhere('lease_until', '<', now());
             })->orderBy('available_at')->lockForUpdate()->first();
             if (! $job) {
                 return null;
             }
-            $job->owner = $owner;
-            $job->lease_until = now()->addSeconds((int) config('pact.worker.lease_seconds', 60));
-            $job->attempts++;
-            $job->save();
+            if ($queue && $job->kind === 'execute') {
+                // Keep the reservation valid for an earlier copy still waiting in Laravel's queue.
+                if (! str_starts_with((string) $job->owner, self::QUEUE_RESERVATION_PREFIX)) {
+                    $job->owner = self::QUEUE_RESERVATION_PREFIX.Str::uuid();
+                }
+                $job->lease_until = now()->addSeconds(self::QUEUE_REDISPATCH_SECONDS);
+                $job->save();
+            } else {
+                $this->claim($job);
+            }
 
             return $job;
         });
         if (! $job) {
             return $this->renewDue();
         }
+
+        if ($queue && $job->kind === 'execute') {
+            try {
+                $queue->dispatch($job->id, $job->owner);
+            } catch (Throwable $e) {
+                // The persisted reservation expires so the outbox can retry publication.
+                report($e);
+            }
+        } else {
+            $this->process($job);
+        }
+
+        return true;
+    }
+
+    public function executeQueued(string $outboxId, string $reservation): void
+    {
+        if (! str_starts_with($reservation, self::QUEUE_RESERVATION_PREFIX)) {
+            return;
+        }
+
+        $job = $this->store->atomic(function () use ($outboxId, $reservation) {
+            $job = Outbox::query()->whereKey($outboxId)->where('kind', 'execute')
+                ->where('state', 'pending')->where('owner', $reservation)->lockForUpdate()->first();
+            if ($job) {
+                $this->claim($job);
+            }
+
+            return $job;
+        });
+
+        if ($job) {
+            $this->process($job);
+        }
+    }
+
+    private function claim(Outbox $job): void
+    {
+        $job->owner = (string) Str::uuid();
+        $job->lease_until = now()->addSeconds((int) config('pact.worker.lease_seconds', 60));
+        $job->attempts++;
+        $job->save();
+    }
+
+    private function process(Outbox $job): void
+    {
+        $owner = $job->owner;
         try {
             $payload = $job->payload;
             if ($job->kind === 'activate') {
@@ -78,8 +135,6 @@ final class Worker
             $nonretryable = $e instanceof \DomainException || ($e instanceof PactError && ! $e->retryable);
             $this->finish($job->id, $owner, $e, $nonretryable || $job->attempts >= (int) config('pact.worker.max_attempts', 5));
         }
-
-        return true;
     }
 
     private function renewDue(): bool

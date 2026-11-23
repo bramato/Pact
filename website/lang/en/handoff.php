@@ -8,6 +8,7 @@ return [
     'unreleased_title' => 'In development',
     'unreleased_progress' => 'Laravel clients can report the current task phase, such as “Checking sources”. The master reads it through GetTask and can show the latest update in chat.',
     'unreleased_calls' => 'The structured call service and ReadsPactCalls trait extract a brief that the client can show in chat. The client retains the original payload for correlation and retries.',
+    'unreleased_queue' => 'Set PACT_QUEUE_CONNECTION and PACT_QUEUE to choose the Laravel connection and queue for task execution. Run a Laravel worker for that queue alongside pact:work, which dispatches work and handles PACT delivery.',
     'protocol' => 'Core protocol :version',
     'references' => 'Documentation for this version',
     'documents' => [

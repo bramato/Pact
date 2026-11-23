@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use PactLaravel\Models\Connection;
 use PactLaravel\Models\Heartbeat;
 use PactLaravel\Models\Outbox;
+use PactLaravel\Runtime\ExecutionQueue;
 use PactLaravel\Support\UrlPolicy;
 
 final class DoctorCommand extends Command
@@ -56,6 +57,7 @@ final class DoctorCommand extends Command
             return true;
         });
         $check('outbox deliveries', fn () => ! Outbox::query()->where('state', 'failed')->exists());
+        $check('Laravel execution queue configuration', fn () => ExecutionQueue::fromConfig());
         $check('worker heartbeat (last 2 minutes)', fn () => Heartbeat::query()->whereKey('worker')->where('updated_at', '>=', now()->subMinutes(2))->exists());
 
         return $failed ? self::FAILURE : self::SUCCESS;
