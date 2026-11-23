@@ -4,6 +4,8 @@ The same `pact-protocol/laravel` package runs as a **master**, owning users' tea
 
 ## Install a versioned release
 
+For an existing installation, follow the [redeploy procedure](#redeploy-an-existing-installation) before running any installation command.
+
 ```sh
 composer require pact-protocol/laravel:^0.3.0
 ```
@@ -14,7 +16,7 @@ For development from a checkout, add Composer path repositories pointing at its 
 
 Before using Composer path repositories from a fresh checkout or building archives, run `npm ci --ignore-scripts` and `npm run build:sdk` in the PACT repository to bundle Core schemas and Federation result contracts. The consuming Laravel application does not need Node.js. Use Laravel 12.41.1+ or 13 with the compatible PHP version and OpenSSL, JSON, mbstring, BCMath, cURL and the database extension.
 
-Configure the Laravel application's database, `APP_KEY`, existing authentication and `APP_URL`, then choose its role:
+On a first installation, configure the Laravel application's database, `APP_KEY`, existing authentication and `APP_URL`, then choose its role:
 
 ```sh
 php artisan pact:install
@@ -32,7 +34,31 @@ php artisan pact:install --role=client --url=http://client.test \
   --allow-local-host=client.test --allow-local-host=master.test
 ```
 
-Include every local peer in `pact.local_hosts`. Public origins require HTTPS. Installation persists role, product identity and initial settings in `storage/app/pact/installation.json`; reinstalling preserves them and signing keys. Existing Passport keys and host authentication are reused. Preserve this storage directory and `APP_KEY` across deployments. Clear configuration caches before installation; rebuild configuration and route caches afterward.
+Include every local peer in `pact.local_hosts`. Public origins require HTTPS. Existing Passport keys and host authentication are reused. Clear the configuration cache before installation and rebuild the configuration and route caches afterward.
+
+### Preserve installation state on ephemeral releases
+
+This procedure applies to Laravel masters and clients. PACT 0.3.0 reads its installation state and signing keys at local paths under `storage_path()`. Setting `FILESYSTEM_DISK=s3` alone leaves those files local. Use encrypted, private S3 storage for the backup and restore it into each new release. An existing persistent volume is an alternative if the project mounts it at the expected local paths and makes it available to every web and worker instance before startup.
+
+| File | What to preserve |
+| --- | --- |
+| `storage/app/pact/installation.json` | The installed role, product ID, origin, guard and provider, database connection and local-host settings. |
+| `storage/app/pact/private.pem` and `storage/app/pact/public.pem` | The original PACT signing key pair on both roles. |
+| `storage/oauth-private.key` and `storage/oauth-public.key` | The original Passport pair on clients that use file-based keys. Use the application's configured local paths if they differ from these defaults. Keep inline Passport keys in the host's secret manager. |
+
+Keep the same `APP_KEY` for this application and environment in the secret manager. Preserve the existing database, including PACT connections and work in progress and, on clients, Passport OAuth state. The database and key must carry over together so encrypted records remain readable.
+
+#### First installation
+
+Run the role-specific installation command only when the deployment is explicitly provisioning a new PACT instance. After a successful `pact:install`, save the files as a complete set in private S3, scoped to the application and environment, before starting the new release or discarding its filesystem. Record file checksums and the expected role and product ID. Use a new backup location or object version for an intentional update, and retain the last verified copy. On a persistent volume, install directly into the mounted paths and verify the complete set there before starting the release.
+
+#### Redeploy an existing installation
+
+1. Use an existing, verified backup for this application and environment. When adding persistence to an existing deployment, capture the initial set from the verified working release and check it before replacing that release. Keep restore access to S3 read-only. With a persistent volume, mount it before running the same checks on the files already there.
+2. Before Laravel boots in the new release, stage the download in a private directory. Verify that all expected files are present and readable, their checksums match the recorded set, `installation.json` is valid and has the expected role and product ID, and each public key matches its private key. Place the validated files at the expected local paths on every web and worker instance. Use restrictive ownership and permissions, for example `0700` for the directory and `0600` for the files when deploy, web and worker use the same account. If they use separate accounts, grant access through a restricted group and verify readability for each process. Keep key contents out of logs and web-served paths.
+3. If the backup is missing, incomplete, inaccessible or fails validation, stop the deployment before activating the new release. Treat conflicting local files as a failed check. Recover the original set from a verified copy, volume or working release. Do not run `pact:install`, generate replacement keys or overwrite the known backup while recovery is pending. If `installation.json` is missing, supplying a role to `pact:install` can create a new product ID and generate any missing key pairs even if the database already contains PACT data.
+4. Once the restore passes, load the original `APP_KEY` and database configuration. Run any Laravel configuration commands and apply any required PACT upgrade only now. An ordinary redeploy does not need `pact:install`. Rebuild the configuration and route caches before starting or restarting the web processes and supervised `php artisan pact:work` worker on the new release.
+5. After the new worker is running, run `php artisan pact:doctor` and check its key, credential and recent worker heartbeat results. Then use a connection that was active before the deploy. Send a diagnostic task from the master, verify the client processes it and returns the result, and check an authenticated client call to the master roster. Use the same connection throughout without relinking. If the deployment has no existing connection, record the continuity check as pending.
 
 ## Connect an agent from its domain
 
@@ -86,7 +112,7 @@ The client controls tenant selection through its existing login/tenant flow. Add
 
 ### Upgrade existing installations
 
-Keep the database, `APP_KEY`, Passport keys and `storage/app/pact`. After updating the package on **both** installations, clear the configuration cache and rerun `php artisan pact:install --no-interaction`, then rebuild configuration/route caches. The additive migration preserves existing connections, federations and credentials, names the original federation “Squadra personale” and allows more teams. It does not modify released Core schemas. Re-publish customised config/views deliberately to include the new pages and middleware option.
+Follow the [redeploy procedure](#redeploy-an-existing-installation) before clearing or rebuilding Laravel caches or rerunning the installer. After updating the package on **both** installations and verifying the restored files, clear the configuration cache and rerun `php artisan pact:install --no-interaction`, then rebuild configuration and route caches. The additive migration preserves existing connections, federations and credentials, names the original federation “Squadra personale” and allows more teams. Re-publish customised config and views deliberately to include the new pages and middleware option.
 
 The previous manual registration commands (`pact:oauth-client`, `pact:application:add` and `pact:connect NAME --user=…`) and `Pact::connectUrl(NAME)` remain supported. That legacy path queues the member into the personal team without the new team-selection step. It is intended for existing integrations; new UI integrations should use `connectDomain()`.
 

@@ -29,16 +29,26 @@ Leggi la documentazione di questa versione:
 
 Verifica le versioni di Laravel e PHP, il database, l’autenticazione, l’agente e gli strumenti presenti nel progetto. Riusa login, guard e provider dell’applicazione. In locale mantieni in APP_URL il dominio Herd .test e il suo schema HTTP o HTTPS. Per i peer pubblici usa HTTPS.
 
+Conserva lo stato dell’installazione sia per il master sia per il client. Mantieni lo stesso valore di APP_KEY nel gestore dei segreti e conserva il database esistente. Se il filesystem viene sostituito a ogni release, salva in uno storage S3 privato e cifrato, dedicato all’applicazione e all’ambiente, storage/app/pact/installation.json (ruolo, ID prodotto e parametri di installazione) e la coppia PACT storage/app/pact/private.pem e storage/app/pact/public.pem. Se il client usa chiavi Passport su file, includi storage/oauth-private.key e storage/oauth-public.key o i percorsi configurati dal progetto. Mantieni le chiavi Passport fornite direttamente come valori nel gestore dei segreti dell’applicazione.
+
+Per un’installazione esistente, monta il volume persistente se il progetto lo supporta già, oppure usa un accesso in sola lettura a S3 per scaricare il backup in una directory temporanea privata. Verifica che ci siano tutti i file, che i checksum corrispondano, che ruolo e ID prodotto siano quelli attesi e che ogni coppia di chiavi combaci. Ripristina i file nei percorsi locali attesi su ogni istanza prima di configurare Laravel o le cache, eseguire pact:install e avviare o riavviare web e worker. Concedi agli utenti di deploy, web e worker solo i permessi necessari. PACT legge percorsi locali. Impostare soltanto FILESYSTEM_DISK=s3 lascia i file sul disco locale.
+
+Se il backup manca, è incompleto, è inaccessibile o non supera le verifiche, blocca il deploy prima di attivare la nuova release. Recupera i file originali da un backup verificato, dal volume o dalla release ancora funzionante. L’assenza dei file non autorizza una prima installazione. Durante il recupero non eseguire l’installer, non rigenerare le chiavi e non sovrascrivere l’ultima copia verificata.
+
 Installa le versioni esatte riportate qui sotto, anche se una guida collegata usa un esempio Composer diverso:
 composer require pact-protocol/laravel::version pact-protocol/core::version --with-all-dependencies
 
 Verifica entrambe le versioni con composer show e conserva composer.json e composer.lock nel progetto. Se un override Composer path o VCS interferisce, confrontalo con il tag selezionato. Per lavorare dal sorgente fai il checkout di v:version, esegui lì npm ci --ignore-scripts e npm run build:sdk e imposta la versione :version per entrambi i pacchetti Composer path.
 
-Verifica database, APP_KEY e APP_URL. Per una nuova installazione esegui:
+Verifica database, APP_KEY e APP_URL. Esegui i comandi seguenti solo quando stai creando esplicitamente una nuova istanza PACT.
 php artisan config:clear
 php artisan pact:install --role=:role --no-interaction
 
-Per i peer HTTP locali aggiungi un --allow-local-host per ciascun host, incluse entrambe le applicazioni. Se PACT è già installato, svuota la cache di configurazione e riesegui php artisan pact:install --no-interaction dopo aver aggiornato i pacchetti. Conserva il database, APP_KEY, le chiavi Passport e storage/app/pact. Confronta le configurazioni e le viste pubblicate con quelle della versione scelta. Esegui php artisan pact:doctor, ricostruisci le cache di configurazione e route e avvia php artisan pact:work sotto un supervisore. Usa pact:work --once per una verifica puntuale.
+Per i peer HTTP locali aggiungi un --allow-local-host per ciascun host, incluse entrambe le applicazioni. Dopo la prima installazione, salva tutti i file con i checksum, il ruolo e l’ID prodotto prima di attivare una release con filesystem effimero. Se usi un volume persistente, verifica che tutti i file siano presenti nei percorsi montati.
+
+In un redeploy ordinario ripristina e verifica i file e salta pact:install. Se l’aggiornamento del pacchetto lo richiede, esegui php artisan config:clear seguito da php artisan pact:install --no-interaction solo dopo aver verificato il ripristino. Confronta le configurazioni e le viste pubblicate con quelle della versione scelta. Ricostruisci le cache di configurazione e route, poi avvia i processi web e tieni php artisan pact:work in esecuzione sotto un supervisore.
+
+Dopo il redeploy esegui php artisan pact:doctor con il nuovo worker in esecuzione. Usa una connessione già attiva per inviare dal master un incarico diagnostico, verificare il risultato del client e controllare una chiamata autenticata dal client al roster del master. Usa la stessa connessione per tutta la prova, senza ripetere il collegamento.
 
 :linking
 

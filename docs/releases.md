@@ -64,6 +64,8 @@ The tag-triggered GitHub Actions workflow also builds release artifacts from the
 
 Select the target package version in the homepage Handoff section for copyable master and client instructions. Release 0.3.0 adds optional [question forms v1](question-forms.md). Update both peers and verify that the coordinator can render v1 before sending forms. For earlier upgrades, see the [0.2.2 upgrade handoff](upgrade-handoff-v0.2.2.md).
 
+Before running the commands below, [restore and verify the existing installation files](laravel-installation.md#redeploy-an-existing-installation) on each release and keep the original `APP_KEY` and database.
+
 ```sh
 composer require pact-protocol/laravel:0.3.0 pact-protocol/core:0.3.0 --with-all-dependencies
 php artisan config:clear
@@ -72,4 +74,4 @@ php artisan config:cache
 php artisan route:cache
 ```
 
-Repeated installation preserves the chosen role, identity and keys. Keep `APP_KEY`, PACT storage and the database when deploying. Review the changelog before accepting a new minor version.
+After starting the new web and worker processes, run `php artisan pact:doctor` and verify continuity with an existing connection. Review the changelog before accepting a new minor version.

@@ -5,6 +5,7 @@ return [
         'changes' => [
             'Core questions can carry a v1 form with typed fields, required values and labeled single or multiple choices.',
             'The PHP and TypeScript SDKs validate answers against the form and the contract. Laravel discovery advertises question_form_versions.',
+            'The Laravel handoffs document how to back up and restore PACT installation settings and keys on ephemeral releases.',
         ],
         'instructions' => [
             'master' => 'For question forms v1, render the prompt and labeled fields in order, preserve JSON types (including false and zero), omit unanswered optional fields, and submit one object keyed by field name as the correlated answer value. Validate against the form and contract, display field errors, and report unsupported forms when the UI cannot render them. Test a required field, multiple selection and task resumption. Keep support for existing questions without a form.',

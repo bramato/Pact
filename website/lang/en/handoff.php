@@ -29,16 +29,26 @@ Read the documentation for this release:
 
 Inspect the host's Laravel/PHP versions, database, authentication, existing agent and tools. Reuse the application's login, guard and provider. Keep its existing Herd scheme and .test domain in APP_URL in local development, and use HTTPS for public peers.
 
+Preserve installation state for both master and client. Keep the same APP_KEY in the secret manager and preserve the existing database. On releases with an ephemeral filesystem, back up storage/app/pact/installation.json (role, product ID and installation settings) and the PACT pair storage/app/pact/private.pem and storage/app/pact/public.pem to encrypted, private S3 storage for this application and environment. On a client with file-based Passport keys, include storage/oauth-private.key and storage/oauth-public.key or the host's configured paths. Keep inline Passport keys in the host's secret manager.
+
+On an existing installation, mount a persistent volume already supported by the host or download the backup into a private staging directory using read-only S3 access. Verify the expected files, their checksums, the role and product ID, and that each key pair matches. Restore the files to the expected local paths on every instance before Laravel config or cache commands, any pact:install, and starting or restarting web and worker processes. Grant the deploy, web and worker accounts only the access they need. PACT reads local paths. Setting FILESYSTEM_DISK=s3 alone leaves the files local.
+
+If a backup is missing, incomplete, inaccessible or fails validation, stop before activating the new release. Recover the original files from a verified backup, volume or still-working release. Never infer that this is a first installation from missing files, run the installer to recover them, regenerate keys or overwrite the last verified copy.
+
 Use the exact package versions below for installation, including when a linked guide shows a different Composer example:
 composer require pact-protocol/laravel::version pact-protocol/core::version --with-all-dependencies
 
 Verify both versions with composer show and keep composer.json and composer.lock in the project. If a Composer path or VCS override interferes, check it against the selected tag. For development from source, check out v:version, run npm ci --ignore-scripts and npm run build:sdk there, and set both Composer path package versions to :version.
 
-Verify the database, APP_KEY and APP_URL. For a fresh install, run:
+Verify the database, APP_KEY and APP_URL. Run the following commands only when explicitly provisioning a new PACT instance.
 php artisan config:clear
 php artisan pact:install --role=:role --no-interaction
 
-For local HTTP peers include one --allow-local-host per host, including both applications. For an existing installation, clear config and rerun php artisan pact:install --no-interaction after updating the packages. Preserve the database, APP_KEY, Passport keys and storage/app/pact. Review published config and views against the selected version. Run php artisan pact:doctor, rebuild the config and route caches, and supervise php artisan pact:work as a persistent process. Use pact:work --once for a single check.
+For local HTTP peers include one --allow-local-host per host, including both applications. After a first installation, save the complete set with its checksums, role and product ID before activating an ephemeral release. If using a persistent volume, verify the complete set at the mounted paths.
+
+On an ordinary redeploy, restore and verify the files and skip pact:install. For a package upgrade that calls for it, run php artisan config:clear and then php artisan pact:install --no-interaction only after the restore passes. Review published config and views against the selected version. Rebuild the config and route caches, then start the web processes and supervise php artisan pact:work as a persistent process.
+
+After redeploy, run php artisan pact:doctor once the new worker is running. Use a connection that was already active to send a diagnostic task from the master, verify the result from the client and check an authenticated client call to the master roster. Use the same connection throughout without relinking.
 
 :linking
 

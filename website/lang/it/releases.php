@@ -5,6 +5,7 @@ return [
         'changes' => [
             'Le domande Core possono includere un modulo v1 con campi tipizzati, valori obbligatori e opzioni con etichette per selezioni singole o multiple.',
             'Gli SDK PHP e TypeScript validano le risposte rispetto al modulo e al contratto. La discovery Laravel espone question_form_versions.',
+            'Gli handoff Laravel spiegano come salvare e ripristinare i parametri di installazione e le chiavi PACT nelle release con filesystem effimero.',
         ],
         'instructions' => [
             'master' => 'Per i moduli v1, mostra il testo della domanda e i campi con le rispettive etichette nell’ordine previsto. Conserva i tipi JSON, inclusi false e zero, ometti i campi facoltativi senza risposta e invia un unico oggetto con le chiavi dei campi come valore della risposta correlata. Valida modulo e contratto, mostra gli errori sui campi e segnala i moduli che l’interfaccia non sa mostrare. Prova un campo obbligatorio, la scelta multipla e la ripresa dell’incarico. Mantieni il supporto per le domande senza modulo.',
