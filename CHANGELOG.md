@@ -2,7 +2,8 @@
 
 ## 0.3.0
 
-Added [versioned question forms](docs/question-forms.md) with typed values, labeled choices and validation in both Core SDKs.
+- Added optional [question forms v1](docs/question-forms.md) with typed fields, required values and labeled choices.
+- The PHP and TypeScript Core SDKs validate answers against the form and the pinned schema. Laravel discovery advertises `question_form_versions` so clients can check coordinator support before sending forms.
 
 ## 0.2.2 — 2026-11-18
 

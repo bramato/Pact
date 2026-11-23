@@ -20,7 +20,7 @@
     @endforeach
     <link rel="alternate" hreflang="x-default" href="{{ $alternateUrls[$defaultLocale] }}">
     <link rel="icon" href="/assets/pact-symbol.svg?v=4" type="image/svg+xml">
-    <link rel="stylesheet" href="/assets/pact.css?v=8">
+    <link rel="stylesheet" href="/assets/pact.css?v=9">
     <script defer src="/assets/pact.js?v=3"></script>
     <title>{{ $copy['meta']['title'] }}</title>
 </head>
@@ -36,7 +36,7 @@
             <a class="nav-source" href="https://github.com/bramato/Pact">GitHub <x-icon name="arrow-up-right" /></a>
             <div class="language-switch" role="group" aria-label="{{ $copy['accessibility']['language'] }}">
                 @foreach($locales as $code => $language)
-                    <a href="{{ $alternateUrls[$code] }}" lang="{{ $code }}" hreflang="{{ $code }}" aria-label="{{ $language['name'] }}" @if($code === $locale) aria-current="page" @endif>{{ strtoupper($code) }}</a>
+                    <a href="{{ $alternateUrls[$code] }}{{ $version === $latest ? '' : '?version='.$version.'#handoff' }}" lang="{{ $code }}" hreflang="{{ $code }}" aria-label="{{ $language['name'] }}" @if($code === $locale) aria-current="page" @endif>{{ strtoupper($code) }}</a>
                 @endforeach
             </div>
         </nav>
@@ -135,26 +135,7 @@
             <div><span class="eyebrow blue">{{ $copy['completion']['label'] }}</span><h2 id="completion-title">{!! $copy['completion']['heading'] !!}</h2><div class="prose">@foreach($copy['completion']['paragraphs'] as $paragraph)<p>{!! $paragraph !!}</p>@endforeach</div></div>
         </section>
 
-        <section class="handoff section wrap" id="handoff" aria-labelledby="handoff-title">
-            <div class="section-label"><span>{{ $copy['handoff']['label'] }}</span><span>{{ $copy['handoff']['kicker'] }}</span></div>
-            <div class="resource-heading"><h2 id="handoff-title">{!! $copy['handoff']['heading'] !!}</h2><p>{{ $copy['handoff']['intro'] }}</p></div>
-            <div class="handoff-list">
-                @foreach($copy['handoff']['roles'] as $role => $handoff)
-                    <article class="handoff-entry" aria-labelledby="handoff-{{ $role }}-title">
-                        <span class="eyebrow blue">Laravel / {{ $role }}</span>
-                        <h3 id="handoff-{{ $role }}-title">{{ $handoff['title'] }}</h3>
-                        <p>{{ $handoff['description'] }}</p>
-                        <button class="button button-dark handoff-copy" type="button" data-copy-target="handoff-{{ $role }}-text" data-copy-success="{{ $copy['handoff']['copied'] }}" data-copy-error="{{ $copy['handoff']['copy_error'] }}" aria-describedby="handoff-{{ $role }}-feedback" hidden><span>{{ $handoff['copy'] }}</span><x-icon name="copy" /></button>
-                        <span class="handoff-feedback" id="handoff-{{ $role }}-feedback" role="status"></span>
-                        <details class="handoff-preview">
-                            <summary>{{ $copy['handoff']['preview'] }}<x-icon name="arrow-down" /></summary>
-                            <pre id="handoff-{{ $role }}-text" tabindex="0" aria-label="{{ $handoff['title'] }}">{{ $handoff['text'] }}</pre>
-                        </details>
-                    </article>
-                @endforeach
-            </div>
-            <p class="handoff-note">{{ $copy['handoff']['note'] }} <a href="https://github.com/bramato/Pact/blob/v0.2.1/docs/laravel-installation.md">{{ $copy['handoff']['guide'] }}</a>.</p>
-        </section>
+        @include('handoff')
 
         <section class="resources section wrap" id="risorse" aria-labelledby="resources-title">
             <div class="section-label"><span>{{ $copy['resources']['label'] }}</span><span>{{ $copy['resources']['kicker'] }}</span></div>

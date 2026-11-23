@@ -5,12 +5,12 @@ The same `pact-protocol/laravel` package runs as a **master**, owning users' tea
 ## Install a versioned release
 
 ```sh
-composer require pact-protocol/laravel:^0.2.2
+composer require pact-protocol/laravel:^0.3.0
 ```
 
 Composer installs the Core dependency automatically. Public version tags and upgrade instructions are described in the [release guide](releases.md).
 
-For development from a checkout, add Composer path repositories pointing at its absolute `sdk/php` and `sdk/laravel` directories, assigning local version `0.2.0`, as shown in `reference/composer.json`. Standalone Composer release archives are also supported.
+For development from a checkout, add Composer path repositories pointing at its absolute `sdk/php` and `sdk/laravel` directories. Assign both packages the version of the checkout, using the path repository structure in `reference/composer.json`. Standalone Composer release archives are also supported.
 
 Before using Composer path repositories from a fresh checkout or building archives, run `npm ci --ignore-scripts` and `npm run build:sdk` in the PACT repository to bundle Core schemas and Federation result contracts. The consuming Laravel application does not need Node.js. Use Laravel 12.41.1+ or 13 with the compatible PHP version and OpenSSL, JSON, mbstring, BCMath, cURL and the database extension.
 
@@ -36,7 +36,7 @@ Include every local peer in `pact.local_hosts`. Public origins require HTTPS. In
 
 ## Connect an agent from its domain
 
-Domain-only linking requires `pact-protocol/laravel` 0.2.1 or newer. The current versioned source is tag `v0.2.2`; the Core wire protocol remains 0.2.0. Use the [upgrade handoff](upgrade-handoff-v0.2.2.md) to update an existing master or client application and verify both credential directions.
+Domain-only linking requires `pact-protocol/laravel` 0.2.1 or newer. Package release 0.3.0 uses the Core wire protocol 0.2.0 and adds optional [question forms v1](question-forms.md). See [the upgrade steps](#upgrade-existing-installations) for existing master and client applications.
 
 On the **master**, open `/pact/agents` and click **Collega agente**. Enter only the client domain (for example `documents.example.com`); an explicit origin such as `https://documents.example.com` is also accepted. A bare domain uses HTTPS. For local Herd peers, enter their existing full HTTP/HTTPS origin and allow every local host on both installations. Paths, embedded passwords, queries and fragments are rejected.
 
@@ -98,7 +98,11 @@ The default execution lease is sixty seconds. Set `pact.worker.lease_seconds` ab
 
 Federation tools are `list_members`, `get_manifest`, `send_message`, `request_delegation`, `get_task`, `read_conversation` and `reserve_step`. The [Laravel Federation binding](../specification/PACT-LARAVEL-BINDING-v0.1.md) defines HTTP resources and versioned tool results. Writes return durable receipts, and retries reuse persisted command bytes. The consumer validates actual output artifacts; an HTTP success or a percentage does not establish completion. Version one permits one outstanding delegation per parent. Root budget/cycle rules apply; nested Swarm is not enabled.
 
-The default diagnostic contract works without an AI provider. To expose application capabilities, configure `handler`, `contract_path` and `contract_registry` in `config/pact.php`. Schemas must be locally registered and pinned by their exact-byte digest. The archive includes the diagnostic schemas and the existing agent-chat contract.
+### Connect the client application's agent
+
+The default diagnostic contract works without an AI provider. To perform real tasks, the client supplies its own server-side agent. Reuse the application's agent or build a small one for a specific task. Choose a model and provider SDK supported by the application, keep the credentials in server configuration or a secret manager, and define the agent's instructions and tool input schemas. A first tool can look up a document visible to the local user. Resolve the account and authorized tenant on the server and enforce those permissions on every tool call.
+
+Configure `handler`, `contract_path` and `contract_registry` in `config/pact.php`. Register the input, output and answer schemas locally and pin their exact-byte digests. The archive includes the diagnostic schemas and the agent-chat contract.
 
 ```php
 use PactLaravel\Contracts\AgentHandler;
@@ -116,6 +120,8 @@ final class PactAgent implements AgentHandler
 ```
 
 The returned data must match the selected output schema. `AgentResult::question()` persists typed questions, `waiting()` persists a continuation checkpoint, and `error()` records failure. The context carries task/user/federation/root identities, invocation identity, answers, checkpoint and delegated results. Applications must use the invocation identity to make external effects idempotent; a database lease cannot make arbitrary remote tools execute exactly once.
+
+Use the diagnostic contract to check connectivity, then run a real task from the master and verify an authorized tool call and a validated output. For question forms introduced in 0.3.0, confirm that the receiving coordinator advertises and can render v1 before emitting a form.
 
 Override `IdentityResolver` through Laravel's container when local identity resolution differs. `ConversationReader` denies reads by default; a configured reader must authorize actual participants. Federation membership never grants general conversation, file or tool access. Conversations remain in their owning apps.
 

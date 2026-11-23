@@ -33,3 +33,8 @@ jobs:
       - run: composer update --working-dir=sdk/laravel --with='laravel/framework:^${{ matrix.laravel }}.0' --no-interaction --no-progress --prefer-dist
       - run: php sdk/laravel/vendor/bin/phpunit --configuration sdk/laravel/phpunit.xml
       - run: npm run test:laravel:http
+      - name: Verify the bilingual website and versioned handoffs
+        if: matrix.laravel == '13'
+        run: |
+          composer install --working-dir=website --no-interaction --no-progress --prefer-dist
+          php website/tests/localization.php

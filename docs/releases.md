@@ -10,7 +10,7 @@ The source of truth is `bramato/Pact`. Public distribution repositories contain 
 Consumers install releases normally:
 
 ```sh
-composer require pact-protocol/laravel:^0.2.2
+composer require pact-protocol/laravel:^0.3.0
 ```
 
 The Core dependency is resolved automatically. Neither a local path repository nor Node.js is needed in the consuming application.
@@ -23,7 +23,7 @@ The package version is independent of the wire protocol and contract versions. A
 
 ## Prepare a release
 
-Commit the intended source changes, update the changelog and `release.json`, and run the applicable checks:
+Update the changelog, `release.json` and the bilingual homepage using the repository skill at `.agents/skills/pact-release-handoff/SKILL.md`. Run the applicable checks and commit the intended source changes.
 
 ```sh
 npm run check:all
@@ -31,6 +31,8 @@ npm run test:laravel
 npm run test:laravel:http
 npm run package:smoke
 node --test tests/release.test.mjs tests/publish-release.test.mjs
+composer install --working-dir=website
+php website/tests/localization.php
 ```
 
 Build an explicit version from a committed ref:
@@ -60,10 +62,10 @@ The tag-triggered GitHub Actions workflow also builds release artifacts from the
 
 ## Upgrade a consuming Laravel application
 
-For domain-only linking and the shared connection theme, use the [0.2.2 upgrade handoff](upgrade-handoff-v0.2.2.md). Update both master and client installations before testing the new connection flow.
+Select the target package version in the homepage Handoff section for copyable master and client instructions. Release 0.3.0 adds optional [question forms v1](question-forms.md). Update both peers and verify that the coordinator can render v1 before sending forms. For earlier upgrades, see the [0.2.2 upgrade handoff](upgrade-handoff-v0.2.2.md).
 
 ```sh
-composer require pact-protocol/laravel:^0.2.2 pact-protocol/core:^0.2.2 --with-all-dependencies
+composer require pact-protocol/laravel:0.3.0 pact-protocol/core:0.3.0 --with-all-dependencies
 php artisan config:clear
 php artisan pact:install --no-interaction
 php artisan config:cache
