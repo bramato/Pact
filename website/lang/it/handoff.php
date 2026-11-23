@@ -7,6 +7,7 @@ return [
     'changes' => 'Novità della :version',
     'unreleased_title' => 'In sviluppo',
     'unreleased_progress' => 'Il client Laravel può pubblicare la fase effettiva dell’incarico, come «Sto verificando le fonti». Il master la legge con GetTask e può mostrare in chat l’ultimo aggiornamento.',
+    'unreleased_calls' => 'Il servizio per gli incarichi strutturati e il trait ReadsPactCalls estraggono il brief da mostrare in chat. Il client conserva il payload originale per correlare l’incarico e gestire i retry.',
     'protocol' => 'Protocollo Core :version',
     'references' => 'Documentazione della versione',
     'documents' => [

@@ -37,6 +37,7 @@
             <div>
                 <h3>{{ $handoff['unreleased_title'] }}</h3>
                 <p>{{ $handoff['unreleased_progress'] }}</p>
+                <p>{{ $handoff['unreleased_calls'] }}</p>
             </div>
         </div>
     @endif
