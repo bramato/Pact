@@ -5,6 +5,8 @@ return [
     'intro' => 'Choose the package version you want to install, then copy the master or client handoff into your project assistant chat.',
     'versions' => 'Package versions',
     'changes' => 'What changed in :version',
+    'unreleased_title' => 'In development',
+    'unreleased_progress' => 'Laravel clients can report the current task phase, such as “Checking sources”. The master reads it through GetTask and can show the latest update in chat.',
     'protocol' => 'Core protocol :version',
     'references' => 'Documentation for this version',
     'documents' => [

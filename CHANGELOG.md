@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Let Laravel client handlers and application workers publish a readable task phase while work is running. Coordinators can display it through the existing task progress resource.
 - Document private S3 backup and restore for PACT installation files on ephemeral Laravel master and client releases.
 
 ## 0.3.0

@@ -5,6 +5,8 @@ return [
     'intro' => 'Scegli la versione del pacchetto da installare, poi copia l’handoff master o client nella chat dell’assistente che lavora sul tuo progetto.',
     'versions' => 'Versioni del pacchetto',
     'changes' => 'Novità della :version',
+    'unreleased_title' => 'In sviluppo',
+    'unreleased_progress' => 'Il client Laravel può pubblicare la fase effettiva dell’incarico, come «Sto verificando le fonti». Il master la legge con GetTask e può mostrare in chat l’ultimo aggiornamento.',
     'protocol' => 'Protocollo Core :version',
     'references' => 'Documentazione della versione',
     'documents' => [

@@ -32,6 +32,14 @@
             </ul>
         </div>
     </div>
+    @if($version === $latest)
+        <div class="handoff-release">
+            <div>
+                <h3>{{ $handoff['unreleased_title'] }}</h3>
+                <p>{{ $handoff['unreleased_progress'] }}</p>
+            </div>
+        </div>
+    @endif
     <div class="handoff-list">
         @foreach($handoff['roles'] as $role => $roleCopy)
             <article class="handoff-entry" aria-labelledby="handoff-{{ $role }}-title">

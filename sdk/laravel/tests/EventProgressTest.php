@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace PactLaravel\Tests;
 
 use Pact\Pact;
+use PactLaravel\Contracts\AgentHandler;
+use PactLaravel\Execution\AgentContext;
+use PactLaravel\Execution\AgentResult;
 use PactLaravel\Models\Connection;
 use PactLaravel\Models\EventReceipt;
 use PactLaravel\Models\Task;
@@ -16,6 +19,59 @@ use PactLaravel\Runtime\Worker;
 
 final class EventProgressTest extends TestCase
 {
+    public function test_host_progress_is_observable_without_interrupting_execution(): void
+    {
+        $this->migratePact();
+        config(['pact.role' => 'client', 'pact.handler' => AgentHandler::class]);
+        $connection = Connection::query()->create(['user_id' => 'alice', 'federation_id' => 'fed', 'member_id' => 'agent', 'remote_url' => 'https://master.example', 'remote_user_id' => 'alice', 'status' => 'active']);
+        $service = $this->app->make(TaskService::class);
+        $store = $this->app->make(Store::class);
+        $message = (object) [
+            'jsonrpc' => '2.0', 'id' => 1, 'method' => 'SendMessage',
+            'params' => (object) ['message' => (object) [
+                'role' => 'ROLE_USER', 'messageId' => 'm', 'parts' => [(object) ['data' => (object) ['message' => 'hello']]],
+                'metadata' => (object) [Pact::CORE_URI => (object) ['version' => Pact::VERSION, 'contract' => $service->contract(), 'idempotency_key' => 'progress']],
+            ]],
+        ];
+        $id = $service->rpc($connection, 'agent', $message, json_encode($message, JSON_THROW_ON_ERROR))['task']['id'];
+        $get = (object) ['jsonrpc' => '2.0', 'id' => 2, 'method' => 'GetTask', 'params' => (object) ['id' => $id]];
+        $read = fn () => $service->rpc($connection, 'agent', $get, json_encode($get, JSON_THROW_ON_ERROR));
+        $handler = $this->createMock(AgentHandler::class);
+        $handler->expects($this->exactly(2))->method('handle')->willReturnCallback(
+            function (AgentContext $context) use ($service, $read): AgentResult {
+                if ($context->checkpoint['handed_off'] ?? false) {
+                    return AgentResult::completed(['pong' => true]);
+                }
+                self::assertTrue($service->reportProgress($context->taskId, 'Sto cercando nei documenti…'));
+                $active = $read();
+                self::assertSame('TASK_STATE_WORKING', $active['status']['state']);
+                self::assertSame('Sto cercando nei documenti…', $active['metadata'][Pact::CORE_URI]['progress']['stage']);
+                self::assertNull($active['metadata'][Pact::CORE_URI]['progress']['percentage']);
+                self::assertFalse($service->reportProgress($context->taskId, 'Sto cercando nei documenti…'));
+
+                return AgentResult::waiting(['handed_off' => true]);
+            }
+        );
+        $this->app->instance(AgentHandler::class, $handler);
+        $worker = $this->app->make(Worker::class);
+        self::assertTrue($worker->workOnce());
+        $waiting = $read()['metadata'][Pact::CORE_URI]['progress'];
+        self::assertSame(1, $waiting['sequence']);
+
+        self::assertTrue($service->reportProgress($id, 'Sto verificando le fonti…'));
+        $verifying = $read()['metadata'][Pact::CORE_URI]['progress'];
+        self::assertSame(2, $verifying['sequence']);
+        self::assertSame('Sto verificando le fonti…', $verifying['stage']);
+        $store->enqueue('execute', $id, [], 'resume-progress');
+        self::assertTrue($worker->workOnce());
+
+        $completed = $read();
+        self::assertSame('TASK_STATE_COMPLETED', $completed['status']['state']);
+        self::assertSame(100, $completed['metadata'][Pact::CORE_URI]['progress']['percentage']);
+        self::assertFalse($service->reportProgress($id, 'Late update'));
+        self::assertSame($completed, $read());
+    }
+
     public function test_audited_events_and_native_progress(): void
     {
         $this->migratePact();

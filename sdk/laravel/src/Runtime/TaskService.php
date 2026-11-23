@@ -22,14 +22,53 @@ final class TaskService
 {
     public function __construct(private readonly Store $store, private readonly Pact $pact) {}
 
-    private function progress(array $value, string $stage, bool $complete = false): array
+    private function progress(array $value, string $stage, ?bool $complete = null): array
     {
         $previous = $value['metadata'][Pact::CORE_URI]['progress']['sequence'] ?? null;
-        $progress = (object) ['sequence' => $previous === null ? 0 : $previous + 1, 'stage' => $stage, 'completed_units' => $complete ? 1 : 0, 'total_units' => 1, 'percentage' => $complete ? 100 : 0, 'updated_at' => now()->utc()->format('Y-m-d\\TH:i:s.v\\Z')];
+        $progress = (object) [
+            'sequence' => $previous === null ? 0 : $previous + 1,
+            'stage' => $stage,
+            'completed_units' => $complete ? 1 : 0,
+            'total_units' => $complete === null ? null : 1,
+            'percentage' => $complete === null ? null : ($complete ? 100 : 0),
+            'updated_at' => now()->utc()->format('Y-m-d\\TH:i:s.v\\Z'),
+        ];
         $this->pact->progress($progress, $previous);
         $value['metadata'][Pact::CORE_URI]['progress'] = (array) $progress;
 
         return $value;
+    }
+
+    /**
+     * Publish a host-defined phase for a working client task from the handler or an application worker.
+     */
+    public function reportProgress(string $taskId, string $stage): bool
+    {
+        if (config('pact.role') !== 'client') {
+            return false;
+        }
+
+        return $this->store->atomic(function () use ($taskId, $stage): bool {
+            $task = Task::query()->where('state', 'TASK_STATE_WORKING')->lockForUpdate()->find($taskId);
+            if (! $task || ! Connection::query()->whereKey($task->connection_id)
+                ->where('user_id', $task->user_id)->where('federation_id', $task->federation_id)
+                ->where('status', 'active')->exists()) {
+                return false;
+            }
+
+            $stage = trim($stage);
+            $value = $task->value;
+            $current = $value['metadata'][Pact::CORE_URI]['progress'] ?? [];
+            if (($current['stage'] ?? null) === $stage && ($current['total_units'] ?? null) === null) {
+                return false;
+            }
+
+            // Progress has its own sequence. The task version fences competing lifecycle updates.
+            $task->value = $this->progress($value, $stage);
+            $task->save();
+
+            return true;
+        });
     }
 
     private function registry(): string
@@ -177,7 +216,7 @@ final class TaskService
                 $this->pact->contractData($this->contract()->input, $message->parts[0]->data, $this->registry());
                 $id = (string) Str::uuid();
                 $value = ['id' => $id, 'contextId' => (string) Str::uuid(), 'status' => ['state' => 'TASK_STATE_WORKING', 'timestamp' => now()->toISOString()], 'metadata' => [Pact::CORE_URI => ['version' => Pact::VERSION, 'contract' => (array) $this->contract(), 'questions' => []]]];
-                $value = $this->progress($value, 'execution');
+                $value = $this->progress($value, 'execution', false);
                 $task = Task::query()->create(['id' => $id, 'connection_id' => $connection->id, 'user_id' => $connection->user_id, 'federation_id' => $connection->federation_id, 'root_id' => $id, 'caller_id' => $connection->member_id, 'state' => 'TASK_STATE_WORKING', 'value' => $value, 'checkpoint' => ['input' => (array) $message->parts[0]->data], 'version' => 1]);
                 $this->store->enqueue('execute', $id, [], $id);
             }
@@ -265,7 +304,10 @@ final class TaskService
             }
             $task->checkpoint = $checkpoint;
             $value['status'] = ['state' => $task->state, 'timestamp' => now()->toISOString()];
-            $value = $this->progress($value,'execution',$task->state === 'TASK_STATE_COMPLETED');
+            $stage = $value['metadata'][Pact::CORE_URI]['progress']['stage'] ?? 'execution';
+            if ($result->state !== 'waiting' || $stage === 'execution') {
+                $value = $this->progress($value, 'execution', $task->state === 'TASK_STATE_COMPLETED');
+            }
             $task->value = $value;
             $task->version++;
             $task->save();
