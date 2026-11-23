@@ -8,12 +8,12 @@
         <ul>
             @foreach(array_keys($releases) as $edition)
                 <li>
-                    <a href="{{ $alternateUrls[$locale] }}?version={{ $edition }}#handoff" @if($edition === $version) aria-current="true" @endif>{{ $edition }}</a>
+                    <a href="{{ $alternateUrls[$locale] }}?version={{ $edition }}#handoff" data-version="{{ $edition }}" @if($edition === $version) aria-current="true" @endif>{{ $edition }}</a>
                 </li>
             @endforeach
         </ul>
     </nav>
-    <div class="handoff-release">
+    <div class="handoff-release" aria-live="polite">
         <div>
             <h3>{{ strtr($handoff['changes'], [':version' => $version]) }}</h3>
             <p class="handoff-protocol">{{ strtr($handoff['protocol'], [':version' => $release['protocol']]) }}</p>

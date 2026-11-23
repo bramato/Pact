@@ -21,7 +21,7 @@
     <link rel="alternate" hreflang="x-default" href="{{ $alternateUrls[$defaultLocale] }}">
     <link rel="icon" href="/assets/pact-symbol.svg?v=4" type="image/svg+xml">
     <link rel="stylesheet" href="/assets/pact.css?v=9">
-    <script defer src="/assets/pact.js?v=3"></script>
+    <script defer src="/assets/pact.js?v=4"></script>
     <title>{{ $copy['meta']['title'] }}</title>
 </head>
 <body>

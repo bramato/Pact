@@ -1,4 +1,100 @@
 (() => {
+  const versionSelector = document.querySelector(".handoff-versions");
+  if (versionSelector) {
+    const versions = [...versionSelector.querySelectorAll("[data-version]")];
+    const release = document.querySelector(".handoff-release");
+    const prompts = [...document.querySelectorAll(".handoff-preview pre")];
+    const feedback = document.querySelectorAll(".handoff-feedback");
+    const languages = document.querySelectorAll(".language-switch a");
+    let selected = versionSelector.querySelector("[aria-current]");
+    let pending;
+
+    async function selectVersion(link, pushHistory) {
+      pending?.abort();
+      if (link === selected) return;
+
+      const request = new AbortController();
+      pending = request;
+      release.setAttribute("aria-busy", "true");
+
+      try {
+        const response = await fetch(link.href, {
+          mode: "same-origin",
+          signal: request.signal,
+        });
+        if (!response.ok) throw new Error("Release unavailable");
+
+        const page = new DOMParser().parseFromString(
+          await response.text(),
+          "text/html",
+        );
+        if (request.signal.aborted) return;
+
+        const nextRelease = page.querySelector(".handoff-release");
+        const nextVersion = page.querySelector(
+          ".handoff-versions [aria-current]",
+        );
+        const nextPrompts = prompts.map((prompt) => page.getElementById(prompt.id));
+        if (
+          !nextRelease ||
+          nextVersion?.href !== link.href ||
+          nextPrompts.includes(null)
+        ) {
+          throw new Error("Unexpected release content");
+        }
+
+        if (pushHistory) history.pushState(null, "", link.href);
+        release.replaceChildren(...nextRelease.children);
+        prompts.forEach((prompt, index) => {
+          prompt.textContent = nextPrompts[index].textContent;
+        });
+        feedback.forEach((status) => {
+          status.textContent = "";
+        });
+        for (const language of languages) {
+          const localized = page.querySelector(
+            `.language-switch a[lang="${language.lang}"]`,
+          );
+          if (localized) language.href = localized.href;
+        }
+        selected.removeAttribute("aria-current");
+        link.setAttribute("aria-current", "true");
+        selected = link;
+      } catch {
+        if (request.signal.aborted) return;
+        if (pushHistory) window.location.assign(link.href);
+        else window.location.reload();
+      } finally {
+        if (pending === request) {
+          pending = undefined;
+          release.removeAttribute("aria-busy");
+        }
+      }
+    }
+
+    versionSelector.addEventListener("click", (event) => {
+      const link = event.target.closest("a[data-version]");
+      if (
+        !link ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) return;
+
+      event.preventDefault();
+      selectVersion(link, true);
+    });
+
+    window.addEventListener("popstate", () => {
+      const version = new URLSearchParams(window.location.search).get("version");
+      const link =
+        versions.find((option) => option.dataset.version === version) ?? versions[0];
+      selectVersion(link, false);
+    });
+  }
+
   document.querySelectorAll("[data-copy-target]").forEach((button) => {
     const source = document.getElementById(button.dataset.copyTarget);
     const feedback = document.getElementById(
@@ -7,13 +103,14 @@
     if (!source || !feedback) return;
 
     button.addEventListener("click", async () => {
+      const text = source.textContent;
       try {
         if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(source.textContent);
+          await navigator.clipboard.writeText(text);
         } else {
           // Herd's HTTP origins may not expose the Clipboard API.
           const field = document.createElement("textarea");
-          field.value = source.textContent;
+          field.value = text;
           field.readOnly = true;
           field.style.position = "fixed";
           field.style.opacity = "0";
@@ -26,8 +123,12 @@
             button.focus({ preventScroll: true });
           }
         }
-        feedback.textContent = button.dataset.copySuccess;
+        if (text === source.textContent) {
+          feedback.textContent = button.dataset.copySuccess;
+        }
       } catch {
+        if (text !== source.textContent) return;
+
         source.closest("details").open = true;
         source.focus();
         const selection = window.getSelection();
