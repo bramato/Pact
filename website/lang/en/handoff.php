@@ -29,6 +29,20 @@ Read the documentation for this release:
 
 Inspect the host's Laravel/PHP versions, database, authentication, existing agent and tools. Reuse the application's login, guard and provider. Keep its existing Herd scheme and .test domain in APP_URL in local development, and use HTTPS for public peers.
 
+:installation
+
+:linking
+
+:execution
+
+:release_instructions
+
+:verification
+
+Report the working integration, the tests run, the worker setup and any checks awaiting a peer or user consent. Keep tokens and private keys out of the report.
+HANDOFF,
+    'installation' => [
+        'files' => <<<'HANDOFF'
 Preserve installation state for both master and client. Keep the same APP_KEY in the secret manager and preserve the existing database. On releases with an ephemeral filesystem, back up storage/app/pact/installation.json (role, product ID and installation settings) and the PACT pair storage/app/pact/private.pem and storage/app/pact/public.pem to encrypted, private S3 storage for this application and environment. On a client with file-based Passport keys, include storage/oauth-private.key and storage/oauth-public.key or the host's configured paths. Keep inline Passport keys in the host's secret manager.
 
 On an existing installation, mount a persistent volume already supported by the host or download the backup into a private staging directory using read-only S3 access. Verify the expected files, their checksums, the role and product ID, and that each key pair matches. Restore the files to the expected local paths on every instance before Laravel config or cache commands, any pact:install, and starting or restarting web and worker processes. Grant the deploy, web and worker accounts only the access they need. PACT reads local paths. Setting FILESYSTEM_DISK=s3 alone leaves the files local.
@@ -49,17 +63,20 @@ For local HTTP peers include one --allow-local-host per host, including both app
 On an ordinary redeploy, restore and verify the files and skip pact:install. For a package upgrade that calls for it, run php artisan config:clear and then php artisan pact:install --no-interaction only after the restore passes. Review published config and views against the selected version. Rebuild the config and route caches, then start the web processes and supervise php artisan pact:work as a persistent process.
 
 After redeploy, run php artisan pact:doctor once the new worker is running. Use a connection that was already active to send a diagnostic task from the master, verify the result from the client and check an authenticated client call to the master roster. Use the same connection throughout without relinking.
-
-:linking
-
-:execution
-
-:release_instructions
-
-:verification
-
-Report the working integration, the tests run, the worker setup and any checks awaiting a peer or user consent. Keep tokens and private keys out of the report.
 HANDOFF,
+        'database' => <<<'HANDOFF'
+Use the original database and APP_KEY for any existing installation. On releases with an ephemeral filesystem, set PACT_STATE_STORE=database for deploy, web and workers. If config/pact.php is already published, add 'state_store' => env('PACT_STATE_STORE', 'files') and refresh any configuration cache that predates this setting. Run installation after the database is available.
+
+For a fresh installation, run from the Laravel project root:
+composer require pact-protocol/laravel::version pact-protocol/core::version --with-all-dependencies && php artisan pact:install --role=:role --no-interaction
+
+On an existing, working release, update the Composer dependencies above and run php artisan pact:install --no-interaction with its original PACT and Passport files still available. On ephemeral releases, verify the installer reports that it saved the identity and file-based keys in the database before switching away from the previous backup and restore. Recover missing files from a verified backup first. Keep inline Passport credentials in the secret manager. Persistent volumes can retain the default file store.
+
+The installer applies package migrations and handles the route cache. Apply host migrations through the project's own deploy. The supported Herd origin comes from APP_URL. Include one --allow-local-host per additional local peer. Supervise php artisan pact:work through the host process manager. On a normal redeploy, restart supervised processes with the same database, APP_KEY and installed key settings. Database-backed installs restore their local files during bootstrap.
+
+With the worker running, run php artisan pact:doctor. Reuse an active link to verify a diagnostic result and an authenticated client call to the master roster. Commit the Composer manifest and lock after verifying the selected version.
+HANDOFF,
+    ],
     'linking' => [
         'manual' => [
             'master' => <<<'HANDOFF'

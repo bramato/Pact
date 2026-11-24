@@ -4,41 +4,38 @@ The same `pact-protocol/laravel` package runs as a **master**, owning users' tea
 
 ## Install a versioned release
 
-For an existing installation, follow the [redeploy procedure](#redeploy-an-existing-installation) before running any installation command.
+On a Laravel application with a working database, login, `APP_KEY` and `APP_URL`, run this from the project root:
 
 ```sh
-composer require pact-protocol/laravel:^0.3.0
+composer require pact-protocol/laravel:^0.3.2 && php artisan pact:install
 ```
 
-Composer installs the Core dependency automatically. Public version tags and upgrade instructions are described in the [release guide](releases.md).
+Choose **master** to coordinate agents or **client** to expose the application's agent. Composer resolves Core automatically. For CI, replace the interactive command with `php artisan pact:install --role=master --no-interaction` or `php artisan pact:install --role=client --no-interaction`. After an installation, `php artisan pact:install --no-interaction` reuses the recorded role and identity.
 
-For development from a checkout, add Composer path repositories pointing at its absolute `sdk/php` and `sdk/laravel` directories. Assign both packages the version of the checkout, using the path repository structure in `reference/composer.json`. Standalone Composer release archives are also supported.
+The installer generates or reuses signing keys, installs the PACT schema and missing Passport setup on clients, and invalidates the route cache. It uses the current Laravel configuration, including an existing config cache. If you changed environment variables or config files, refresh that cache before invoking the command. The installer leaves host application migrations to the host's normal deploy. For a read-only code checkout, publish `pact-config` in a writable checkout if you need to customize the package.
 
-Before using Composer path repositories from a fresh checkout or building archives, run `npm ci --ignore-scripts` and `npm run build:sdk` in the PACT repository to bundle Core schemas and Federation result contracts. The consuming Laravel application does not need Node.js. Use Laravel 12.41.1+ or 13 with the compatible PHP version and OpenSSL, JSON, mbstring, BCMath, cURL and the database extension.
+Use `--url`, `--guard`, `--provider` or `--connection` on first installation when the host needs overrides. An explicit guard uses its configured user provider unless you pass `--provider`. For Herd, use the application's existing `.test` origin in `APP_URL`. The installer allows that origin's host in a Laravel `local` environment. Include one `--allow-local-host` for each additional local peer on both installations. Public peers require HTTPS.
 
-On a first installation, configure the Laravel application's database, `APP_KEY`, existing authentication and `APP_URL`, then choose its role:
+Keep `php artisan pact:work` running through the application's process supervisor. A client can run the built-in diagnostic task immediately. To expose its own AI agent, [configure the handler and the application's authorized tools](#connect-the-client-applications-agent).
 
-```sh
-php artisan pact:install
-# Equivalent scripted choices, in separate applications:
-php artisan pact:install --role=master --no-interaction
-php artisan pact:install --role=client --no-interaction
-```
+### Keep state in the database on ephemeral deployments
 
-The first installation accepts `--url`, `--guard`, `--provider` and `--connection`. Missing required non-interactive configuration fails explicitly. Only PACT migrations and any missing client-side Passport migrations run; unrelated application migrations are excluded.
+On Laravel Cloud or any deployment that replaces local storage, set `PACT_STATE_STORE=database` as a **persistent environment setting** on the deploy, web and worker processes. For a published `config/pact.php`, add `'state_store' => env('PACT_STATE_STORE', 'files')` and refresh any existing configuration cache. Use one deployment job for the first installation or upgrade.
 
-Herd development uses the project folder's `.test` domain and its existing HTTP/HTTPS scheme. Explicitly allow local HTTP peers:
+- **New installation.** Run the role-specific installation command once. PACT stores the installation metadata and both PACT keys, plus file-based Passport keys on a client, in the default Laravel database. It encrypts the record with `APP_KEY`. Inline Passport keys stay in the host secret configuration.
+- **Existing installation.** Run `php artisan pact:install --no-interaction` on the working release with the original installation file and complete key pairs available. The command adopts the existing product ID and keys. Confirm the command reports that the state is encrypted in the database before switching deploys away from any host-specific S3 restore. If the working release lost its files, recover them from its trusted backup first.
 
-```sh
-php artisan pact:install --role=client --url=http://client.test \
-  --allow-local-host=client.test --allow-local-host=master.test
-```
+On subsequent deploys, keep the same database, original `APP_KEY` and key configuration. PACT reloads the stored state at bootstrap and restores missing files to private local storage before registering its routes. Each web or worker replica needs database access at bootstrap and writable storage at the regular signing-key paths. A local identity or key that differs from the encrypted record stops bootstrap. If runtime tables exist and the installation is missing, `pact:install` asks for recovery before generating any new identity. Back up the database and keep the key in the host secret manager. If you use a separate PACT runtime connection, preserve both databases.
 
-Include every local peer in `pact.local_hosts`. Public origins require HTTPS. Existing Passport keys and host authentication are reused. Clear the configuration cache before installation and rebuild the configuration and route caches afterward.
+Deploy normally and restart the supervised worker on the new release. Run `php artisan pact:doctor` with the worker active. Then use an existing link to send a diagnostic task, receive the result and make an authenticated client call to the master roster.
+
+### Development from a source checkout
+
+Use Composer path repositories for `sdk/php` and `sdk/laravel` as shown in `reference/composer.json`. Run `npm ci --ignore-scripts` and `npm run build:sdk` in the PACT checkout to bundle schemas and contracts. Consuming apps installed through Composer need Laravel 12.41.1+ or 13, compatible PHP, OpenSSL, JSON, mbstring, BCMath, cURL and the database extension. See the [release guide](releases.md) for package versions.
 
 ### Preserve installation state on ephemeral releases
 
-This procedure applies to Laravel masters and clients. PACT 0.3.0 reads its installation state and signing keys at local paths under `storage_path()`. Setting `FILESYSTEM_DISK=s3` alone leaves those files local. Use encrypted, private S3 storage for the backup and restore it into each new release. An existing persistent volume is an alternative if the project mounts it at the expected local paths and makes it available to every web and worker instance before startup.
+Use this procedure for the default file store, including existing masters and clients that already have persistent volumes or a host-managed backup. PACT reads the files from local storage even when `FILESYSTEM_DISK=s3`. Mount the persistent volume before Laravel starts or restore the files from encrypted, private S3 storage.
 
 | File | What to preserve |
 | --- | --- |
@@ -56,7 +53,7 @@ Run the role-specific installation command only when the deployment is explicitl
 
 1. Use an existing, verified backup for this application and environment. When adding persistence to an existing deployment, capture the initial set from the verified working release and check it before replacing that release. Keep restore access to S3 read-only. With a persistent volume, mount it before running the same checks on the files already there.
 2. Before Laravel boots in the new release, stage the download in a private directory. Verify that all expected files are present and readable, their checksums match the recorded set, `installation.json` is valid and has the expected role and product ID, and each public key matches its private key. Place the validated files at the expected local paths on every web and worker instance. Use restrictive ownership and permissions, for example `0700` for the directory and `0600` for the files when deploy, web and worker use the same account. If they use separate accounts, grant access through a restricted group and verify readability for each process. Keep key contents out of logs and web-served paths.
-3. If the backup is missing, incomplete, inaccessible or fails validation, stop the deployment before activating the new release. Treat conflicting local files as a failed check. Recover the original set from a verified copy, volume or working release. Do not run `pact:install`, generate replacement keys or overwrite the known backup while recovery is pending. If `installation.json` is missing, supplying a role to `pact:install` can create a new product ID and generate any missing key pairs even if the database already contains PACT data.
+3. If the backup is missing, incomplete, inaccessible or fails validation, stop the deployment before activating the new release. Treat conflicting local files as a failed check. Recover the original set from a verified copy, volume or working release. Do not run `pact:install`, generate replacement keys or overwrite the known backup while recovery is pending. Versions through 0.3.1 could issue a new product ID in this situation. In 0.3.2, the command checks for existing PACT tables on the selected runtime connection.
 4. Once the restore passes, load the original `APP_KEY` and database configuration. Run any Laravel configuration commands and apply any required PACT upgrade only now. An ordinary redeploy does not need `pact:install`. Rebuild the configuration and route caches before starting or restarting the web processes and supervised `php artisan pact:work` worker on the new release.
 5. After the new worker is running, run `php artisan pact:doctor` and check its key, credential and recent worker heartbeat results. Then use a connection that was active before the deploy. Send a diagnostic task from the master, verify the client processes it and returns the result, and check an authenticated client call to the master roster. Use the same connection throughout without relinking. If the deployment has no existing connection, record the continuity check as pending.
 
@@ -108,11 +105,13 @@ The authenticated facade provides `teams()`, `createTeam($name)`, `members($team
 
 ### Client account and tenant integration
 
+Open consent as a full browser navigation from Inertia or another single-page shell. If the host adds tenant or project selection, keep each pending authorization server-side, scoped to the signed-in user and the individual OAuth attempt. Exercise consent in two tabs, a changed workspace, an expired attempt, and a user denied access to the selected tenant. A retry follows a fresh link from the master. Keep browser CSRF protection on login and consent forms. For a host-supplied MCP route, test a peer call with its PACT bearer credential and exclude browser CSRF middleware on that specific machine endpoint when registered in the web group.
+
 The client controls tenant selection through its existing login/tenant flow. Add any required selection/authorization middleware to `pact.auth.middleware`; it runs on consent routes after the existing login middleware. Bind `PactLaravel\Contracts\IdentityResolver` when the authorized agent identity includes an account or tenant. `id()` must return a stable, unique local subject (maximum 191 bytes), such as an opaque tenant/user identifier, and `find()` must resolve that subject. Authorization, `/oauth/subject` and task execution preserve it. The selected identity is bound at consent and checked again at approval; switching account or tenant requires a fresh consent request. Do not resolve the tenant from a master-supplied value or infer identity from matching emails.
 
 ### Upgrade existing installations
 
-Follow the [redeploy procedure](#redeploy-an-existing-installation) before clearing or rebuilding Laravel caches or rerunning the installer. After updating the package on **both** installations and verifying the restored files, clear the configuration cache and rerun `php artisan pact:install --no-interaction`, then rebuild configuration and route caches. The additive migration preserves existing connections, federations and credentials, names the original federation “Squadra personale” and allows more teams. Re-publish customised config and views deliberately to include the new pages and middleware option.
+Keep the original `APP_KEY`, databases and signing keys. For installations on files, follow the [redeploy procedure](#redeploy-an-existing-installation) or adopt the same files into the [database store](#keep-state-in-the-database-on-ephemeral-deployments). After updating Composer and refreshing any changed configuration, run `php artisan pact:install --no-interaction`. The migration introduced in 0.2.1 preserves existing connections, federations and credentials and supports named teams. Review any published configuration or view overrides against the chosen release.
 
 The previous manual registration commands (`pact:oauth-client`, `pact:application:add` and `pact:connect NAME --user=…`) and `Pact::connectUrl(NAME)` remain supported. That legacy path queues the member into the personal team without the new team-selection step. It is intended for existing integrations; new UI integrations should use `connectDomain()`.
 
@@ -135,7 +134,7 @@ PACT_QUEUE=pact
 
 Use an asynchronous connection defined in `config/queue.php`. Setting only the queue name uses Laravel's default queue connection. Setting only the connection uses that driver's default queue. With both settings empty, `pact:work` runs the handler directly. `pact.database_connection` selects the database for PACT records.
 
-Keep `php artisan pact:work` running for delivery, polling and dispatch to the Laravel queue. Supervise a Laravel worker for the configured destination as well, for example `php artisan queue:work redis --queue=pact --timeout=45`. If the PACT handler starts application-specific jobs, those jobs use the application's own queue settings. Rebuild the Laravel config cache and restart the workers after changing these settings.
+Keep `php artisan pact:work` running for delivery, polling and dispatch to the Laravel queue. Reuse a connection and queue already consumed by the host worker when appropriate. For a dedicated Redis queue, for example, supervise `php artisan queue:work redis --queue=pact --timeout=45`. If the PACT handler starts application-specific jobs, check which connection and queue those jobs use as well. Rebuild the Laravel config cache and restart the workers after changing these settings. Send a task through to its real result to verify the jobs were consumed.
 
 PACT starts the execution lease when the Laravel worker picks up the job. The outbox can resend an unclaimed job if publication fails or a worker is unavailable. Only the worker that claims the current outbox reservation may execute it. Set the Laravel worker timeout below the PACT execution lease and the queue driver's retry or visibility timeout above the worker timeout.
 

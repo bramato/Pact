@@ -8,14 +8,16 @@ use Laravel\Passport\PassportServiceProvider;
 use PactLaravel\PactManager;
 use PactLaravel\PactServiceProvider;
 
-require getenv('PACT_VENDOR').'/autoload.php';
-class FixtureUser extends User
-{
-    protected $table = 'users';
+require_once getenv('PACT_VENDOR').'/autoload.php';
+if (! class_exists(FixtureUser::class, false)) {
+    class FixtureUser extends User
+    {
+        protected $table = 'users';
 
-    public $timestamps = false;
+        public $timestamps = false;
 
-    protected $guarded = [];
+        protected $guarded = [];
+    }
 }
 $app = Application::configure(basePath: getenv('FIXTURE_BASE'))
     ->withProviders([PassportServiceProvider::class, McpServiceProvider::class, PactServiceProvider::class])

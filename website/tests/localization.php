@@ -146,6 +146,7 @@ foreach (['it' => '/', 'en' => '/en'] as $locale => $path) {
             $prompt = $xpath->evaluate('string(//details/pre[@id="'.$id.'"])');
             expect(str_contains($prompt, "pact-protocol/laravel:$version pact-protocol/core:$version"), 'Both packages must be pinned to '.$version.'.');
             expect(str_contains($prompt, 'pact:install --role='.$role), 'The handoff must install the correct role.');
+            expect(str_contains($prompt, 'PACT_STATE_STORE=database') === (($releases[$version]['installation'] ?? 'files') === 'database'), 'The handoff must use the installation procedure supported by the selected version.');
             expect(str_contains($prompt, $editions[$version]['instructions'][$role]), 'The preview must include the selected release instructions.');
             expect($xpath->query('//button[@data-copy-target="'.$id.'"]')->length === 1, 'Copy must use the visible prompt text.');
             expect(str_contains($prompt, 'pact:oauth-client') === ($releases[$version]['linking'] === 'manual'), 'Only the legacy handoff should require manual OAuth registration.');

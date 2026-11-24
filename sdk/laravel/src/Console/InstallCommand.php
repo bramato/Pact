@@ -6,6 +6,8 @@ namespace PactLaravel\Console;
 
 use Illuminate\Console\Command;
 use Laravel\Passport\Passport;
+use PactLaravel\Runtime\ExecutionQueue;
+use PactLaravel\Support\DatabaseInstallation;
 use PactLaravel\Support\Installation;
 
 final class InstallCommand extends Command
@@ -17,30 +19,40 @@ final class InstallCommand extends Command
     public function handle(Installation $installation): int
     {
         try {
-            if ($this->laravel->configurationIsCached()) {
-                $this->error('Clear the configuration cache before installing; rebuild it after installation.');
-
-                return self::FAILURE;
-            }
             $previous = Installation::load();
-            $role = $this->option('role') ?: ($previous['role'] ?? null);
+            $role = $this->option('role') ?: ($previous['role'] ?? config('pact.role'));
             if (! $role && $this->input->isInteractive()) {
                 $role = $this->choice('PACT installation role', ['master', 'client']);
             }
             if (! $role) {
                 throw new \RuntimeException('--role=master or --role=client is required in non-interactive mode.');
             }
-            $local = array_values(array_unique(array_merge(config('pact.local_hosts', []), $this->option('allow-local-host'))));
-            config(['pact.local_hosts' => $local]);
+            $local = array_merge(config('pact.local_hosts', []), $this->option('allow-local-host'));
+            $host = strtolower((string) parse_url((string) config('app.url'), PHP_URL_HOST));
+            if ($this->laravel->environment('local') && str_ends_with($host, '.test')) {
+                $local[] = $host;
+            }
+            config(['pact.local_hosts' => array_values(array_unique($local))]);
             $options = array_filter(['url' => $this->option('url'), 'guard' => $this->option('guard'), 'provider' => $this->option('provider'), 'database_connection' => $this->option('connection')], fn ($value) => $value !== null);
             // Validate the database before persisting a fresh installation.
-            $this->laravel['db']->connection($options['database_connection'] ?? config('pact.database_connection'))->getPdo();
+            $connectionName = $previous === []
+                ? $options['database_connection'] ?? config('pact.database_connection')
+                : config('pact.database_connection');
+            $connection = $this->laravel['db']->connection($connectionName);
+            $connection->getPdo();
+            if ($previous === [] && $connection->getSchemaBuilder()->hasTable('pact_federations')) {
+                throw new \RuntimeException('PACT tables already exist without installation metadata. Restore the original state and signing keys before installing.');
+            }
+            ExecutionQueue::fromConfig();
             $installed = $installation->install((string) $role, $options);
             foreach ($installed as $key => $value) {
+                if ($key === 'auth') {
+                    $value = array_replace(config('pact.auth', []), $value);
+                }
                 config(['pact.'.$key => $value]);
             }
             $path = config_path('pact.php');
-            if (! is_file($path)) {
+            if (! is_file($path) && is_writable(dirname($path))) {
                 copy(__DIR__.'/../../config/pact.php', $path);
             }
             $paths = [realpath(__DIR__.'/../../database/migrations')];
@@ -48,7 +60,7 @@ final class InstallCommand extends Command
                 $reflection = new \ReflectionClass(Passport::class);
                 $passport = dirname($reflection->getFileName(), 2).'/database/migrations';
                 // Already migrated Passport tables belong to the app; do not recreate them.
-                if (! $this->laravel['db']->connection()->getSchemaBuilder()->hasTable('oauth_clients')) {
+                if (! $this->laravel['db']->connection(config('passport.connection'))->getSchemaBuilder()->hasTable('oauth_clients')) {
                     $paths[] = $passport;
                 }
             }
@@ -56,8 +68,13 @@ final class InstallCommand extends Command
             if ($result !== 0) {
                 return $result;
             }
-            $this->callSilent('route:clear');
+            if ($this->callSilent('route:clear') !== self::SUCCESS || $this->laravel->routesAreCached()) {
+                throw new \RuntimeException('PACT is installed but the route cache could not be cleared.');
+            }
             $this->info('PACT '.$installed['role'].' installed. Product identity: '.$installed['product_id']);
+            if (DatabaseInstallation::enabled()) {
+                $this->info('PACT installation and file-based keys are encrypted in the application database.');
+            }
             $this->line('Run php artisan pact:doctor and keep php artisan pact:work running.');
 
             return self::SUCCESS;

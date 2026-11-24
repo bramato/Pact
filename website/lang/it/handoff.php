@@ -29,6 +29,20 @@ Leggi la documentazione di questa versione:
 
 Verifica le versioni di Laravel e PHP, il database, l’autenticazione, l’agente e gli strumenti presenti nel progetto. Riusa login, guard e provider dell’applicazione. In locale mantieni in APP_URL il dominio Herd .test e il suo schema HTTP o HTTPS. Per i peer pubblici usa HTTPS.
 
+:installation
+
+:linking
+
+:execution
+
+:release_instructions
+
+:verification
+
+Riporta l’integrazione realizzata, i test eseguiti, la configurazione del worker e le verifiche ancora in attesa di un peer o del consenso dell’utente. Tieni token e chiavi private fuori dal resoconto.
+HANDOFF,
+    'installation' => [
+        'files' => <<<'HANDOFF'
 Conserva lo stato dell’installazione sia per il master sia per il client. Mantieni lo stesso valore di APP_KEY nel gestore dei segreti e conserva il database esistente. Se il filesystem viene sostituito a ogni release, salva in uno storage S3 privato e cifrato, dedicato all’applicazione e all’ambiente, storage/app/pact/installation.json (ruolo, ID prodotto e parametri di installazione) e la coppia PACT storage/app/pact/private.pem e storage/app/pact/public.pem. Se il client usa chiavi Passport su file, includi storage/oauth-private.key e storage/oauth-public.key o i percorsi configurati dal progetto. Mantieni le chiavi Passport fornite direttamente come valori nel gestore dei segreti dell’applicazione.
 
 Per un’installazione esistente, monta il volume persistente se il progetto lo supporta già, oppure usa un accesso in sola lettura a S3 per scaricare il backup in una directory temporanea privata. Verifica che ci siano tutti i file, che i checksum corrispondano, che ruolo e ID prodotto siano quelli attesi e che ogni coppia di chiavi combaci. Ripristina i file nei percorsi locali attesi su ogni istanza prima di configurare Laravel o le cache, eseguire pact:install e avviare o riavviare web e worker. Concedi agli utenti di deploy, web e worker solo i permessi necessari. PACT legge percorsi locali. Impostare soltanto FILESYSTEM_DISK=s3 lascia i file sul disco locale.
@@ -49,17 +63,20 @@ Per i peer HTTP locali aggiungi un --allow-local-host per ciascun host, incluse 
 In un redeploy ordinario ripristina e verifica i file e salta pact:install. Se l’aggiornamento del pacchetto lo richiede, esegui php artisan config:clear seguito da php artisan pact:install --no-interaction solo dopo aver verificato il ripristino. Confronta le configurazioni e le viste pubblicate con quelle della versione scelta. Ricostruisci le cache di configurazione e route, poi avvia i processi web e tieni php artisan pact:work in esecuzione sotto un supervisore.
 
 Dopo il redeploy esegui php artisan pact:doctor con il nuovo worker in esecuzione. Usa una connessione già attiva per inviare dal master un incarico diagnostico, verificare il risultato del client e controllare una chiamata autenticata dal client al roster del master. Usa la stessa connessione per tutta la prova, senza ripetere il collegamento.
-
-:linking
-
-:execution
-
-:release_instructions
-
-:verification
-
-Riporta l’integrazione realizzata, i test eseguiti, la configurazione del worker e le verifiche ancora in attesa di un peer o del consenso dell’utente. Tieni token e chiavi private fuori dal resoconto.
 HANDOFF,
+        'database' => <<<'HANDOFF'
+Per un’installazione esistente usa il database e il valore di APP_KEY originali. Su release con filesystem effimero imposta PACT_STATE_STORE=database per deploy, web e worker. Se config/pact.php è già pubblicato, aggiungi 'state_store' => env('PACT_STATE_STORE', 'files') e aggiorna la cache di configurazione precedente all’impostazione. Esegui l’installazione quando il database è disponibile.
+
+Per una prima installazione, esegui dalla radice del progetto Laravel:
+composer require pact-protocol/laravel::version pact-protocol/core::version --with-all-dependencies && php artisan pact:install --role=:role --no-interaction
+
+Su una release esistente e funzionante, aggiorna le dipendenze Composer sopra e lancia php artisan pact:install --no-interaction con i file PACT e Passport originali disponibili. Con filesystem effimero verifica che l’installer confermi il salvataggio di identità e chiavi su file nel database prima di sostituire il precedente backup e ripristino. Recupera prima eventuali file mancanti da un backup verificato. Conserva le chiavi Passport configurate come valori nel gestore dei segreti. I volumi persistenti possono continuare a usare l’archivio su file.
+
+L’installer applica le migrazioni del pacchetto e gestisce la cache delle route. Esegui le migrazioni applicative con il deploy del progetto. L’origine Herd viene da APP_URL. Aggiungi un --allow-local-host per ogni ulteriore peer locale. Tieni php artisan pact:work sotto il gestore dei processi del progetto. Nei deploy ordinari riavvia i processi con database, APP_KEY e impostazioni delle chiavi originali. Le installazioni su database ripristinano i file locali durante l’avvio.
+
+Con il worker in esecuzione, lancia php artisan pact:doctor. Usa un collegamento già attivo per verificare un risultato diagnostico e una chiamata autenticata dal client al roster del master. Verifica la versione selezionata e registra nel progetto manifest e lock Composer.
+HANDOFF,
+    ],
     'linking' => [
         'manual' => [
             'master' => <<<'HANDOFF'

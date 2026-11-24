@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PactLaravel\Tests;
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use PactLaravel\PactServiceProvider;
 use PactLaravel\Support\Installation;
@@ -60,15 +61,15 @@ PHP);
         self::assertSame($key, file_get_contents(storage_path('oauth-private.key')));
     }
 
-    public function test_cached_configuration_refuses_install_without_writing_keys_or_migrating(): void
+    public function test_install_uses_cached_configuration_and_preserves_it(): void
     {
-        file_put_contents($this->app->getCachedConfigPath(), '<?php return [];');
+        $cache = $this->app->getCachedConfigPath();
+        file_put_contents($cache, '<?php return [];');
         $this->app->instance('config_loaded_from_cache', true);
-        self::assertSame(1, Artisan::call('pact:install', ['--role' => 'master', '--url' => 'https://master.example', '--no-interaction' => true]));
-        self::assertStringContainsString('configuration cache', Artisan::output());
-        self::assertFileDoesNotExist(Installation::path());
-        self::assertFileDoesNotExist(storage_path('app/pact/private.pem'));
-        self::assertFalse(Schema::hasTable('pact_tasks'));
+        self::assertSame(0, Artisan::call('pact:install', ['--role' => 'master', '--no-interaction' => true]), Artisan::output());
+        self::assertSame('https://master.example', Installation::load()['url']);
+        self::assertFileExists($cache);
+        self::assertTrue(Schema::hasTable('pact_tasks'));
     }
 
     public function test_install_clears_existing_route_cache_after_registering_package_migrations(): void
@@ -79,5 +80,78 @@ PHP);
         self::assertSame(0, Artisan::call('pact:install', ['--role' => 'master', '--url' => 'https://master.example', '--no-interaction' => true]), Artisan::output());
         self::assertFileDoesNotExist($cache);
         self::assertTrue(Schema::hasTable('pact_tasks'));
+    }
+
+    public function test_install_refuses_to_create_a_replacement_identity_from_an_existing_database(): void
+    {
+        $this->migratePact();
+        self::assertSame(1, Artisan::call('pact:install', ['--role' => 'master', '--no-interaction' => true]));
+        self::assertStringContainsString('Restore the original state', Artisan::output());
+        self::assertFileDoesNotExist(Installation::path());
+        self::assertFileDoesNotExist(storage_path('app/pact/private.pem'));
+    }
+
+    public function test_install_uses_the_configured_role_and_guard_provider_for_herd(): void
+    {
+        $this->app->instance('env', 'local');
+        config([
+            'app.url' => 'http://pact.test',
+            'pact.url' => 'http://pact.test',
+            'pact.role' => 'master',
+            'auth.guards.team' => ['driver' => 'session', 'provider' => 'staff'],
+            'auth.providers.staff' => ['driver' => 'eloquent', 'model' => 'App\\Models\\User'],
+        ]);
+        self::assertSame(0, Artisan::call('pact:install', ['--guard' => 'team', '--no-interaction' => true]), Artisan::output());
+        self::assertSame(['guard' => 'team', 'provider' => 'staff'], Installation::load()['auth']);
+        self::assertSame(['pact.test'], Installation::load()['local_hosts']);
+    }
+
+    public function test_existing_file_installation_can_be_adopted_and_restored_from_the_database(): void
+    {
+        self::assertSame(0, Artisan::call('pact:install', ['--role' => 'client', '--no-interaction' => true]), Artisan::output());
+        $original = Installation::load();
+        $paths = ['app/pact/private.pem', 'app/pact/public.pem', 'oauth-private.key', 'oauth-public.key'];
+        $keys = array_map(fn ($path) => file_get_contents(storage_path($path)), $paths);
+        self::assertFalse(Schema::hasTable('pact_installation_state'));
+
+        config(['pact.state_store' => 'database']);
+        self::assertSame(0, Artisan::call('pact:install', ['--no-interaction' => true]), Artisan::output());
+        $encrypted = DB::table('pact_installation_state')->value('payload');
+        self::assertIsString($encrypted);
+        self::assertStringNotContainsString($original['product_id'], $encrypted);
+        self::assertStringNotContainsString('PRIVATE KEY', $encrypted);
+        self::assertSame(0, Artisan::call('pact:install', ['--no-interaction' => true]), Artisan::output());
+        self::assertSame($encrypted, DB::table('pact_installation_state')->value('payload'));
+
+        unlink(Installation::path());
+        foreach ($paths as $path) {
+            unlink(storage_path($path));
+        }
+        self::assertSame($original, (new Installation)->restore());
+        self::assertSame($original, Installation::load());
+        self::assertSame($keys, array_map(fn ($path) => file_get_contents(storage_path($path)), $paths));
+
+        file_put_contents(storage_path('app/pact/public.pem'), 'conflicting key');
+        $this->expectExceptionMessage('Local PACT or Passport signing keys differ');
+        (new Installation)->restore();
+    }
+
+    public function test_database_installation_preserves_identity_when_the_encryption_key_changes(): void
+    {
+        config(['pact.state_store' => 'database']);
+        self::assertSame(0, Artisan::call('pact:install', ['--role' => 'master', '--no-interaction' => true]), Artisan::output());
+        $encrypted = DB::table('pact_installation_state')->value('payload');
+        unlink(Installation::path());
+        config(['app.key' => 'base64:'.base64_encode(str_repeat('z', 32))]);
+        $this->app->forgetInstance('encrypter');
+
+        try {
+            (new Installation)->restore();
+            self::fail('Restoring with another encryption key should fail.');
+        } catch (\RuntimeException $error) {
+            self::assertStringContainsString('original APP_KEY', $error->getMessage());
+        }
+        self::assertFileDoesNotExist(Installation::path());
+        self::assertSame($encrypted, DB::table('pact_installation_state')->value('payload'));
     }
 }

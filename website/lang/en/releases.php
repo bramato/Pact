@@ -1,6 +1,17 @@
 <?php
 
 return [
+    '0.3.2' => [
+        'changes' => [
+            'Install the Laravel runtime with pact:install, including when Laravel already has a configuration cache.',
+            'Set PACT_STATE_STORE=database to preserve the product identity and signing keys across ephemeral deployments.',
+            'Adopt the keys and identity of an existing installation while keeping its active connections and original protocol version.',
+        ],
+        'instructions' => [
+            'master' => 'Keep the persistent delivery process running. For any host-supplied MCP route, verify a peer request with a signed PACT bearer token succeeds without a browser session. Verify that an existing link still works after replacing local storage.',
+            'client' => 'Keep OAuth consent in a full browser navigation and use the host’s authorization rules for tenant selection. Run the diagnostic task and a real task with an authorized tool. If the agent dispatches to a Laravel queue, verify that a worker consumes that exact connection and queue.',
+        ],
+    ],
     '0.3.1' => [
         'changes' => [
             'Use PACT_QUEUE_CONNECTION and PACT_QUEUE to route task execution to a Laravel queue.',

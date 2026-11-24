@@ -9,6 +9,7 @@ use Pact\HttpBinding;
 use PactLaravel\Contracts\AgentHandler;
 use PactLaravel\Contracts\ConversationReader;
 use PactLaravel\Contracts\IdentityResolver;
+use PactLaravel\Support\DatabaseInstallation;
 use PactLaravel\Support\DefaultIdentityResolver;
 use PactLaravel\Support\DenyConversationReader;
 use PactLaravel\Support\Installation;
@@ -22,12 +23,13 @@ final class PactServiceProvider extends ServiceProvider
             $this->app['config']->set('pact.url', $this->app['config']->get('app.url'));
         }
         if (method_exists($this->app, 'storagePath')) {
-            foreach (Installation::load() as $key => $value) {
-                if ($key === 'auth') {
-                    // Persisted login settings must not hide the host's tenant middleware.
-                    $value = array_replace($this->app['config']->get('pact.auth', []), $value);
-                }
-                $this->app['config']->set('pact.'.$key, $value);
+            if (DatabaseInstallation::enabled() && ! $this->app->runningConsoleCommand(
+                'package:discover', 'config:clear', 'route:clear',
+            )) {
+                // Passport and the application's configuration providers must be registered first.
+                $this->app->booting(fn () => $this->applyInstallation((new Installation)->restore()));
+            } else {
+                $this->applyInstallation(Installation::load());
             }
             $this->app->bindIf(IdentityResolver::class, DefaultIdentityResolver::class);
             $this->app->bindIf(ConversationReader::class, function ($app) {
@@ -36,6 +38,17 @@ final class PactServiceProvider extends ServiceProvider
             if ($handler = $this->app['config']->get('pact.handler')) {
                 $this->app->bindIf(AgentHandler::class, $handler);
             }
+        }
+    }
+
+    private function applyInstallation(array $installation): void
+    {
+        foreach ($installation as $key => $value) {
+            if ($key === 'auth') {
+                // Persisted login settings must not hide the host's tenant middleware.
+                $value = array_replace($this->app['config']->get('pact.auth', []), $value);
+            }
+            $this->app['config']->set('pact.'.$key, $value);
         }
     }
 

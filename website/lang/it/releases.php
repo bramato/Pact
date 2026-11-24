@@ -1,6 +1,17 @@
 <?php
 
 return [
+    '0.3.2' => [
+        'changes' => [
+            'Installa il runtime Laravel con pact:install anche se la configurazione di Laravel è già in cache.',
+            'Imposta PACT_STATE_STORE=database per conservare l’identità del prodotto e le chiavi tra deploy con filesystem effimero.',
+            'Adotta le chiavi e l’identità di un’installazione esistente mantenendo le connessioni attive e la versione del protocollo.',
+        ],
+        'instructions' => [
+            'master' => 'Mantieni in esecuzione il processo di consegna. Se il progetto definisce una propria route MCP, verifica una richiesta del peer con un token PACT firmato senza sessione browser. Verifica che un collegamento esistente funzioni anche dopo la sostituzione dello storage locale.',
+            'client' => 'Apri il consenso OAuth con una navigazione completa del browser e applica le autorizzazioni del progetto alla scelta del tenant. Esegui un incarico diagnostico e uno reale con uno strumento autorizzato. Se l’agente accoda il lavoro in Laravel, verifica che un worker consumi quella connessione e quella coda.',
+        ],
+    ],
     '0.3.1' => [
         'changes' => [
             'Usa PACT_QUEUE_CONNECTION e PACT_QUEUE per scegliere la coda Laravel che esegue gli incarichi.',

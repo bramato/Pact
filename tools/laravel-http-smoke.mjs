@@ -37,6 +37,10 @@ const apps = ["master", "client1", "client2"].map((name, i) => {
     mkdirSync(join(base, dir), { recursive: true });
   for (const file of ["bootstrap.php", "artisan", "index.php", "setup.php"])
     copyFileSync(join(fixture, file), join(base, file));
+  writeFileSync(
+    join(base, "bootstrap/app.php"),
+    "<?php return require dirname(__DIR__).'/bootstrap.php';\n",
+  );
   writeFileSync(join(base, "database/db.sqlite"), "");
   writeFileSync(
     join(base, "composer.json"),
@@ -63,6 +67,7 @@ const apps = ["master", "client1", "client2"].map((name, i) => {
       ...process.env,
       FIXTURE_BASE: base,
       PACT_VENDOR: join(root, "sdk/laravel/vendor"),
+      PACT_STATE_STORE: name === "client2" ? "files" : "database",
     },
     cookies: new Map(),
   };
@@ -107,6 +112,7 @@ async function expect(app, url, status, options) {
 try {
   for (const app of apps) {
     run(app, "setup.php");
+    if (app.name === "master") run(app, "artisan", "config:cache");
     run(
       app,
       "artisan",
@@ -210,6 +216,21 @@ try {
   check(roster.length === 3, `expected 3 members: ${JSON.stringify(roster)}`);
   const member = roster.find((m) => m.kind === "agent" && m.active);
   check(member, "active client member missing");
+  for (const app of [master, clients[0]]) {
+    const installation = join(app.base, "storage/app/pact");
+    const identity = readFileSync(join(installation, "installation.json"), "utf8");
+    rmSync(installation, { recursive: true });
+    if (app !== master) {
+      rmSync(join(app.base, "storage/oauth-private.key"));
+      rmSync(join(app.base, "storage/oauth-public.key"));
+    }
+    await expect(app, "/.well-known/pact", 200);
+    check(
+      readFileSync(join(installation, "installation.json"), "utf8") === identity,
+      `${app.name}: ephemeral release must restore the same installation`,
+    );
+  }
+  await expect(clients[0], "/fixture/reverse-roster", 200);
   const sent = JSON.parse(
     (
       await expect(
@@ -237,7 +258,7 @@ try {
     `missing diagnostic output: ${JSON.stringify(task)}`,
   );
   console.log(
-    "PASS: domain-only UI, automatic registration, real OAuth PKCE, team choice, bidirectional credentials and completed diagnostic message",
+    "PASS: installation with cached configuration, OAuth PKCE, identity restore on master and client, and diagnostic completion on the original link",
   );
 } catch (error) {
   for (const app of apps) {

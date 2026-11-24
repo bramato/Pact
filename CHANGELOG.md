@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2 — 2026-11-24
+
+- Install a Laravel master or client with one Artisan command, including when Laravel's configuration is cached. The installer reuses the recorded role on repeat runs and allows the application's own Herd host in a local environment.
+- Opt in to database-backed installation state with `PACT_STATE_STORE=database`. PACT saves the existing or newly generated identity and file-based signing keys encrypted with `APP_KEY` and restores them on each replica that needs them.
+- Reject installs over an existing PACT schema when the identity file is missing. The original file store remains the default, and package, OAuth and wire protocol compatibility is preserved.
+
 ## 0.3.1 — 2026-11-24
 
 - Configure the Laravel queue connection and queue name for PACT task execution. The PACT outbox keeps track of each execution and its retries.

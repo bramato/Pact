@@ -10,7 +10,7 @@ The source of truth is `bramato/Pact`. Public distribution repositories contain 
 Consumers install releases normally:
 
 ```sh
-composer require pact-protocol/laravel:^0.3.1
+composer require pact-protocol/laravel:^0.3.2
 ```
 
 The Core dependency is resolved automatically. Neither a local path repository nor Node.js is needed in the consuming application.
@@ -62,15 +62,12 @@ The tag-triggered GitHub Actions workflow also builds release artifacts from the
 
 ## Upgrade a consuming Laravel application
 
-Select the target package version in the homepage Handoff section for copyable master and client instructions. Release 0.3.1 adds optional [Laravel queue configuration for task execution](laravel-installation.md#choose-the-laravel-queue-for-task-execution) and readable task progress. For [question forms v1](question-forms.md), verify that both peers support the form and that the coordinator can render it. For earlier upgrades, see the [0.2.2 upgrade handoff](upgrade-handoff-v0.2.2.md).
+Select the target package version in the homepage Handoff section for copyable master and client instructions. Release 0.3.2 adds an optional [database installation store](laravel-installation.md#keep-state-in-the-database-on-ephemeral-deployments). Release 0.3.1 adds optional [Laravel queue configuration for task execution](laravel-installation.md#choose-the-laravel-queue-for-task-execution) and readable task progress. For [question forms v1](question-forms.md), verify that both peers support the form and that the coordinator can render it. For earlier upgrades, see the [0.2.2 upgrade handoff](upgrade-handoff-v0.2.2.md).
 
-Before running the commands below, [restore and verify the existing installation files](laravel-installation.md#redeploy-an-existing-installation) on each release and keep the original `APP_KEY` and database. An existing 0.3.0 installation can upgrade with its current schema. Merge `queue.connection` and `queue.name` into any customized published PACT config before rebuilding the cache.
+Before running the commands below, [restore and verify the existing installation files](laravel-installation.md#redeploy-an-existing-installation) and keep the original `APP_KEY` and database. For an existing project adopting the database store, configure it on the working release first and run the installer with the original files available. Refresh Laravel's configuration cache if you changed the configuration.
 
 ```sh
-composer require pact-protocol/laravel:0.3.1 pact-protocol/core:0.3.1 --with-all-dependencies
-php artisan config:clear
-php artisan config:cache
-php artisan route:cache
+composer require pact-protocol/laravel:0.3.2 pact-protocol/core:0.3.2 --with-all-dependencies && php artisan pact:install --no-interaction
 ```
 
 After starting the new web and worker processes, run `php artisan pact:doctor` and verify continuity with an existing connection.

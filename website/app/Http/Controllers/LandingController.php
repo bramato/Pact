@@ -33,6 +33,8 @@ final class LandingController
         $release = $releases[$version];
         $releaseCopy = Lang::get('releases', [], $locale, false)[$version];
         $handoff = Lang::get('handoff', [], $locale, false);
+        $installation = $handoff['installation'][$release['installation'] ?? 'files'];
+        $prompt = str_replace(':installation', $installation, $handoff['prompt']);
         $source = 'https://github.com/bramato/Pact/blob/v'.$version.'/';
         $documents = array_map(
             fn (string $path): string => $source.$path,
@@ -46,7 +48,7 @@ final class LandingController
         );
 
         foreach ($handoff['roles'] as $role => $roleCopy) {
-            $handoff['roles'][$role]['text'] = strtr($handoff['prompt'], [
+            $handoff['roles'][$role]['text'] = strtr($prompt, [
                 ':version' => $version,
                 ':protocol' => $release['protocol'],
                 ':role' => $role,

@@ -3,13 +3,12 @@
 Install one package, choose `master` or `client`, and link users' agents through OAuth. Masters coordinate personal federations; clients execute work using their application's agent. The package includes persistence, a worker, Passport authorization with PKCE, and Laravel MCP/A2A endpoints.
 
 ```sh
-php artisan pact:install --role=master --no-interaction
-# In a different Laravel application:
-php artisan pact:install --role=client --no-interaction
-php artisan pact:work
+composer require pact-protocol/laravel:^0.3.2 && php artisan pact:install
 ```
 
-Install with `composer require pact-protocol/laravel:^0.2`; Composer resolves the Core dependency. Read the [installation and operations guide](https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md) for registration, OAuth linking, agent interfaces, diagnostics and recovery. Requires Laravel 12.41.1+ or 13 and compatible PHP. The default agent is a deterministic connectivity check; application AI capabilities require a configured handler and pinned contract.
+Choose the role when prompted or pass `--role=master --no-interaction` or `--role=client --no-interaction` to the Artisan command. Composer resolves Core automatically. On ephemeral deployments, set `PACT_STATE_STORE=database` before installation to save the identity and signing keys encrypted in the application database. Keep `php artisan pact:work` running under the host process supervisor.
+
+The package requires Laravel 12.41.1+ or 13 and compatible PHP. The included agent checks connectivity. To expose an application agent, configure the handler and its pinned contract. [Installation and operations guide](https://github.com/bramato/Pact/blob/main/docs/laravel-installation.md)
 
 ## Existing HTTP bindings
 
